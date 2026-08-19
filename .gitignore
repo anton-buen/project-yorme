@@ -1,0 +1,35 @@
+# Python virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# PyTorch / Machine Learning models (keep repo lightweight for Streamlit Cloud)
+*.pt
+*.pth
+*.onnx
+*.pkl
+
+# Local datasets or large media (if any)
+data/raw/
+*.mp4
+*.avi
+
+# Streamlit local settings
+.streamlit/secrets.toml
+
+# Operating System files (Windows / macOS)
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# IDE / Editor configurations
+.vscode/
+.idea/
