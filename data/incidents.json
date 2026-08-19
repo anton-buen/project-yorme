@@ -1,0 +1,42 @@
+{
+  "incidents": [
+    {
+      "id": "carina_2024_july23",
+      "name": "July 23, 2024 Monsoon / Typhoon Carina Inundation",
+      "description": "Heavy monsoon surge inundated España Blvd and Taft Ave. Late afternoon LGU suspension stranded thousands of college students.",
+      "actual_announcement_time": 14.0,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "stranded_count": 0},
+        "4.0": {"flood_active": false, "pagasa_warning": "YELLOW", "stranded_count": 0},
+        "5.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 450},
+        "6.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1200},
+        "7.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 2800},
+        "8.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 4100},
+        "9.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 4900},
+        "10.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 5200},
+        "11.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 5300},
+        "12.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 5300}
+      }
+    },
+    {
+      "id": "august_28_2024_monsoon",
+      "name": "August 28, 2024 Habagat Manila Surge",
+      "description": "Early morning Yellow Rainfall warning over Metro Manila caused severe Taft Avenue flooding during peak morning commute.",
+      "actual_announcement_time": 6.0,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "stranded_count": 0},
+        "4.0": {"flood_active": false, "pagasa_warning": "YELLOW", "stranded_count": 0},
+        "5.0": {"flood_active": true, "pagasa_warning": "YELLOW", "stranded_count": 150},
+        "6.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 800},
+        "7.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1400},
+        "8.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
+        "9.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
+        "10.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
+        "11.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
+        "12.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600}
+      }
+    }
+  ]
+}

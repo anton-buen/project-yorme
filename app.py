@@ -1,7 +1,13 @@
-import streamlit as st
+import os
+import json
+import torch
 import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
+import streamlit as st
+import matplotlib.pyplot as plt
+from stable_baselines3 import PPO
+
+from src.env import LguSuspensionEnv
 
 # --- PAGE CONFIGURATION ---
 st.set_page_config(
@@ -10,17 +16,10 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Custom CSS for dark minimalist aesthetic
 st.markdown("""
 <style>
-    .main {
-        background-color: #0E1117;
-    }
-    .metric-card {
-        background-color: #1E222A;
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid #2E3440;
-    }
+    .main { background-color: #0E1117; }
     .status-actual {
         border-left: 6px solid #E53935;
         background-color: #1E222A;
@@ -35,29 +34,68 @@ st.markdown("""
         border-radius: 4px;
         margin-bottom: 12px;
     }
-    .text-critical { color: #E53935; font-weight: bold; }
-    .text-safe { color: #43A047; font-weight: bold; }
-    .text-warning { color: #FB8C00; font-weight: bold; }
     .text-muted { color: #8892B0; font-size: 0.9em; }
 </style>
-""", unsafe_allow_dict=True)
+""", unsafe_allow_html=True)
 
 
-# --- DUMMY DATA GENERATOR FOR HISTORICAL & RADAR ---
-def generate_radar_matrix(intensity_level):
-    """Generates a 32x32 synthetic radar tensor grid for display."""
-    np.random.seed(int(intensity_level * 10))
-    grid = np.random.uniform(0.0, 0.3, (32, 32))
-    if intensity_level > 2:
-        # Generate heavy storm core
-        x, y = np.ogrid[:32, :32]
-        center_x, center_y = 16, 16
-        mask = (x - center_x)**2 + (y - center_y)**2 <= (intensity_level * 3)**2
-        grid[mask] += np.random.uniform(0.5, 0.7, np.count_nonzero(mask))
-    return np.clip(grid, 0.0, 1.0)
+# --- DATA LOADERS ---
+@st.cache_data
+def load_datasets():
+    incidents_path = "data/incidents.json"
+    cctv_path = "data/cctv_feeds.json"
+    
+    incidents = []
+    cctvs = []
+    
+    if os.path.exists(incidents_path):
+        with open(incidents_path, "r") as f:
+            incidents = json.load(f).get("incidents", [])
+            
+    if os.path.exists(cctv_path):
+        with open(cctv_path, "r") as f:
+            cctvs = json.load(f).get("camera_feeds", [])
+            
+    return incidents, cctvs
 
 
-# --- HEADER & TOP CONTROL BAR ---
+@st.cache_resource
+def load_ppo_agent():
+    model_paths = [
+        "models/best_model/best_model.zip",
+        "models/ppo_yorme_agent.zip"
+    ]
+    for path in model_paths:
+        if os.path.exists(path):
+            try:
+                model = PPO.load(path)
+                return model, path
+            except Exception as e:
+                st.error(f"Error loading checkpoint at {path}: {e}")
+    return None, None
+
+
+def get_model_prediction(model, obs_dict):
+    if model is None:
+        return 3, [0.05, 0.10, 0.15, 0.65, 0.05]
+
+    action, _ = model.predict(obs_dict, deterministic=True)
+    ai_code = int(action)
+
+    with torch.no_grad():
+        obs_tensor = {
+            k: torch.as_tensor(v).unsqueeze(0).to(model.device) 
+            for k, v in obs_dict.items()
+        }
+        distribution = model.policy.get_distribution(obs_tensor)
+        probs = distribution.distribution.probs.cpu().numpy()[0]
+
+    return ai_code, probs
+
+
+# --- INITIALIZE DATA & CONTROLS ---
+incidents, cctv_feeds = load_datasets()
+
 st.title("WALANG PASOK AI: Predictive Early Suspension Advisor")
 st.caption("City of Manila LGU Decision Support System | Reinforcement Learning Model")
 
@@ -66,24 +104,15 @@ st.divider()
 col_mode, col_event, col_time = st.columns([1, 1.5, 2])
 
 with col_mode:
-    app_mode = st.radio(
-        "Mode Select",
-        ["Historical Replay", "Live Watch"],
-        horizontal=True
-    )
+    app_mode = st.radio("Mode Select", ["Historical Replay", "Live Watch"], horizontal=True)
 
-with col_event:
-    if app_mode == "Historical Replay":
-        selected_event = st.selectbox(
-            "Select Incident",
-            [
-                "August 2024 Monsoon / U-Belt Flood",
-                "Typhoon Carina (July 2024)",
-                "Typhoon Ulysses Historical Case"
-            ]
-        )
-    else:
-        st.text_input("Active Target Region", value="Metro Manila (District 1-6)", disabled=True)
+incident_data = None
+if app_mode == "Historical Replay" and incidents:
+    incident_names = [inc["name"] for inc in incidents]
+    selected_name = col_event.selectbox("Select Incident", incident_names)
+    incident_data = next(inc for inc in incidents if inc["name"] == selected_name)
+else:
+    col_event.text_input("Active Target Region", value="Metro Manila (District 1-6)", disabled=True)
 
 with col_time:
     if app_mode == "Historical Replay":
@@ -102,29 +131,43 @@ with col_time:
         st.info("Live Monitoring Active: Connected to PAGASA & Public Traffic Streams")
 
 
-# --- SIMULATION STATE MAPPING ---
-# action: 0=Status Quo, 1=ADM/Online, 2=Basic Ed, 3=All Levels,4=Full Lockdown
-if selected_time < 5.0:
+# --- STATE INFERENCE & HISTORICAL MAPPING ---
+env = LguSuspensionEnv()
+env.reset()
+env.current_hour = float(selected_time)
+
+# Pull state details from JSON timeline if available
+time_key = str(float(selected_time))
+timeline_state = {}
+if incident_data and time_key in incident_data.get("hourly_timeline", {}):
+    timeline_state = incident_data["hourly_timeline"][time_key]
+    env._will_flood = timeline_state.get("flood_active", False)
+    env._has_pagasa_red_warning = (timeline_state.get("pagasa_warning") == "RED")
+
+obs = env._get_obs()
+model, model_path = load_ppo_agent()
+ai_code, action_probs = get_model_prediction(model, obs)
+
+# Actual LGU action mapping from incident metadata
+actual_announcement_hour = incident_data.get("actual_announcement_time", 11.5) if incident_data else 11.5
+if selected_time < actual_announcement_hour:
     actual_code = 0
-    ai_code = 3
-    stranded_count_actual = 0
-    stranded_count_ai = 0
-    actual_risk = "SAFE (Pre-Commute)"
-    ai_risk = "PROTECTED (Early Call)"
-elif selected_time < 11.5:
-    actual_code = 0
-    ai_code = 3
-    stranded_count_actual = int((selected_time - 5.0) * 800)
-    stranded_count_ai = 0
-    actual_risk = "CRITICAL (Commuters Stranded)"
-    ai_risk = "PREEMPTED (Safe at Home)"
 else:
-    actual_code = 3  #late suspension issued 11:30 am
-    ai_code = 3
-    stranded_count_actual = 5200
+    actual_code = incident_data.get("actual_action_code", 3) if incident_data else 3
+
+stranded_count_actual = timeline_state.get("stranded_count", 0)
+
+if ai_code >= 3:
     stranded_count_ai = 0
-    actual_risk = "HIGH INJURY/STRANDED RISK"
-    ai_risk = "SAFE"
+    ai_risk = "PROTECTED (Early Call)"
+elif ai_code in [1, 2]:
+    stranded_count_ai = int(stranded_count_actual * 0.3)
+    ai_risk = "PARTIAL PROTECTION"
+else:
+    stranded_count_ai = stranded_count_actual
+    ai_risk = "CRITICAL (Commuters Stranded)" if stranded_count_actual > 0 else "SAFE"
+
+actual_risk = "CRITICAL (Commuters Stranded)" if stranded_count_actual > 0 else "SAFE (Pre-Commute)"
 
 action_names = {
     0: "Status Quo (Normal F2F)",
@@ -135,7 +178,7 @@ action_names = {
 }
 
 
-# --- MAIN VIEW: SIDE-BY-SIDE DECISION---
+# --- MAIN DISPLAY ---
 st.subheader(f"Decision Status Comparison at {time_str}")
 
 col_actual, col_ai = st.columns(2)
@@ -147,98 +190,90 @@ with col_actual:
         <h3>{action_names[actual_code]}</h3>
         <p class="text-muted">Source: Manila PIO Official Log</p>
     </div>
-    """, unsafe_allow_dict=True)
-    
+    """, unsafe_allow_html=True)
     m1, m2 = st.columns(2)
-    with m1:
-        st.metric("Estimated Stranded Students", f"{stranded_count_actual:,}")
-    with m2:
-        st.metric("Commuter Safety Index", actual_risk)
+    with m1: st.metric("Estimated Stranded Students", f"{stranded_count_actual:,}")
+    with m2: st.metric("Commuter Safety Index", actual_risk)
 
 with col_ai:
+    status_sub = f"Loaded Weights: {model_path}" if model_path else "Fallback Inference"
     st.markdown(f"""
     <div class="status-ai">
         <h4>WALANGPASOK AI POLICY RECOMMENDATION</h4>
         <h3>{action_names[ai_code]}</h3>
-        <p class="text-muted">Model Confidence: 92.4% | Lead Time: 6.5 Hours</p>
+        <p class="text-muted">{status_sub}</p>
     </div>
-    """, unsafe_allow_dict=True)
-    
+    """, unsafe_allow_html=True)
     m3, m4 = st.columns(2)
-    with m3:
-        st.metric("Estimated Stranded Students", f"{stranded_count_ai:,}")
-    with m4:
-        st.metric("Commuter Safety Index", ai_risk)
+    with m3: st.metric("Estimated Stranded Students", f"{stranded_count_ai:,}")
+    with m4: st.metric("Commuter Safety Index", ai_risk)
 
 st.divider()
 
 
-# --- VISUAL GROUND TRUTH SECTION ---
+# --- GROUND TRUTH MAPS & CCTVS ---
 st.subheader("Visual Ground Truth & Spatial Inputs")
 
 col_radar, col_cctv = st.columns(2)
 
 with col_radar:
-    st.write("**PAGASA Radar Input Grid (32x32 Channel 0)**")
-    radar_data = generate_radar_matrix(selected_time)
+    st.write("**PAGASA Radar Input Grid (Channel 0: dBZ Reflectivity)**")
+    radar_data = obs["spatial"][0]
     
-    fig, ax = plt.subplots(figsize=(5, 3.5))
+    fig, ax = plt.subplots(figsize=(5, 3.2))
     fig.patch.set_facecolor('#0E1117')
     ax.set_facecolor('#0E1117')
     im = ax.imshow(radar_data, cmap='Blues', vmin=0, vmax=1)
-    ax.set_title("Local Manila dBZ Reflectivity", color="white", fontsize=10)
+    ax.set_title(f"Manila Grid at {time_str}", color="white", fontsize=10)
     ax.tick_params(colors='white')
     fig.colorbar(im, ax=ax)
     st.pyplot(fig)
 
 with col_cctv:
-    st.write("**Live / Historical Traffic CCTV Feed (Espana Blvd / U-Belt)**")
-    # Placeholder container - public video feed 
-    st.markdown("""
-    <div style="background-color: #1E222A; height: 215px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #2E3440;">
-        <p style="color: #8892B0; margin: 0;">[ PUBLIC CCTV STREAM FEED ]</p>
-        <p style="color: #4C566A; font-size: 0.8em;">LOCATION: Espana Blvd cor. Lacson Ave</p>
-        <p style="color: #E53935; font-weight: bold; margin-top: 10px;">STATUS: WATER LEVEL 18 INCHES (NON-PASSABLE)</p>
+    st.write("**Live / Historical Traffic CCTV Feed**")
+    selected_cctv = st.selectbox("Select Camera Location", [c["location_name"] for c in cctv_feeds]) if cctv_feeds else "Espana Blvd"
+    
+    is_flooded = timeline_state.get("flood_active", False)
+    cctv_status = "WATER LEVEL 18 INCHES (NON-PASSABLE)" if is_flooded else "ROAD CLEAR (DRY)"
+    cctv_color = "#E53935" if is_flooded else "#43A047"
+    
+    st.markdown(f"""
+    <div style="background-color: #1E222A; height: 180px; border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; border: 1px solid #2E3440;">
+        <p style="color: #8892B0; margin: 0;">[ PUBLIC MMDA CCTV STREAM FEED ]</p>
+        <p style="color: #4C566A; font-size: 0.8em;">LOCATION: {selected_cctv}</p>
+        <p style="color: {cctv_color}; font-weight: bold; margin-top: 10px;">STATUS: {cctv_status}</p>
     </div>
-    """, unsafe_allow_dict=True)
+    """, unsafe_allow_html=True)
 
 st.divider()
 
 
-# --- SIDEBARR ---
+# --- TECHNICAL VAULT SIDEBAR ---
 with st.sidebar:
     st.header("TECHNICAL VAULT")
     st.caption("RL Model Mechanics & Developer Logs")
     
-    st.subheader("Mayor Policy Bias Tuning")
-    bias_setting = st.select_slider(
-        "Reward Function Policy Bias",
-        options=["Strict (Avoid False Alarms)", "Balanced", "Protective (Zero Stranded)"],
-        value="Balanced"
-    )
-    
-    st.divider()
-    
-    with st.expander("PPO Action Q-Value Distribution", expanded=True):
-        q_vals = [0.05, 0.12, 0.18, 0.92, 0.10]
+    with st.expander("PPO Action Probability Distribution", expanded=True):
         fig_q, ax_q = plt.subplots(figsize=(4, 2.5))
         fig_q.patch.set_facecolor('#1E222A')
         ax_q.set_facecolor('#1E222A')
         
-        bars = ax_q.bar(["A0", "A1", "A2", "A3", "A4"], q_vals, color='#43A047')
-        bars[3].set_color('#00E676')  #winning action
+        bars = ax_q.bar(["A0", "A1", "A2", "A3", "A4"], action_probs, color='#3B4252')
+        bars[ai_code].set_color('#43A047')
         
         ax_q.tick_params(colors='white', labelsize=8)
         ax_q.set_ylabel("Probability", color='white', fontsize=8)
+        ax_q.set_ylim(0, 1.0)
         st.pyplot(fig_q)
         st.caption("A0:StatusQuo | A1:ADM | A2:BasicEd | A3:AllLevels | A4:Lockdown")
 
-    with st.expander("CNN Tensor Channel Inspector"):
-        st.text("Input Tensor Shape: (4, 32, 32)")
-        st.text("Channel 0: Manila Reflectivity")
-        st.text("Channel 1: Regional Vector Map")
-        st.text("Channel 2: Elevation Vulnerability")
-        st.text("Channel 3: MCDRRMO Risk Index")
+    with st.expander("Incident Metadata Inspector"):
+        if incident_data:
+            st.json({
+                "incident_id": incident_data.get("id"),
+                "actual_announcement_time": f"{incident_data.get('actual_announcement_time')}:00",
+                "pagasa_warning_level": timeline_state.get("pagasa_warning", "NONE")
+            })
 
     with st.expander("Reward Matrix Weights"):
         st.code("""
@@ -248,8 +283,3 @@ False Alarm Penalty:        -50
 Status Quo Failure:         -2000
 Legal Constraint Override:  ACTIVE
         """, language="python")
-
-    with st.expander("PPO Training Convergence"):
-        st.text("Policy Loss (L_pi): 0.014")
-        st.text("Value Loss (L_v):   0.082")
-        st.text("Total Timesteps:    500,000")
