@@ -1,0 +1,10 @@
+{
+  "description": "Monitors flood and weather conditions with AI-driven action recommendations to support timely decisions for education and local government safety measures.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}

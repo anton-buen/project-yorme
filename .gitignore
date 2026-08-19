@@ -1,35 +1,43 @@
-# Python virtual environments
-venv/
+# --- Python / Backend ---
+backend/.venv/
 .venv/
-env/
+venv/
 ENV/
-
-# Python bytecode & cache
 __pycache__/
 *.py[cod]
 *$py.class
 .pytest_cache/
+backend/logs/
 
-# PyTorch / Machine Learning models (keep repo lightweight for Streamlit Cloud)
+# Model Files (Allow SB3 .zip files, ignore raw large checkpoints/tensors if needed)
 *.pt
 *.pth
 *.onnx
 *.pkl
 
-# Local datasets or large media (if any)
-data/raw/
-*.mp4
-*.avi
+# --- Node / Frontend ---
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+build/
+.cache/
+.env*
+.vite/
+vite.config.*.timestamp-*
+*.tsbuildinfo
+*-debug.log*
+*.log
+.claude-replay.*
+.tmp-*
 
-# Streamlit local settings
-.streamlit/secrets.toml
-
-# Operating System files (Windows / macOS)
+# --- OS & IDE Configurations ---
+.vscode/
+.idea/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
 .DS_Store
 
-# IDE / Editor configurations
-.vscode/
-.idea/
+# Streamlit (Legacy)
+.streamlit/secrets.toml
