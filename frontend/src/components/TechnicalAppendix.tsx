@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { X, Loader2 } from 'lucide-react';
 import {
   BarChart,
@@ -12,7 +13,6 @@ import type { ActionCode, PredictionResponse } from '../types/dashboard';
 
 const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
-const SAGE = { text: "#3A7050", line: "#6B9E7A" };
 
 const ACTION_SHORT: Record<ActionCode, string> = {
   0: "A0 — Status Quo",
@@ -23,6 +23,34 @@ const ACTION_SHORT: Record<ActionCode, string> = {
 };
 
 type BiasMode = "strict" | "balanced" | "protective";
+
+interface RewardWeights {
+  earlyWarning: number;
+  lateSuspension: number;
+  falseAlarm: number;
+  statusQuoFailure: number;
+}
+
+const REWARD_PRESETS: Record<BiasMode, RewardWeights> = {
+  strict: {
+    earlyWarning: 100,
+    lateSuspension: -1000,
+    falseAlarm: -500,
+    statusQuoFailure: -2000,
+  },
+  balanced: {
+    earlyWarning: 100,
+    lateSuspension: -1000,
+    falseAlarm: -50,
+    statusQuoFailure: -2000,
+  },
+  protective: {
+    earlyWarning: 100,
+    lateSuspension: -5000,
+    falseAlarm: -50,
+    statusQuoFailure: -2000,
+  },
+};
 
 interface TechnicalAppendixProps {
   isOpen: boolean;
@@ -39,12 +67,21 @@ export default function TechnicalAppendix({
   setBias, 
   prediction 
 }: TechnicalAppendixProps) {
+  const [activeBias, setActiveBias] = useState<BiasMode>('balanced');
+  
+  const handleBiasChange = (newBias: BiasMode) => {
+    setActiveBias(newBias);
+    setBias(newBias);
+  };
+
+  const currentWeights = REWARD_PRESETS[activeBias];
+
   if (!isOpen) return null;
 
   const chartData = prediction ? prediction.action_probabilities.map((prob, idx) => ({
     name: ACTION_SHORT[idx as ActionCode] || `A${idx}`,
     value: Math.round(prob * 100),
-    color: idx === prediction.ai_action_code ? SAGE.line : "#A8A29E",
+    isWinner: idx === prediction.ai_action_code,
   })) : [];
 
   const maxProb = prediction ? Math.max(...prediction.action_probabilities) : 0;
@@ -96,9 +133,9 @@ export default function TechnicalAppendix({
                 {(['strict', 'balanced', 'protective'] as BiasMode[]).map((mode) => (
                   <button
                     key={mode}
-                    onClick={() => setBias(mode)}
+                    onClick={() => handleBiasChange(mode)}
                     className={`w-full p-4 rounded-xl text-left transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98] ${
-                      bias === mode 
+                      activeBias === mode 
                         ? 'bg-stone-900 text-white shadow-md' 
                         : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/50'
                     }`}
@@ -124,23 +161,36 @@ export default function TechnicalAppendix({
                 <>
                   <div className="h-64">
                     <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartData} layout="vertical">
-                        <XAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
-                        <YAxis type="category" dataKey="name" width={120} style={SANS} />
+                      <BarChart data={chartData} layout="vertical" margin={{ left: 0, right: 10, top: 10, bottom: 10 }}>
+                        <XAxis 
+                          type="number" 
+                          domain={[0, 100]} 
+                          tickFormatter={(value) => `${value}%`}
+                          tick={{ fontSize: 11 }}
+                        />
+                        <YAxis 
+                          type="category" 
+                          dataKey="name" 
+                          width={140}
+                          tick={{ fontSize: 11, ...SANS }}
+                        />
                         <ReTooltip 
                           formatter={(value) => [`${value}%`, 'Probability']}
                           contentStyle={{ ...SANS, fontSize: '12px' }}
                         />
-                        <Bar dataKey="value" radius={[0, 8, 8, 0]}>
+                        <Bar dataKey="value" radius={[0, 6, 6, 0]}>
                           {chartData.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
+                            <Cell 
+                              key={`cell-${index}`} 
+                              fill={entry.isWinner ? '#4d7c5f' : '#d6d3d1'} 
+                            />
                           ))}
                         </Bar>
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
                   <div className="mt-3 text-xs text-stone-600 text-center" style={SANS}>
-                    Winner: <span className="font-mono font-bold" style={{ color: SAGE.text }}>
+                    Winner: <span className="font-mono font-bold text-emerald-800">
                       {ACTION_SHORT[prediction.ai_action_code as ActionCode]} ({Math.round(maxProb * 100)}%)
                     </span>
                   </div>
@@ -191,19 +241,27 @@ export default function TechnicalAppendix({
                 <div className="space-y-2.5 text-sm font-mono">
                   <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">Early Warning (t &lt; 05:30):</span>
-                    <span className="font-bold text-base" style={{ color: '#065F46' }}>+100</span>
+                    <span className="font-bold text-base text-emerald-800">
+                      {currentWeights.earlyWarning > 0 ? '+' : ''}{currentWeights.earlyWarning}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">Late Suspension (t &gt; 06:00):</span>
-                    <span className="font-bold text-base" style={{ color: '#7F1D1D' }}>-1000</span>
+                    <span className="font-bold text-base text-rose-900">
+                      {currentWeights.lateSuspension}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">False Alarm Penalty:</span>
-                    <span className="font-bold text-base" style={{ color: '#9A3412' }}>-50</span>
+                    <span className="font-bold text-base text-amber-800">
+                      {currentWeights.falseAlarm}
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-stone-600">Status Quo Failure:</span>
-                    <span className="font-bold text-base" style={{ color: '#7F1D1D' }}>-2000</span>
+                    <span className="font-bold text-base text-rose-900">
+                      {currentWeights.statusQuoFailure}
+                    </span>
                   </div>
                 </div>
               </div>

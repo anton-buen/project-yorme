@@ -64,29 +64,29 @@ export default function Header({
 
   return (
     <>
-      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-stone-200/80 shadow-sm">
+      <div className="sticky top-0 z-50 bg-stone-950 border-b border-stone-800 shadow-lg">
       <div className="max-w-7xl mx-auto">
         
         {/* Row 1: Wordmark + Mode Toggle (Centered) + Incident */}
         <div className="px-6 py-4 flex items-center justify-between gap-6">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-slate-900" style={SERIF}>
+            <h1 className="text-3xl font-bold text-white" style={SERIF}>
               Yormetrics
             </h1>
-            <p className="text-sm text-slate-600 mt-0.5" style={SANS}>
+            <p className="text-sm text-stone-400 mt-0.5" style={SANS}>
               Predictive Early Suspension Advisor — City of Manila LGU
             </p>
           </div>
 
           {/* Segmented Control - Centered */}
           <div className="flex items-center justify-center">
-            <div className="inline-flex bg-stone-100 rounded-full p-1 shadow-inner">
+            <div className="inline-flex bg-stone-800 rounded-full p-1 shadow-inner">
               <button
                 onClick={() => setMode("historical")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out ${
                   mode === "historical" 
-                    ? 'bg-white text-slate-900 shadow-md' 
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-stone-200 text-stone-900 shadow-md' 
+                    : 'text-stone-400 hover:text-stone-200'
                 }`}
                 style={SANS}
               >
@@ -96,8 +96,8 @@ export default function Header({
                 onClick={() => setMode("live")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 ${
                   mode === "live" 
-                    ? 'bg-white text-slate-900 shadow-md' 
-                    : 'text-slate-600 hover:text-slate-900'
+                    ? 'bg-stone-200 text-stone-900 shadow-md' 
+                    : 'text-stone-400 hover:text-stone-200'
                 }`}
                 style={SANS}
               >
@@ -115,7 +115,7 @@ export default function Header({
               <select
                 value={incidentIdx}
                 onChange={(e) => setIncidentIdx(Number(e.target.value))}
-                className="w-full px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-300 focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
+                className="w-full px-4 py-2 bg-stone-800 border border-stone-700 text-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-600 focus:border-stone-500 focus:ring-2 focus:ring-stone-600"
                 style={SANS}
               >
                   {incidents.map((incident, idx) => (
@@ -140,7 +140,7 @@ export default function Header({
           </div>
 
           {/* Clock Display */}
-          <div className="px-3 py-1.5 bg-stone-100 rounded-lg text-sm text-stone-900 whitespace-nowrap" style={MONO}>
+          <div className="px-3 py-1.5 bg-stone-800 rounded-lg text-sm text-stone-200 whitespace-nowrap" style={MONO}>
             {mode === "live" ? (
               <>
                 {currentTime.toLocaleTimeString('en-US', { 
@@ -167,9 +167,9 @@ export default function Header({
                 max={HOUR_STEPS.length - 1}
                 value={step}
                 onChange={(e) => setStep(Number(e.target.value))}
-                className="w-full h-2 bg-stone-200 rounded-full appearance-none cursor-pointer slider-thumb"
+                className="w-full h-2 bg-stone-800 rounded-full appearance-none cursor-pointer slider-thumb"
                 style={{
-                  background: `linear-gradient(to right, ${SAGE.line} 0%, ${SAGE.line} ${(step / (HOUR_STEPS.length - 1)) * 100}%, #E7E5E4 ${(step / (HOUR_STEPS.length - 1)) * 100}%, #E7E5E4 100%)`
+                  background: `linear-gradient(to right, ${SAGE.line} 0%, ${SAGE.line} ${(step / (HOUR_STEPS.length - 1)) * 100}%, #292524 ${(step / (HOUR_STEPS.length - 1)) * 100}%, #292524 100%)`
                 }}
               />
             </div>
@@ -185,8 +185,8 @@ export default function Header({
           border-radius: 50%;
           background: ${SAGE.line};
           cursor: pointer;
-          border: 3px solid white;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border: 3px solid #1c1917;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
         .slider-thumb::-moz-range-thumb {
           width: 18px;
@@ -194,8 +194,8 @@ export default function Header({
           border-radius: 50%;
           background: ${SAGE.line};
           cursor: pointer;
-          border: 3px solid white;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+          border: 3px solid #1c1917;
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
         }
       `}</style>
     </>

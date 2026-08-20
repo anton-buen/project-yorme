@@ -15,7 +15,7 @@ export default function SystemContextBanner() {
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-12 bg-slate-800 rounded-full" />
               <h2 className="text-2xl font-bold text-slate-800" style={SERIF}>
-                The Transparent Room
+                How it Works
               </h2>
             </div>
             

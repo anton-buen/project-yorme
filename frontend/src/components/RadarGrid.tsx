@@ -217,6 +217,11 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning }: RadarGri
           tensor input processed by the CNN encoder branch of the PPO policy network.
         </div>
       </div>
+
+      {/* Elegant Caption */}
+      <p className="text-xs text-stone-500 italic mt-3 text-center" style={SANS}>
+        The PPO agent processes this 32×32 spatial tensor to identify storm density and trajectory relative to the Metro Manila grid.
+      </p>
     </div>
   );
 }

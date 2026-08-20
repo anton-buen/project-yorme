@@ -29,6 +29,11 @@ export default function LiveMap() {
           Updates hourly • Centered on Manila coordinates (14.5995°N, 120.9842°E)
         </div>
       </div>
+
+      {/* Elegant Caption */}
+      <p className="text-xs text-stone-500 italic mt-3 text-center" style={SANS}>
+        Real-time ECMWF meteorological data used as the live observation space for inference.
+      </p>
     </div>
   );
 }

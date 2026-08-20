@@ -347,7 +347,7 @@ export default function App() {
       />
 
       {/* FAB Button - Bottom Center */}
-      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 group">
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[60] group">
         <button
           onClick={() => setDrawerOpen(!drawerOpen)}
           className="relative bg-white border border-stone-200/80 rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 ease-in-out hover:px-6 hover:scale-105 active:scale-95 px-4 py-3 gap-2"
@@ -355,8 +355,8 @@ export default function App() {
           style={SANS}
         >
           <BarChart2 className="w-5 h-5 text-slate-700" />
-          <span className="text-sm font-medium text-slate-700 max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
-            View Metrics
+          <span className="text-sm font-medium text-slate-700 w-0 overflow-hidden group-hover:w-auto transition-all duration-300 whitespace-nowrap">
+            View RL Metrics
           </span>
         </button>
       </div>
