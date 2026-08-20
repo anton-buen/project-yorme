@@ -43,6 +43,19 @@ function getPagasaColor(level: PagasaLevel): string {
   }
 }
 
+function getKnobGradient(step: number, totalSteps: number): string {
+  const progress = step / (totalSteps - 1);
+  
+  const nightColor = { r: 30, g: 41, b: 59 };
+  const morningColor = { r: 251, g: 191, b: 36 };
+  
+  const r = Math.round(nightColor.r + (morningColor.r - nightColor.r) * progress);
+  const g = Math.round(nightColor.g + (morningColor.g - nightColor.g) * progress);
+  const b = Math.round(nightColor.b + (morningColor.b - nightColor.b) * progress);
+  
+  return `rgb(${r}, ${g}, ${b})`;
+}
+
 export default function Header({
   mode,
   setMode,
@@ -54,6 +67,7 @@ export default function Header({
   pagasaWarning,
 }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
+  const knobColor = getKnobGradient(step, HOUR_STEPS.length);
 
   useEffect(() => {
     if (mode === "live") {
@@ -88,11 +102,16 @@ export default function Header({
                 className="min-w-[280px] px-4 py-2 bg-stone-800 border border-stone-700 text-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-600 focus:border-stone-500 focus:ring-2 focus:ring-stone-600"
                 style={SANS}
               >
-                {incidents.map((incident, idx) => (
-                  <option key={incident.id} value={idx}>
-                    {incident.name}
-                  </option>
-                ))}
+                {incidents
+                  .filter((inc) => inc && inc.id && inc.name)
+                  .map((incident, filteredIdx) => {
+                    const originalIdx = incidents.indexOf(incident);
+                    return (
+                      <option key={incident.id} value={originalIdx}>
+                        {incident.name}
+                      </option>
+                    );
+                  })}
               </select>
             )}
 
@@ -166,6 +185,7 @@ export default function Header({
                 value={step}
                 onChange={(e) => setStep(Number(e.target.value))}
                 className="w-full h-2 bg-stone-800 rounded-full appearance-none cursor-pointer slider-gradient-thumb"
+                data-knob-color={knobColor}
                 style={{
                   background: "#57534e"
                 }}
@@ -181,37 +201,29 @@ export default function Header({
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: linear-gradient(135deg, 
-            rgb(251, 191, 36) 0%, 
-            rgb(251, 146, 60) 25%,
-            rgb(100, 116, 139) 75%, 
-            rgb(30, 41, 59) 100%
-          );
+          background: ${knobColor};
           cursor: pointer;
           border: 2px solid #1c1917;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 2px 6px rgba(0, 0, 0, 0.4);
           transition: transform 0.2s ease;
         }
         .slider-gradient-thumb::-webkit-slider-thumb:hover {
           transform: scale(1.1);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.5);
         }
         .slider-gradient-thumb::-moz-range-thumb {
           width: 20px;
           height: 20px;
           border-radius: 50%;
-          background: linear-gradient(135deg, 
-            rgb(251, 191, 36) 0%, 
-            rgb(251, 146, 60) 25%,
-            rgb(100, 116, 139) 75%, 
-            rgb(30, 41, 59) 100%
-          );
+          background: ${knobColor};
           cursor: pointer;
           border: 2px solid #1c1917;
-          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 2px 6px rgba(0, 0, 0, 0.4);
           transition: transform 0.2s ease;
         }
         .slider-gradient-thumb::-moz-range-thumb:hover {
           transform: scale(1.1);
+          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.5);
         }
       `}</style>
     </>

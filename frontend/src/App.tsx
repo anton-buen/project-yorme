@@ -138,14 +138,14 @@ export default function App() {
       
       console.log('[App] ⏰ Current hour calculated:', currentHour, 'mode:', mode);
       
-      const timelineKey = Math.floor(currentHour).toFixed(1);
+      const timelineKey = Number.isFinite(currentHour) ? Math.floor(currentHour).toFixed(1) : "3.0";
       console.log('[App] 🔑 Timeline key (floored):', timelineKey, 'from hour:', currentHour);
       
-      const timeline = currentIncident.hourly_timeline[timelineKey];
+      const timeline = currentIncident?.hourly_timeline?.[timelineKey];
 
       if (!timeline) {
         console.error('[App] ❌ No timeline data for key:', timelineKey);
-        console.error('[App] Available keys:', Object.keys(currentIncident.hourly_timeline));
+        console.error('[App] Available keys:', currentIncident?.hourly_timeline ? Object.keys(currentIncident.hourly_timeline) : 'No timeline data');
         setPredictionError(`No timeline data available for hour ${timelineKey}`);
         setPredictionLoading(false);
         return;
@@ -174,9 +174,9 @@ export default function App() {
         setPredictionError(null);
 
         const request = {
-          current_hour: currentHour,
-          flood_active: timeline.flood_active,
-          pagasa_warning_red: timeline.pagasa_warning === "RED",
+          current_hour: Number.isFinite(currentHour) ? currentHour : 3.0,
+          flood_active: timeline?.flood_active ?? false,
+          pagasa_warning_red: timeline?.pagasa_warning === "RED",
         };
 
         console.log('[App] 📤 Calling getPrediction with request:', request);
@@ -209,19 +209,30 @@ export default function App() {
   }, [incidentIdx, step, mode, bias, incidents, loadingState]);
 
   const currentIncident = incidents[incidentIdx];
+  
+  if (!currentIncident) {
+    return <LoadingScreen stage="complete" error="Invalid incident selection. Please select a valid incident." />;
+  }
+  
   const currentHour = mode === "live" 
     ? new Date().getHours() + new Date().getMinutes() / 60 
     : HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
   
-  const timelineKey = Math.floor(currentHour).toFixed(1);
-  const currentTimeline = currentIncident?.hourly_timeline[timelineKey];
+  const timelineKey = Number.isFinite(currentHour) ? Math.floor(currentHour).toFixed(1) : "3.0";
+  const currentTimeline = currentIncident?.hourly_timeline?.[timelineKey] ?? {
+    pagasa_warning: "NONE" as PagasaLevel,
+    flood_active: false,
+    simulated_stranded_projection: 0
+  };
 
   const announcementStep = currentIncident 
-    ? HOUR_STEPS.findIndex(h => (h.hour + h.minute / 60) === currentIncident.actual_announcement_time)
+    ? HOUR_STEPS.findIndex(h => (h.hour + h.minute / 60) === (currentIncident.actual_announcement_time ?? -1))
     : -1;
 
-  const simulatedStranded = currentTimeline?.simulated_stranded_projection || 0;
-  const pagasaWarning: PagasaLevel = currentTimeline?.pagasa_warning || "NONE";
+  const simulatedStranded = typeof currentTimeline?.simulated_stranded_projection === 'number' 
+    ? currentTimeline.simulated_stranded_projection 
+    : 0;
+  const pagasaWarning: PagasaLevel = currentTimeline?.pagasa_warning ?? "NONE";
 
   if (loadingState.isLoading || loadingState.error) {
     return <LoadingScreen stage={loadingState.stage} error={loadingState.error} />;

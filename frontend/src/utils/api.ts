@@ -95,7 +95,22 @@ export async function checkApiHealth(): Promise<{ status: string; message: strin
 // Fetch all incidents
 export async function fetchIncidents(): Promise<IncidentData[]> {
   const response = await fetchApi<{ incidents: IncidentData[] }>('/api/incidents');
-  return response.incidents;
+  const validIncidents = (response.incidents || []).filter((inc) => 
+    inc && 
+    inc.id && 
+    inc.name && 
+    inc.hourly_timeline &&
+    typeof inc.actual_announcement_time === 'number' &&
+    typeof inc.actual_action_code === 'number'
+  );
+  
+  if (validIncidents.length === 0) {
+    console.error('[API] No valid incidents found after filtering');
+  } else {
+    console.log(`[API] Filtered ${response.incidents?.length || 0} incidents to ${validIncidents.length} valid incidents`);
+  }
+  
+  return validIncidents;
 }
 
 // Get AI prediction

@@ -46,7 +46,7 @@ export default function HeroCards({
   onRetry,
   mode = 'historical',
 }: HeroCardsProps) {
-  const wasAnnounced = currentHour >= currentIncident.actual_announcement_time;
+  const wasAnnounced = currentHour >= (currentIncident?.actual_announcement_time ?? 0);
   const confidence = prediction 
     ? Math.round(Math.max(...prediction.action_probabilities) * 100)
     : null;
@@ -87,11 +87,15 @@ export default function HeroCards({
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold mb-6"
                    style={{ backgroundColor: LGU.bg, color: LGU.text, ...SANS }}>
                 <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
-                Announced at {currentIncident.actual_announcement_time.toFixed(1)}:00
+                Announced at {typeof currentIncident.actual_announcement_time === 'number' 
+                  ? currentIncident.actual_announcement_time.toFixed(1) 
+                  : (Number(currentIncident.actual_announcement_time) || 0).toFixed(1)}:00
               </div>
             ) : (
               <div className="text-sm text-slate-500 mb-6" style={SANS}>
-                Pending announcement (scheduled {currentIncident.actual_announcement_time.toFixed(1)}:00)
+                Pending announcement (scheduled {typeof currentIncident.actual_announcement_time === 'number' 
+                  ? currentIncident.actual_announcement_time.toFixed(1) 
+                  : (Number(currentIncident.actual_announcement_time) || 0).toFixed(1)}:00)
               </div>
             )}
 

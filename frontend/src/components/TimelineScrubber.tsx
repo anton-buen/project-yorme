@@ -24,12 +24,12 @@ interface TimelineScrubberProps {
 function getKnobGradient(step: number, totalSteps: number): string {
   const progress = step / (totalSteps - 1);
   
-  const morningColor = { r: 251, g: 191, b: 36 };
   const nightColor = { r: 30, g: 41, b: 59 };
+  const morningColor = { r: 251, g: 191, b: 36 };
   
-  const r = Math.round(morningColor.r + (nightColor.r - morningColor.r) * progress);
-  const g = Math.round(morningColor.g + (nightColor.g - morningColor.g) * progress);
-  const b = Math.round(morningColor.b + (nightColor.b - morningColor.b) * progress);
+  const r = Math.round(nightColor.r + (morningColor.r - nightColor.r) * progress);
+  const g = Math.round(nightColor.g + (morningColor.g - nightColor.g) * progress);
+  const b = Math.round(nightColor.b + (morningColor.b - nightColor.b) * progress);
   
   return `rgb(${r}, ${g}, ${b})`;
 }

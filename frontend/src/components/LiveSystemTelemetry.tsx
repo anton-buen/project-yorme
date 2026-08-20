@@ -51,7 +51,9 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
             <span className="text-stone-400 text-sm">COMMUTER_DENSITY</span>
             <span className="text-stone-100 text-sm font-semibold">
-              {commuteDensity.toFixed(2)}
+              {typeof commuteDensity === 'number' 
+                ? commuteDensity.toFixed(2) 
+                : (Number(commuteDensity) || 0).toFixed(2)}
             </span>
           </div>
 
