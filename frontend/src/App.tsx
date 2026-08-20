@@ -403,7 +403,7 @@ export default function App() {
         const isFlooded = step >= CCTV_FEEDS[cctvIdx].floodStep;
         const isRed = INCIDENTS[incidentIdx].pagasa(step) === "RED";
 
-        const response = await fetch("http://localhost:8000/api/predict", {
+        const response = await fetch("https://yorme-trics.onrender.com/api/predict", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
