@@ -20,6 +20,7 @@ interface HeroCardsProps {
   predictionError?: string | null;
   predictionLoading?: boolean;
   onRetry?: () => void;
+  mode?: 'historical' | 'live';
 }
 
 export default function HeroCards({
@@ -30,6 +31,7 @@ export default function HeroCards({
   predictionError = null,
   predictionLoading = false,
   onRetry,
+  mode = 'historical',
 }: HeroCardsProps) {
   const wasAnnounced = currentHour >= currentIncident.actual_announcement_time;
   const confidence = prediction 
@@ -37,94 +39,98 @@ export default function HeroCards({
     : null;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className={mode === 'live' ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 lg:grid-cols-2 gap-6"}>
       
-      {/* Left Hero: Official LGU Decision (Terra Palette) */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden">
-        {/* Terra Top Border Accent */}
-        <div className="h-1.5" style={{ backgroundColor: TERRA.text }} />
-        
-        <div className="p-8">
-          {/* Header */}
-          <div className="flex items-start justify-between mb-6">
-            <div>
-              <h2 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
-                Official LGU Decision
-              </h2>
-              <p className="text-xs text-stone-500" style={SANS}>
-                Source: Manila PIO Official Log
-              </p>
-            </div>
-            <div 
-              className="px-3 py-1.5 rounded-lg font-bold text-lg"
-              style={{ backgroundColor: TERRA.bg, color: TERRA.text, ...MONO }}
-            >
-              {ACTION_SHORT[currentIncident.actual_action_code]}
-            </div>
-          </div>
-
-          {/* Action Title in Large Serif */}
-          <h3 className="text-3xl font-bold leading-tight mb-4" style={{ color: TERRA.text, ...SERIF }}>
-            {ACTION_NAMES[currentIncident.actual_action_code]}
-          </h3>
-
-          {/* Announcement Tag */}
-          {wasAnnounced ? (
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold mb-6"
-                 style={{ backgroundColor: TERRA.bg, color: TERRA.text, ...SANS }}>
-              <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
-              Announced at {currentIncident.actual_announcement_time.toFixed(1)}:00
-            </div>
-          ) : (
-            <div className="text-sm text-stone-500 mb-6" style={SANS}>
-              Pending announcement (scheduled {currentIncident.actual_announcement_time.toFixed(1)}:00)
-            </div>
-          )}
-
-          {/* Two Inner Stat Sub-cards */}
-          <div className="grid grid-cols-2 gap-4">
-            {/* Box 1: Estimated Stranded */}
-            <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: TERRA.bg }}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
-                Estimated Stranded
+      {/* Left Hero: Official LGU Decision (Terra Palette) - Historical Mode Only */}
+      {mode === 'historical' && (
+        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.01]">
+          {/* Terra Top Border Accent */}
+          <div className="h-1.5" style={{ backgroundColor: TERRA.text }} />
+          
+          <div className="p-8">
+            {/* Header */}
+            <div className="flex items-start justify-between mb-6">
+              <div>
+                <h2 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
+                  Official LGU Decision
+                </h2>
+                <p className="text-xs text-stone-500" style={SANS}>
+                  Source: Manila PIO Official Log
+                </p>
               </div>
-              <div className="text-3xl font-bold leading-none" style={{ color: TERRA.text, ...SERIF }}>
-                {simulatedStranded.toLocaleString()}
-              </div>
-              <div className="text-xs text-stone-500 mt-2" style={SANS}>
-                students
+              <div 
+                className="px-3 py-1.5 rounded-lg font-bold text-lg"
+                style={{ backgroundColor: TERRA.bg, color: TERRA.text, ...MONO }}
+              >
+                {ACTION_SHORT[currentIncident.actual_action_code]}
               </div>
             </div>
 
-            {/* Box 2: Commuter Safety */}
-            <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: TERRA.bg }}>
-              <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
-                Commuter Safety
+            {/* Action Title in Large Serif */}
+            <h3 className="text-3xl font-bold leading-tight mb-4" style={{ color: TERRA.text, ...SERIF }}>
+              {ACTION_NAMES[currentIncident.actual_action_code]}
+            </h3>
+
+            {/* Announcement Tag */}
+            {wasAnnounced ? (
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold mb-6"
+                   style={{ backgroundColor: TERRA.bg, color: TERRA.text, ...SANS }}>
+                <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
+                Announced at {currentIncident.actual_announcement_time.toFixed(1)}:00
               </div>
-              <div className="mt-2">
-                {wasAnnounced ? (
-                  simulatedStranded < 500 ? (
-                    <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold text-white bg-green-600">
-                      Protected
-                    </span>
+            ) : (
+              <div className="text-sm text-stone-500 mb-6" style={SANS}>
+                Pending announcement (scheduled {currentIncident.actual_announcement_time.toFixed(1)}:00)
+              </div>
+            )}
+
+            {/* Two Inner Stat Sub-cards */}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Box 1: Estimated Stranded */}
+              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: TERRA.bg }}>
+                <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
+                  Estimated Stranded
+                </div>
+                <div className="text-3xl font-bold leading-none" style={{ color: TERRA.text, ...SERIF }}>
+                  {simulatedStranded.toLocaleString()}
+                </div>
+                <div className="text-xs text-stone-500 mt-2" style={SANS}>
+                  students
+                </div>
+              </div>
+
+              {/* Box 2: Commuter Safety */}
+              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: TERRA.bg }}>
+                <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
+                  Commuter Safety
+                </div>
+                <div className="mt-2">
+                  {wasAnnounced ? (
+                    simulatedStranded < 500 ? (
+                      <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ease-in-out hover:scale-105"
+                            style={{ backgroundColor: '#065F46', color: '#D1FAE5' }}>
+                        Protected
+                      </span>
+                    ) : (
+                      <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ease-in-out hover:scale-105"
+                            style={{ backgroundColor: '#7F1D1D', color: '#FEE2E2' }}>
+                        Critical
+                      </span>
+                    )
                   ) : (
-                    <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold text-white bg-red-600">
-                      Critical
+                    <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold text-white bg-stone-400 transition-all duration-300 ease-in-out hover:scale-105">
+                      Pending
                     </span>
-                  )
-                ) : (
-                  <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold text-white bg-stone-400">
-                    Pending
-                  </span>
-                )}
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Right Hero: AI Policy Recommendation (Sage Palette) */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden">
+      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.01]">
         {/* Sage Top Border Accent */}
         <div className="h-1.5" style={{ backgroundColor: SAGE.text }} />
         
@@ -199,8 +205,9 @@ export default function HeroCards({
             /* Error State */
             <div className="flex flex-col items-center justify-center h-96 px-6">
               <div className="text-center max-w-md">
-                <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-300"
+                     style={{ backgroundColor: '#7F1D1D20' }}>
+                  <svg className="w-8 h-8" style={{ color: '#7F1D1D' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
@@ -216,7 +223,7 @@ export default function HeroCards({
                 {onRetry && (
                   <button
                     onClick={onRetry}
-                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-colors hover:opacity-90"
+                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 ease-in-out hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
                     style={{ backgroundColor: SAGE.text, ...SANS }}
                   >
                     Retry Connection

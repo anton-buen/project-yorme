@@ -63,15 +63,15 @@ export default function TimelineScrubber({
               <button
                 key={idx}
                 onClick={() => setStep(idx)}
-                className="relative group"
+                className="relative group transition-transform duration-300 ease-in-out hover:scale-110"
                 title={hourStep.label}
               >
                 {/* Step circle */}
                 <div
-                  className={`w-7 h-7 rounded-full border-3 transition-all duration-200 ${
+                  className={`w-7 h-7 rounded-full border-3 transition-all duration-300 ease-in-out ${
                     isActive 
                       ? 'scale-125 shadow-md' 
-                      : 'hover:scale-110'
+                      : ''
                   }`}
                   style={{
                     backgroundColor: isActive 
@@ -97,11 +97,11 @@ export default function TimelineScrubber({
                 )}
 
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg"
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out whitespace-nowrap pointer-events-none shadow-lg"
                      style={MONO}>
                   {hourStep.label}
                   {isAnnouncement && (
-                    <span className="block text-orange-300 text-[11px] mt-0.5">
+                    <span className="block text-[11px] mt-0.5" style={{ color: '#FDBA74' }}>
                       ⚡ Actual Announcement
                     </span>
                   )}

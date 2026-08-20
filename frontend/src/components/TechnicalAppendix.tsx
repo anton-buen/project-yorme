@@ -69,7 +69,7 @@ export default function TechnicalAppendix({
           <div className="flex items-center justify-between mb-6">
             <div>
               <h2 className="text-2xl font-bold text-stone-900" style={SERIF}>
-                Technical Vault & Developer Metrics
+                RL Metrics
               </h2>
               <p className="text-sm text-stone-600 mt-1" style={SANS}>
                 PPO Policy Weights, Tensor Shapes, and System Configuration
@@ -97,7 +97,7 @@ export default function TechnicalAppendix({
                   <button
                     key={mode}
                     onClick={() => setBias(mode)}
-                    className={`w-full p-4 rounded-xl text-left transition-all ${
+                    className={`w-full p-4 rounded-xl text-left transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98] ${
                       bias === mode 
                         ? 'bg-stone-900 text-white shadow-md' 
                         : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/50'
@@ -191,19 +191,19 @@ export default function TechnicalAppendix({
                 <div className="space-y-2.5 text-sm font-mono">
                   <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">Early Warning (t &lt; 05:30):</span>
-                    <span className="text-green-600 font-bold text-base">+100</span>
+                    <span className="font-bold text-base" style={{ color: '#065F46' }}>+100</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">Late Suspension (t &gt; 06:00):</span>
-                    <span className="text-red-600 font-bold text-base">-1000</span>
+                    <span className="font-bold text-base" style={{ color: '#7F1D1D' }}>-1000</span>
                   </div>
                   <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">False Alarm Penalty:</span>
-                    <span className="text-orange-600 font-bold text-base">-50</span>
+                    <span className="font-bold text-base" style={{ color: '#9A3412' }}>-50</span>
                   </div>
                   <div className="flex justify-between items-center py-2">
                     <span className="text-stone-600">Status Quo Failure:</span>
-                    <span className="text-red-700 font-bold text-base">-2000</span>
+                    <span className="font-bold text-base" style={{ color: '#7F1D1D' }}>-2000</span>
                   </div>
                 </div>
               </div>

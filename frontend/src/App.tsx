@@ -218,37 +218,61 @@ export default function App() {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         
-        {/* Dual Hero Comparison Cards */}
-        <HeroCards
-          currentIncident={currentIncident}
-          prediction={currentPrediction}
-          currentHour={currentHour}
-          simulatedStranded={simulatedStranded}
-          predictionError={predictionError}
-          predictionLoading={predictionLoading}
-          onRetry={() => {
-            setPredictionError(null);
-            setStep(step); // Trigger re-fetch
-          }}
-        />
+        {mode === "historical" ? (
+          <>
+            {/* Historical Mode: Dual Hero Comparison Cards */}
+            <HeroCards
+              currentIncident={currentIncident}
+              prediction={currentPrediction}
+              currentHour={currentHour}
+              simulatedStranded={simulatedStranded}
+              predictionError={predictionError}
+              predictionLoading={predictionLoading}
+              onRetry={() => {
+                setPredictionError(null);
+                setStep(step); // Trigger re-fetch
+              }}
+            />
 
-        {/* Visual Grounding Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <RadarGrid
-            step={step}
-            incidentIdx={incidentIdx}
-            pagasaWarning={pagasaWarning}
-          />
-          <LiveMap />
-        </div>
+            {/* Visual Grounding Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <RadarGrid
+                step={step}
+                incidentIdx={incidentIdx}
+                pagasaWarning={pagasaWarning}
+              />
+              <LiveMap />
+            </div>
 
-        {/* Timeline Scrubber (Historical Mode Only) */}
-        {mode === "historical" && (
-          <TimelineScrubber
-            step={step}
-            setStep={setStep}
-            announcementStep={announcementStep}
-          />
+            {/* Timeline Scrubber */}
+            <TimelineScrubber
+              step={step}
+              setStep={setStep}
+              announcementStep={announcementStep}
+            />
+          </>
+        ) : (
+          <>
+            {/* Live Watch Mode: AI Card + Live Radar Focus */}
+            <HeroCards
+              currentIncident={currentIncident}
+              prediction={currentPrediction}
+              currentHour={currentHour}
+              simulatedStranded={simulatedStranded}
+              predictionError={predictionError}
+              predictionLoading={predictionLoading}
+              onRetry={() => {
+                setPredictionError(null);
+                setStep(step); // Trigger re-fetch
+              }}
+              mode={mode}
+            />
+
+            {/* Live Watch: Expanded Radar Section */}
+            <div className="grid grid-cols-1 gap-6">
+              <LiveMap />
+            </div>
+          </>
         )}
 
         {/* Footer */}
@@ -266,14 +290,20 @@ export default function App() {
         prediction={currentPrediction}
       />
 
-      {/* FAB Button */}
-      <button
-        onClick={() => setDrawerOpen(!drawerOpen)}
-        className="fixed bottom-6 right-6 w-14 h-14 bg-white/90 backdrop-blur-md hover:bg-white border border-stone-200 rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-110 z-40"
-        aria-label="Open technical metrics"
-      >
-        <BarChart2 className="w-6 h-6 text-stone-700" />
-      </button>
+      {/* FAB Button - Bottom Center with Hover Tooltip */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 group">
+        <button
+          onClick={() => setDrawerOpen(!drawerOpen)}
+          className="relative bg-white/90 backdrop-blur-md hover:bg-white border border-stone-200 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:px-6 hover:scale-[1.05] active:scale-[0.95] px-4 py-3 gap-2"
+          aria-label="Open RL metrics"
+          style={SANS}
+        >
+          <BarChart2 className="w-5 h-5 text-stone-700" />
+          <span className="text-sm font-medium text-stone-700 max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
+            View Metrics
+          </span>
+        </button>
+      </div>
     </div>
   );
 }

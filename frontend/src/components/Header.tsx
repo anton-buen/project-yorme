@@ -82,7 +82,7 @@ export default function Header({
             <div className="flex bg-stone-100 rounded-xl p-1">
               <button
                 onClick={() => setMode("historical")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] ${
                   mode === "historical" 
                     ? 'bg-white text-stone-900 shadow-sm' 
                     : 'text-stone-600 hover:text-stone-900'
@@ -93,7 +93,7 @@ export default function Header({
               </button>
               <button
                 onClick={() => setMode("live")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out flex items-center gap-1 hover:scale-[1.02] active:scale-[0.98] ${
                   mode === "live" 
                     ? 'bg-white text-stone-900 shadow-sm' 
                     : 'text-stone-600 hover:text-stone-900'
@@ -107,21 +107,23 @@ export default function Header({
               </button>
             </div>
 
-            {/* Incident Selector */}
-            {mode === "historical" && (
-              <select
-                value={incidentIdx}
-                onChange={(e) => setIncidentIdx(Number(e.target.value))}
-                className="px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm"
-                style={SANS}
-              >
-                {incidents.map((incident, idx) => (
-                  <option key={incident.id} value={idx}>
-                    {incident.name}
-                  </option>
-                ))}
-              </select>
-            )}
+            {/* Incident Selector - Fixed Width Container */}
+            <div className="w-[300px]">
+              {mode === "historical" && (
+                <select
+                  value={incidentIdx}
+                  onChange={(e) => setIncidentIdx(Number(e.target.value))}
+                  className="w-full px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-300 focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
+                  style={SANS}
+                >
+                  {incidents.map((incident, idx) => (
+                    <option key={incident.id} value={idx}>
+                      {incident.name}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </div>
           </div>
         </div>
 
