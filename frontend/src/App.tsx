@@ -244,36 +244,39 @@ export default function App() {
   // ─── Main Dashboard UI ───────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-[#F9F8F6]">
+    <div className="min-h-screen w-full bg-[#F9F8F6] flex flex-col relative">
       
-      {/* Header */}
-      <Header
-        mode={mode}
-        setMode={setMode}
-        incidents={incidents}
-        incidentIdx={incidentIdx}
-        setIncidentIdx={setIncidentIdx}
-        step={step}
-        setStep={setStep}
-        pagasaWarning={pagasaWarning}
-      />
+      {/* Full width header */}
+      <div className="w-full">
+        <Header
+          mode={mode}
+          setMode={setMode}
+          incidents={incidents}
+          incidentIdx={incidentIdx}
+          setIncidentIdx={setIncidentIdx}
+          step={step}
+          setStep={setStep}
+          pagasaWarning={pagasaWarning}
+        />
+      </div>
 
-      {/* System Context Banner */}
-      <SystemContextBanner />
+      {/* Constrained content area */}
+      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
+        
+        {/* System Context Banner */}
+        <SystemContextBanner />
 
-      {/* Timeline Scrubber - Seamless Integration (Historical Mode Only) */}
-      {mode === "historical" && (
-        <div className="max-w-7xl mx-auto px-6">
+        {/* Timeline Scrubber - Seamless Integration (Historical Mode Only) */}
+        {mode === "historical" && (
           <TimelineScrubber
             step={step}
             setStep={setStep}
             announcementStep={announcementStep}
           />
-        </div>
-      )}
+        )}
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
+        {/* Main Content */}
+        <div className="space-y-8">
         
         {mode === "historical" ? (
           <>
@@ -335,7 +338,7 @@ export default function App() {
         <div className="text-center text-slate-500 text-sm pt-4" style={SANS}>
           Yormetrics v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
         </div>
-      </div>
+      </main>
 
       {/* Technical Appendix Drawer */}
       <TechnicalAppendix

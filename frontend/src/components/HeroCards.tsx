@@ -55,8 +55,7 @@ export default function HeroCards({
       
       {/* Left Hero: Official LGU Decision - Historical Mode Only */}
       {mode === 'historical' && (
-        <div className="bg-white rounded-xl border border-stone-200/80 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md">
-          <div className="h-1" style={{ backgroundColor: LGU.accent }} />
+        <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 border-t-rose-900">
           
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
@@ -93,7 +92,7 @@ export default function HeroCards({
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: LGU.bg }}>
+              <div className="bg-rose-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Estimated Stranded
                 </div>
@@ -105,23 +104,23 @@ export default function HeroCards({
                 </div>
               </div>
 
-              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: LGU.bg }}>
+              <div className="bg-rose-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Commuter Safety
                 </div>
                 <div className="mt-2">
                   {wasAnnounced ? (
                     simulatedStranded < 500 ? (
-                      <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 transition-all duration-300 ease-in-out hover:scale-105">
+                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-emerald-800 text-white">
                         Protected
                       </span>
                     ) : (
-                      <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-rose-900 transition-all duration-300 ease-in-out hover:scale-105">
+                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-rose-900 text-white">
                         Critical
                       </span>
                     )
                   ) : (
-                    <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 transition-all duration-300 ease-in-out hover:scale-105">
+                    <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-slate-600 text-white">
                       Pending
                     </span>
                   )}
@@ -133,8 +132,7 @@ export default function HeroCards({
       )}
 
       {/* Right Hero: AI Policy Recommendation */}
-      <div className="bg-white rounded-xl border border-stone-200/80 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md">
-        <div className="h-1" style={{ backgroundColor: AI.accent }} />
+      <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 border-t-emerald-800">
         
         <div className="p-8">
           {prediction ? (
@@ -169,7 +167,7 @@ export default function HeroCards({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: AI.bg }}>
+                <div className="bg-emerald-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Simulated Stranded
                   </div>
@@ -181,13 +179,12 @@ export default function HeroCards({
                   </div>
                 </div>
 
-                <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: AI.bg }}>
+                <div className="bg-emerald-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Commuter Safety
                   </div>
                   <div className="mt-2">
-                    <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold text-white"
-                          style={{ backgroundColor: AI.accent }}>
+                    <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-emerald-800 text-white">
                       Protected
                     </span>
                   </div>
