@@ -130,6 +130,7 @@ export default function App() {
       const currentIncident = incidents[incidentIdx];
       if (!currentIncident) {
         console.error('[App] ❌ No current incident found at index:', incidentIdx);
+        setPredictionLoading(false);
         return;
       }
 
@@ -139,15 +140,22 @@ export default function App() {
       
       console.log('[App] ⏰ Current hour calculated:', currentHour, 'mode:', mode);
       
-      const timelineKey = currentHour.toString();
+      // FIX: Timeline only has whole hours (3.0, 4.0, 5.0), but scrubber creates half-hours (3.5, 4.5)
+      // Use Math.floor() to snap to the nearest whole hour, then format as "X.0"
+      const timelineKey = Math.floor(currentHour).toFixed(1);
+      console.log('[App] 🔑 Timeline key (floored):', timelineKey, 'from hour:', currentHour);
+      
       const timeline = currentIncident.hourly_timeline[timelineKey];
 
       if (!timeline) {
-        console.error('[App] ❌ No timeline data for hour:', timelineKey);
-        setPredictionError("No timeline data available for current hour");
+        console.error('[App] ❌ No timeline data for key:', timelineKey);
+        console.error('[App] Available keys:', Object.keys(currentIncident.hourly_timeline));
+        setPredictionError(`No timeline data available for hour ${timelineKey}`);
         setPredictionLoading(false);
         return;
       }
+
+      console.log('[App] ✅ Timeline data found:', timeline);
 
       const cacheKey = `${incidentIdx}-${step}-${mode}-${bias}`;
       console.log('[App] 🔑 Cache key:', cacheKey);
@@ -212,7 +220,8 @@ export default function App() {
     ? new Date().getHours() + new Date().getMinutes() / 60 
     : HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
   
-  const timelineKey = currentHour.toString();
+  // FIX: Use Math.floor() to snap to whole hours that exist in timeline data
+  const timelineKey = Math.floor(currentHour).toFixed(1);
   const currentTimeline = currentIncident?.hourly_timeline[timelineKey];
 
   const announcementStep = currentIncident 
@@ -235,7 +244,7 @@ export default function App() {
   // ─── Main Dashboard UI ───────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#F8F6F0' }}>
+    <div className="min-h-screen bg-[#F9F8F6]">
       
       {/* Header */}
       <Header
@@ -252,9 +261,9 @@ export default function App() {
       {/* System Context Banner */}
       <SystemContextBanner />
 
-      {/* Timeline Scrubber - Top Position (Historical Mode Only) */}
+      {/* Timeline Scrubber - Seamless Integration (Historical Mode Only) */}
       {mode === "historical" && (
-        <div className="max-w-7xl mx-auto px-6 pt-6">
+        <div className="max-w-7xl mx-auto px-6">
           <TimelineScrubber
             step={step}
             setStep={setStep}
@@ -323,7 +332,7 @@ export default function App() {
         )}
 
         {/* Footer */}
-        <div className="text-center text-stone-500 text-sm pt-4" style={SANS}>
+        <div className="text-center text-slate-500 text-sm pt-4" style={SANS}>
           Yormetrics v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
         </div>
       </div>
@@ -337,16 +346,16 @@ export default function App() {
         prediction={currentPrediction}
       />
 
-      {/* FAB Button - Bottom Center with Hover Tooltip */}
+      {/* FAB Button - Bottom Center */}
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 group">
         <button
           onClick={() => setDrawerOpen(!drawerOpen)}
-          className="relative bg-white/90 backdrop-blur-md hover:bg-white border border-stone-200 rounded-full shadow-lg flex items-center justify-center transition-all duration-300 ease-in-out hover:px-6 hover:scale-[1.05] active:scale-[0.95] px-4 py-3 gap-2"
+          className="relative bg-white border border-stone-200/80 rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 ease-in-out hover:px-6 hover:scale-105 active:scale-95 px-4 py-3 gap-2"
           aria-label="Open RL metrics"
           style={SANS}
         >
-          <BarChart2 className="w-5 h-5 text-stone-700" />
-          <span className="text-sm font-medium text-stone-700 max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
+          <BarChart2 className="w-5 h-5 text-slate-700" />
+          <span className="text-sm font-medium text-slate-700 max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 whitespace-nowrap">
             View Metrics
           </span>
         </button>

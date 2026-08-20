@@ -70,41 +70,41 @@ export default function Header({
         {/* Row 1: Wordmark + Mode Toggle (Centered) + Incident */}
         <div className="px-6 py-4 flex items-center justify-between gap-6">
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-stone-900" style={SERIF}>
+            <h1 className="text-3xl font-bold text-slate-900" style={SERIF}>
               Yormetrics
             </h1>
-            <p className="text-sm text-stone-600 mt-0.5" style={SANS}>
+            <p className="text-sm text-slate-600 mt-0.5" style={SANS}>
               Predictive Early Suspension Advisor — City of Manila LGU
             </p>
           </div>
 
-          {/* iOS-style Segmented Control - Centered */}
+          {/* Segmented Control - Centered */}
           <div className="flex items-center justify-center">
             <div className="inline-flex bg-stone-100 rounded-full p-1 shadow-inner">
               <button
                 onClick={() => setMode("historical")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out ${
                   mode === "historical" 
-                    ? 'bg-white text-stone-900 shadow-md' 
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-white text-slate-900 shadow-md' 
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
                 style={SANS}
               >
-                📊 Historical Replay
+                Historical Replay
               </button>
               <button
                 onClick={() => setMode("live")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 ${
                   mode === "live" 
-                    ? 'bg-white text-stone-900 shadow-md' 
-                    : 'text-stone-600 hover:text-stone-900'
+                    ? 'bg-white text-slate-900 shadow-md' 
+                    : 'text-slate-600 hover:text-slate-900'
                 }`}
                 style={SANS}
               >
                 {mode === "live" && (
                   <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                 )}
-                🔴 Live Watch
+                Live Watch
               </button>
             </div>
           </div>

@@ -52,35 +52,35 @@ export default function TechnicalAppendix({
   return (
     <div className="fixed inset-0 z-50 pointer-events-none">
       <div 
-        className={`absolute inset-0 bg-black/20 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto ${
+        className={`absolute inset-0 bg-stone-900/20 backdrop-blur-md transition-opacity duration-300 pointer-events-auto ${
           isOpen ? 'opacity-100' : 'opacity-0'
         }`}
         onClick={onClose}
       />
       
       <div 
-        className={`absolute bottom-0 left-0 right-0 backdrop-blur-xl border-t border-stone-200/80 shadow-2xl transition-transform duration-300 pointer-events-auto ${
+        className={`absolute bottom-0 left-0 right-0 bg-white border-t border-stone-200/80 shadow-2xl transition-transform duration-300 pointer-events-auto ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={{ maxHeight: '70vh', overflowY: 'auto', backgroundColor: '#FBF9F6' }}
+        style={{ maxHeight: '70vh', overflowY: 'auto' }}
       >
         <div className="max-w-7xl mx-auto p-6">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-stone-900" style={SERIF}>
+              <h2 className="text-2xl font-bold text-slate-900" style={SERIF}>
                 RL Metrics
               </h2>
-              <p className="text-sm text-stone-600 mt-1" style={SANS}>
+              <p className="text-sm text-slate-600 mt-1" style={SANS}>
                 PPO Policy Weights, Tensor Shapes, and System Configuration
               </p>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-stone-100 rounded-lg transition-colors"
+              className="p-2 hover:bg-slate-100 rounded-lg transition-colors"
               aria-label="Close drawer"
             >
-              <X className="w-6 h-6 text-stone-600" />
+              <X className="w-6 h-6 text-slate-600" />
             </button>
           </div>
 
@@ -89,7 +89,7 @@ export default function TechnicalAppendix({
             
             {/* Col 1: Mayor Policy Bias */}
             <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
+              <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
                 Mayor Policy Bias Tuning
               </h3>
               <div className="space-y-3">
@@ -117,7 +117,7 @@ export default function TechnicalAppendix({
 
             {/* Col 2: PPO Action Probability Distribution */}
             <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
+              <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
                 PPO Action Probability Distribution
               </h3>
               {prediction ? (
@@ -155,7 +155,7 @@ export default function TechnicalAppendix({
             {/* Col 3: Tensor Inspector & Reward Matrix */}
             <div className="space-y-4">
               <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
+                <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
                   Active Observation Tensor
                 </h3>
                 {prediction ? (
@@ -185,7 +185,7 @@ export default function TechnicalAppendix({
               </div>
 
               <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
+                <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
                   Reward Matrix Weights
                 </h3>
                 <div className="space-y-2.5 text-sm font-mono">

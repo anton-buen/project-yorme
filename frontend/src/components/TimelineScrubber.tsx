@@ -1,7 +1,6 @@
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
-const SAGE = { line: "#6B9E7A" };
-const TERRA = { line: "#C2745A" };
+const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 
 interface HourStep { label: string; hour: number; minute: number }
 
@@ -28,32 +27,32 @@ export default function TimelineScrubber({
   announcementStep,
 }: TimelineScrubberProps) {
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-stone-900 mb-2" style={SANS}>
+    <div className="py-8">
+      {/* Title */}
+      <div className="mb-6 text-center">
+        <h3 className="text-lg font-bold text-slate-800 mb-1" style={SERIF}>
           Simulation Timeline
         </h3>
-        <p className="text-sm text-stone-600" style={SANS}>
-          03:00 AM – 12:00 PM (19 steps in 30-minute intervals)
+        <p className="text-xs text-slate-500 tracking-wide" style={MONO}>
+          03:00 — 12:00 • 19 INTERVALS • 30 MIN RESOLUTION
         </p>
       </div>
 
-      {/* Timeline Strip */}
-      <div className="relative">
+      {/* Timeline Track */}
+      <div className="relative px-4">
         {/* Background line */}
-        <div className="absolute top-4 left-0 right-0 h-1.5 bg-stone-200/60 rounded-full" />
+        <div className="absolute top-1/2 -translate-y-1/2 left-4 right-4 h-0.5 bg-stone-300 rounded-full" />
 
         {/* Active progress line */}
         <div 
-          className="absolute top-4 left-0 h-1.5 rounded-full transition-all duration-300"
+          className="absolute top-1/2 -translate-y-1/2 left-4 h-0.5 bg-slate-800 rounded-full transition-all duration-300"
           style={{ 
-            width: `${(step / (HOUR_STEPS.length - 1)) * 100}%`,
-            backgroundColor: SAGE.line 
+            width: `calc((100% - 2rem) * ${step / (HOUR_STEPS.length - 1)})`
           }}
         />
 
         {/* Step indicators */}
-        <div className="relative flex justify-between items-center mb-4">
+        <div className="relative flex justify-between items-center">
           {HOUR_STEPS.map((hourStep, idx) => {
             const isActive = idx === step;
             const isPassed = idx < step;
@@ -63,46 +62,42 @@ export default function TimelineScrubber({
               <button
                 key={idx}
                 onClick={() => setStep(idx)}
-                className="relative group transition-transform duration-300 ease-in-out hover:scale-110"
+                className="relative group transition-transform duration-200 ease-out hover:scale-125"
                 title={hourStep.label}
               >
-                {/* Step circle */}
+                {/* Main circle */}
                 <div
-                  className={`w-7 h-7 rounded-full border-3 transition-all duration-300 ease-in-out ${
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
                     isActive 
-                      ? 'scale-125 shadow-md' 
-                      : ''
+                      ? 'scale-150 shadow-md' 
+                      : 'hover:scale-125'
                   }`}
                   style={{
                     backgroundColor: isActive 
-                      ? SAGE.line 
+                      ? '#1e293b' 
                       : isPassed 
-                      ? '#D6D3D1' 
-                      : 'white',
-                    borderColor: isActive 
-                      ? SAGE.line 
-                      : isAnnouncement 
-                      ? TERRA.line 
-                      : '#E7E5E4',
-                    borderWidth: isAnnouncement ? '3px' : '2px',
+                      ? '#94a3b8' 
+                      : '#e2e8f0',
+                    border: isAnnouncement ? '2px solid #dc2626' : 'none',
                   }}
                 />
 
-                {/* Announcement marker */}
+                {/* Announcement indicator */}
                 {isAnnouncement && (
                   <div 
-                    className="absolute -top-2 left-1/2 transform -translate-x-1/2 w-2 h-2 rounded-full animate-pulse"
-                    style={{ backgroundColor: TERRA.line }}
+                    className="absolute -top-1.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-rose-600 animate-pulse"
                   />
                 )}
 
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-all duration-300 ease-in-out whitespace-nowrap pointer-events-none shadow-lg"
-                     style={MONO}>
+                <div 
+                  className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-slate-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap shadow-lg"
+                  style={MONO}
+                >
                   {hourStep.label}
                   {isAnnouncement && (
-                    <span className="block text-[11px] mt-0.5" style={{ color: '#FDBA74' }}>
-                      ⚡ Actual Announcement
+                    <span className="block text-[10px] text-rose-300 mt-0.5">
+                      Official Announcement
                     </span>
                   )}
                 </div>
@@ -111,32 +106,12 @@ export default function TimelineScrubber({
           })}
         </div>
 
-        {/* Labels */}
-        <div className="flex justify-between text-xs text-stone-500 mt-2" style={MONO}>
-          <span>03:00 AM</span>
-          <span>06:00 AM</span>
-          <span>09:00 AM</span>
-          <span>12:00 PM</span>
-        </div>
-      </div>
-
-      {/* Legend */}
-      <div className="mt-8 flex items-center justify-center gap-8 text-sm" style={SANS}>
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full border-2" style={{ backgroundColor: SAGE.line, borderColor: SAGE.line }} />
-          <span className="text-stone-700 font-medium">Active Step</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full border-3 bg-white" style={{ borderColor: TERRA.line }} />
-          <span className="text-stone-700 font-medium">Actual Announcement</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full border-2 bg-stone-300 border-stone-300" />
-          <span className="text-stone-700 font-medium">Passed</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-5 h-5 rounded-full border-2 bg-white border-stone-200" />
-          <span className="text-stone-700 font-medium">Future</span>
+        {/* Time labels */}
+        <div className="flex justify-between text-[10px] text-slate-500 mt-4" style={MONO}>
+          <span>03:00</span>
+          <span>06:00</span>
+          <span>09:00</span>
+          <span>12:00</span>
         </div>
       </div>
     </div>

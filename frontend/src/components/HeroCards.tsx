@@ -5,8 +5,20 @@ const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, s
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
-const TERRA = { text: "#9A4B2F", bg: "#FDF4F0", border: "#E8C2AE", line: "#C2745A" };
-const SAGE = { text: "#3A7050", bg: "#EEF5F0", border: "#AECBB7", line: "#6B9E7A" };
+// Muted, sophisticated color palette
+const LGU = { 
+  text: "#881337", 
+  bg: "#fef2f2", 
+  border: "#fecaca",
+  accent: "#9f1239"
+};
+
+const AI = { 
+  text: "#065f46", 
+  bg: "#f0fdf4", 
+  border: "#bbf7d0",
+  accent: "#047857"
+};
 
 const ACTION_SHORT: Record<ActionCode, string> = {
   0: "A0", 1: "A1", 2: "A2", 3: "A3", 4: "A4",
@@ -41,84 +53,75 @@ export default function HeroCards({
   return (
     <div className={mode === 'live' ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 lg:grid-cols-2 gap-6"}>
       
-      {/* Left Hero: Official LGU Decision (Terra Palette) - Historical Mode Only */}
+      {/* Left Hero: Official LGU Decision - Historical Mode Only */}
       {mode === 'historical' && (
-        <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.01]">
-          {/* Terra Top Border Accent */}
-          <div className="h-1.5" style={{ backgroundColor: TERRA.text }} />
+        <div className="bg-white rounded-xl border border-stone-200/80 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md">
+          <div className="h-1" style={{ backgroundColor: LGU.accent }} />
           
           <div className="p-8">
-            {/* Header */}
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
+                <h2 className="text-2xl font-bold text-slate-900 mb-2" style={SERIF}>
                   Official LGU Decision
                 </h2>
-                <p className="text-xs text-stone-500" style={SANS}>
+                <p className="text-xs text-slate-500" style={SANS}>
                   Source: Manila PIO Official Log
                 </p>
               </div>
               <div 
                 className="px-3 py-1.5 rounded-lg font-bold text-lg"
-                style={{ backgroundColor: TERRA.bg, color: TERRA.text, ...MONO }}
+                style={{ backgroundColor: LGU.bg, color: LGU.text, ...MONO }}
               >
                 {ACTION_SHORT[currentIncident.actual_action_code]}
               </div>
             </div>
 
-            {/* Action Title in Large Serif */}
-            <h3 className="text-3xl font-bold leading-tight mb-4" style={{ color: TERRA.text, ...SERIF }}>
+            <h3 className="text-3xl font-bold leading-tight mb-4" style={{ color: LGU.text, ...SERIF }}>
               {ACTION_NAMES[currentIncident.actual_action_code]}
             </h3>
 
-            {/* Announcement Tag */}
             {wasAnnounced ? (
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold mb-6"
-                   style={{ backgroundColor: TERRA.bg, color: TERRA.text, ...SANS }}>
+                   style={{ backgroundColor: LGU.bg, color: LGU.text, ...SANS }}>
                 <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
                 Announced at {currentIncident.actual_announcement_time.toFixed(1)}:00
               </div>
             ) : (
-              <div className="text-sm text-stone-500 mb-6" style={SANS}>
+              <div className="text-sm text-slate-500 mb-6" style={SANS}>
                 Pending announcement (scheduled {currentIncident.actual_announcement_time.toFixed(1)}:00)
               </div>
             )}
 
-            {/* Two Inner Stat Sub-cards */}
             <div className="grid grid-cols-2 gap-4">
-              {/* Box 1: Estimated Stranded */}
-              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: TERRA.bg }}>
-                <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
+              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: LGU.bg }}>
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Estimated Stranded
                 </div>
-                <div className="text-3xl font-bold leading-none" style={{ color: TERRA.text, ...SERIF }}>
+                <div className="text-3xl font-bold leading-none" style={{ color: LGU.text, ...SERIF }}>
                   {simulatedStranded.toLocaleString()}
                 </div>
-                <div className="text-xs text-stone-500 mt-2" style={SANS}>
+                <div className="text-xs text-slate-500 mt-2" style={SANS}>
                   students
                 </div>
               </div>
 
-              {/* Box 2: Commuter Safety */}
-              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: TERRA.bg }}>
-                <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
+              <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: LGU.bg }}>
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Commuter Safety
                 </div>
                 <div className="mt-2">
                   {wasAnnounced ? (
                     simulatedStranded < 500 ? (
-                      <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ease-in-out hover:scale-105"
-                            style={{ backgroundColor: '#065F46', color: '#D1FAE5' }}>
+                      <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-emerald-50 text-emerald-800 transition-all duration-300 ease-in-out hover:scale-105">
                         Protected
                       </span>
                     ) : (
-                      <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold transition-all duration-300 ease-in-out hover:scale-105"
-                            style={{ backgroundColor: '#7F1D1D', color: '#FEE2E2' }}>
+                      <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-rose-50 text-rose-900 transition-all duration-300 ease-in-out hover:scale-105">
                         Critical
                       </span>
                     )
                   ) : (
-                    <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold text-white bg-stone-400 transition-all duration-300 ease-in-out hover:scale-105">
+                    <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600 transition-all duration-300 ease-in-out hover:scale-105">
                       Pending
                     </span>
                   )}
@@ -129,102 +132,93 @@ export default function HeroCards({
         </div>
       )}
 
-      {/* Right Hero: AI Policy Recommendation (Sage Palette) */}
-      <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md hover:scale-[1.01]">
-        {/* Sage Top Border Accent */}
-        <div className="h-1.5" style={{ backgroundColor: SAGE.text }} />
+      {/* Right Hero: AI Policy Recommendation */}
+      <div className="bg-white rounded-xl border border-stone-200/80 overflow-hidden transition-all duration-300 ease-in-out hover:shadow-md">
+        <div className="h-1" style={{ backgroundColor: AI.accent }} />
         
         <div className="p-8">
           {prediction ? (
             <>
-              {/* Header */}
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
+                  <h2 className="text-2xl font-bold text-slate-900 mb-2" style={SERIF}>
                     AI Policy Recommendation
                   </h2>
-                  <p className="text-xs text-stone-500" style={SANS}>
-                    PyTorch PPO Agent • Live Integration
+                  <p className="text-xs text-slate-500" style={SANS}>
+                    PyTorch PPO Agent
                   </p>
                 </div>
                 <div 
                   className="px-3 py-1.5 rounded-lg font-bold text-lg"
-                  style={{ backgroundColor: SAGE.bg, color: SAGE.text, ...MONO }}
+                  style={{ backgroundColor: AI.bg, color: AI.text, ...MONO }}
                 >
                   {ACTION_SHORT[prediction.ai_action_code as ActionCode]}
                 </div>
               </div>
 
-              {/* Action Title in Large Serif */}
-              <h3 className="text-3xl font-bold leading-tight mb-2" style={{ color: SAGE.text, ...SERIF }}>
+              <h3 className="text-3xl font-bold leading-tight mb-2" style={{ color: AI.text, ...SERIF }}>
                 {ACTION_NAMES[prediction.ai_action_code as ActionCode]}
               </h3>
 
-              {/* Confidence & Weights Subtext */}
-              <div className="text-sm text-stone-600 mb-6" style={SANS}>
+              <div className="text-sm text-slate-600 mb-6" style={SANS}>
                 <span className="font-semibold">Confidence:</span> {confidence}% • 
                 <span className="font-semibold ml-2">Weights:</span>
-                <span className="text-xs font-mono ml-1 text-stone-500">
+                <span className="text-xs font-mono ml-1 text-slate-500">
                   {prediction.loaded_model_path.split('/').pop()}
                 </span>
               </div>
 
-              {/* Two Inner Stat Sub-cards */}
               <div className="grid grid-cols-2 gap-4">
-                {/* Box 1: Simulated Stranded */}
-                <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: SAGE.bg }}>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
+                <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: AI.bg }}>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Simulated Stranded
                   </div>
-                  <div className="text-3xl font-bold leading-none" style={{ color: SAGE.text, ...SERIF }}>
+                  <div className="text-3xl font-bold leading-none" style={{ color: AI.text, ...SERIF }}>
                     {Math.round(simulatedStranded * 0.15).toLocaleString()}
                   </div>
-                  <div className="text-xs text-stone-500 mt-2" style={SANS}>
+                  <div className="text-xs text-slate-500 mt-2" style={SANS}>
                     students (AI projection)
                   </div>
                 </div>
 
-                {/* Box 2: Commuter Safety */}
-                <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: SAGE.bg }}>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-stone-600 mb-2" style={SANS}>
+                <div className="p-5 rounded-xl border border-stone-200/50" style={{ backgroundColor: AI.bg }}>
+                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Commuter Safety
                   </div>
                   <div className="mt-2">
-                    <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold text-white"
-                          style={{ backgroundColor: SAGE.text }}>
+                    <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold text-white"
+                          style={{ backgroundColor: AI.accent }}>
                       Protected
                     </span>
                   </div>
-                  <div className="text-xs text-stone-500 mt-2" style={SANS}>
+                  <div className="text-xs text-slate-500 mt-2" style={SANS}>
                     Early warning
                   </div>
                 </div>
               </div>
             </>
           ) : predictionError ? (
-            /* Error State */
             <div className="flex flex-col items-center justify-center h-96 px-6">
               <div className="text-center max-w-md">
-                <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 transition-all duration-300"
-                     style={{ backgroundColor: '#7F1D1D20' }}>
-                  <svg className="w-8 h-8" style={{ color: '#7F1D1D' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <div className="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center mx-auto mb-4 transition-all duration-300">
+                  <svg className="w-8 h-8 text-rose-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-bold text-stone-900 mb-2" style={SANS}>
+                <h3 className="text-lg font-bold text-slate-900 mb-2" style={SANS}>
                   Backend Offline or Waking Up
                 </h3>
-                <p className="text-sm text-stone-600 mb-4" style={SANS}>
+                <p className="text-sm text-slate-600 mb-4" style={SANS}>
                   {predictionError}
                 </p>
-                <p className="text-xs text-stone-500 mb-6" style={SANS}>
+                <p className="text-xs text-slate-500 mb-6" style={SANS}>
                   The AI engine may be starting up (cold start can take up to 50 seconds on free tier)
                 </p>
                 {onRetry && (
                   <button
                     onClick={onRetry}
-                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 ease-in-out hover:scale-[1.02] hover:opacity-90 active:scale-[0.98]"
-                    style={{ backgroundColor: SAGE.text, ...SANS }}
+                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:opacity-90 active:scale-95"
+                    style={{ backgroundColor: AI.accent, ...SANS }}
                   >
                     Retry Connection
                   </button>
@@ -232,12 +226,11 @@ export default function HeroCards({
               </div>
             </div>
           ) : (
-            /* Loading State */
             <div className="flex items-center justify-center h-96">
               <div className="text-center">
-                <div className="w-10 h-10 border-4 border-stone-200 rounded-full animate-spin mx-auto mb-4"
-                     style={{ borderTopColor: SAGE.text }} />
-                <p className="text-stone-500" style={SANS}>
+                <div className="w-10 h-10 border-4 border-slate-200 rounded-full animate-spin mx-auto mb-4"
+                     style={{ borderTopColor: AI.accent }} />
+                <p className="text-slate-500" style={SANS}>
                   {predictionLoading ? 'Fetching AI prediction...' : 'Loading AI prediction...'}
                 </p>
               </div>
