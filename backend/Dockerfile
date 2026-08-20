@@ -4,8 +4,8 @@ WORKDIR /app
 
 COPY requirements.txt .
 
-# Force CPU-only PyTorch to save memory and stay within free tier limits
-RUN pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
+# Use extra-index-url so pip still searches the main Python registry for background dependencies
+RUN pip install torch torchvision --extra-index-url https://download.pytorch.org/whl/cpu
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
