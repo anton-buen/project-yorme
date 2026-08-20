@@ -217,18 +217,12 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
         </div>
       </div>
 
-      {/* Data Source Note */}
-      <div className="mt-6 p-4 rounded-xl border border-stone-200/80" style={{ backgroundColor: '#FBF9F6' }}>
-        <div className="text-xs text-stone-600" style={SANS}>
-          <strong>Data Source:</strong> 32×32 pixelated heatmap representing storm intensity vectors 
-          derived from PAGASA Doppler radar. This visualization approximates the spatial 
-          tensor input processed by the CNN encoder branch of the PPO policy network.
-        </div>
-      </div>
-
-      <div className="mt-4 p-4 bg-stone-50 border border-stone-200 rounded-lg">
-        <p className="text-sm font-sans text-stone-700 leading-relaxed">
-          <strong>Data Source:</strong> The PPO agent processes this 32×32 spatial tensor to identify storm density and trajectory relative to the Metro Manila grid.
+      <div className="mt-4 p-4 bg-stone-50 border border-stone-200 rounded-xl">
+        <h4 className="text-xs font-semibold text-stone-900 mb-2 uppercase tracking-wide" style={SANS}>
+          Spatial Observation Tensor
+        </h4>
+        <p className="text-sm text-stone-700 leading-relaxed" style={SANS}>
+          This 32×32 grid maps radar reflectivity (dBZ intensity) across Metro Manila. The PPO policy network processes these spatial vectors through its convolutional encoder to evaluate storm trajectory and density before making a recommendation.
         </p>
       </div>
     </div>

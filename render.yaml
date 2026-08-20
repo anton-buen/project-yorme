@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: walang-pasok-api
+    env: docker
+    region: singapore
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
+    healthCheckPath: /api/health

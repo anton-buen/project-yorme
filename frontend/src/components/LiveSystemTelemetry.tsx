@@ -12,9 +12,15 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
     <div className="bg-stone-900 border border-stone-800 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
       <div className="p-8">
         <div className="mb-6">
-          <h2 className="text-2xl font-bold text-stone-100 mb-2" style={SERIF}>
-            Live System Telemetry
-          </h2>
+          <div className="flex items-center gap-2 mb-2">
+            <h2 className="text-2xl font-bold text-stone-100" style={SERIF}>
+              Live System Telemetry
+            </h2>
+            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono bg-rose-900/30 text-rose-400 border border-rose-800">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
+              LIVE
+            </span>
+          </div>
           <p className="text-xs text-stone-400" style={SANS}>
             Backend Inference Monitor
           </p>
