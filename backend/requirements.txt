@@ -9,3 +9,10 @@ pillow>=10.0.0
 requests>=2.31.0
 tensorboard
 matplotlib
+fastapi
+uvicorn
+pydantic
+stable-baselines3
+numpy
+Pillow
+requests
