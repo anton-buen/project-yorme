@@ -8,6 +8,7 @@ import type { IncidentData, PredictionResponse } from './types/dashboard';
 // Component imports
 import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
+import SystemContextBanner from './components/SystemContextBanner';
 import HeroCards from './components/HeroCards';
 import RadarGrid from './components/RadarGrid';
 import LiveMap from './components/LiveMap';
@@ -108,35 +109,64 @@ export default function App() {
   // ─── AI Prediction Fetching ──────────────────────────────────────────────────
 
   useEffect(() => {
+    console.log('[App] 🔄 Prediction useEffect triggered', {
+      loadingState: loadingState.isLoading,
+      hasError: !!loadingState.error,
+      incidentsCount: incidents.length,
+      incidentIdx,
+      step,
+      mode,
+      bias
+    });
+
     if (loadingState.isLoading || loadingState.error || incidents.length === 0) {
+      console.log('[App] ⏸️ Skipping prediction fetch (loading or error or no incidents)');
       return;
     }
 
     async function fetchPrediction() {
+      console.log('[App] 🚀 Starting fetchPrediction...');
+      
       const currentIncident = incidents[incidentIdx];
-      if (!currentIncident) return;
+      if (!currentIncident) {
+        console.error('[App] ❌ No current incident found at index:', incidentIdx);
+        return;
+      }
 
       const currentHour = mode === "live" 
         ? new Date().getHours() + new Date().getMinutes() / 60 
         : HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
       
+      console.log('[App] ⏰ Current hour calculated:', currentHour, 'mode:', mode);
+      
       const timelineKey = currentHour.toString();
       const timeline = currentIncident.hourly_timeline[timelineKey];
 
       if (!timeline) {
+        console.error('[App] ❌ No timeline data for hour:', timelineKey);
         setPredictionError("No timeline data available for current hour");
+        setPredictionLoading(false);
         return;
       }
 
       const cacheKey = `${incidentIdx}-${step}-${mode}-${bias}`;
+      console.log('[App] 🔑 Cache key:', cacheKey);
       
       if (predictionCache[cacheKey]) {
+        console.log('[App] ✅ Using cached prediction');
         setCurrentPrediction(predictionCache[cacheKey]);
         setPredictionError(null);
+        // Ensure loading is false when using cache
+        if (predictionLoading) {
+          setPredictionLoading(false);
+        }
         return;
       }
 
+      console.log('[App] 💾 No cache found, fetching from API...');
+
       try {
+        console.log('[App] ⏳ Setting loading state...');
         setPredictionLoading(true);
         setPredictionError(null);
 
@@ -146,7 +176,9 @@ export default function App() {
           pagasa_warning_red: timeline.pagasa_warning === "RED",
         };
 
+        console.log('[App] 📤 Calling getPrediction with request:', request);
         const prediction = await getPrediction(request);
+        console.log('[App] ✅ Prediction received:', prediction);
         
         setPredictionCache(prev => ({
           ...prev,
@@ -157,19 +189,21 @@ export default function App() {
         setPredictionError(null);
 
       } catch (error) {
-        console.error('Failed to fetch prediction:', error);
+        console.error('[App] ❌ PREDICTION FETCH FAILED:', error);
         const errorMsg = error instanceof ApiError 
           ? error.message 
           : 'Failed to connect to AI backend. Server may be waking up.';
+        console.error('[App] ❌ Setting error message:', errorMsg);
         setPredictionError(errorMsg);
         setCurrentPrediction(null);
       } finally {
+        console.log('[App] 🏁 Setting loading to false');
         setPredictionLoading(false);
       }
     }
 
     fetchPrediction();
-  }, [incidentIdx, step, mode, bias, incidents, loadingState, predictionCache]);
+  }, [incidentIdx, step, mode, bias, incidents, loadingState]);
 
   // ─── Helper Functions ─────────────────────────────────────────────────────────
 
@@ -215,6 +249,20 @@ export default function App() {
         pagasaWarning={pagasaWarning}
       />
 
+      {/* System Context Banner */}
+      <SystemContextBanner />
+
+      {/* Timeline Scrubber - Top Position (Historical Mode Only) */}
+      {mode === "historical" && (
+        <div className="max-w-7xl mx-auto px-6 pt-6">
+          <TimelineScrubber
+            step={step}
+            setStep={setStep}
+            announcementStep={announcementStep}
+          />
+        </div>
+      )}
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-8 space-y-8">
         
@@ -229,27 +277,23 @@ export default function App() {
               predictionError={predictionError}
               predictionLoading={predictionLoading}
               onRetry={() => {
+                console.log('[App] Retry button clicked - resetting prediction state');
                 setPredictionError(null);
-                setStep(step); // Trigger re-fetch
+                setPredictionLoading(false);
+                setCurrentPrediction(null);
+                // Force re-fetch by clearing cache
+                setPredictionCache({});
               }}
             />
 
-            {/* Visual Grounding Section */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Visual Grounding Section - Historical Radar Only */}
+            <div className="grid grid-cols-1 gap-6">
               <RadarGrid
                 step={step}
                 incidentIdx={incidentIdx}
                 pagasaWarning={pagasaWarning}
               />
-              <LiveMap />
             </div>
-
-            {/* Timeline Scrubber */}
-            <TimelineScrubber
-              step={step}
-              setStep={setStep}
-              announcementStep={announcementStep}
-            />
           </>
         ) : (
           <>
@@ -262,13 +306,16 @@ export default function App() {
               predictionError={predictionError}
               predictionLoading={predictionLoading}
               onRetry={() => {
+                console.log('[App] Retry button clicked (Live mode) - resetting prediction state');
                 setPredictionError(null);
-                setStep(step); // Trigger re-fetch
+                setPredictionLoading(false);
+                setCurrentPrediction(null);
+                setPredictionCache({});
               }}
               mode={mode}
             />
 
-            {/* Live Watch: Expanded Radar Section */}
+            {/* Live Watch: Expanded Live Radar Only */}
             <div className="grid grid-cols-1 gap-6">
               <LiveMap />
             </div>

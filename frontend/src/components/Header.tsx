@@ -63,12 +63,13 @@ export default function Header({
   }, [mode]);
 
   return (
-    <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-stone-200/80 shadow-sm">
+    <>
+      <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-stone-200/80 shadow-sm">
       <div className="max-w-7xl mx-auto">
         
-        {/* Row 1: Wordmark + Mode + Incident */}
+        {/* Row 1: Wordmark + Mode Toggle (Centered) + Incident */}
         <div className="px-6 py-4 flex items-center justify-between gap-6">
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold text-stone-900" style={SERIF}>
               Yormetrics
             </h1>
@@ -77,45 +78,46 @@ export default function Header({
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
-            {/* Mode Toggle */}
-            <div className="flex bg-stone-100 rounded-xl p-1">
+          {/* iOS-style Segmented Control - Centered */}
+          <div className="flex items-center justify-center">
+            <div className="inline-flex bg-stone-100 rounded-full p-1 shadow-inner">
               <button
                 onClick={() => setMode("historical")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98] ${
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out ${
                   mode === "historical" 
-                    ? 'bg-white text-stone-900 shadow-sm' 
+                    ? 'bg-white text-stone-900 shadow-md' 
                     : 'text-stone-600 hover:text-stone-900'
                 }`}
                 style={SANS}
               >
-                Historical Replay
+                📊 Historical Replay
               </button>
               <button
                 onClick={() => setMode("live")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all duration-300 ease-in-out flex items-center gap-1 hover:scale-[1.02] active:scale-[0.98] ${
+                className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 ${
                   mode === "live" 
-                    ? 'bg-white text-stone-900 shadow-sm' 
+                    ? 'bg-white text-stone-900 shadow-md' 
                     : 'text-stone-600 hover:text-stone-900'
                 }`}
                 style={SANS}
               >
-                Live Watch
                 {mode === "live" && (
                   <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                 )}
+                🔴 Live Watch
               </button>
             </div>
+          </div>
 
-            {/* Incident Selector - Fixed Width Container */}
-            <div className="w-[300px]">
-              {mode === "historical" && (
-                <select
-                  value={incidentIdx}
-                  onChange={(e) => setIncidentIdx(Number(e.target.value))}
-                  className="w-full px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-300 focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
-                  style={SANS}
-                >
+          {/* Incident Selector - Fixed Width Container */}
+          <div className="w-[300px] flex justify-end">
+            {mode === "historical" && (
+              <select
+                value={incidentIdx}
+                onChange={(e) => setIncidentIdx(Number(e.target.value))}
+                className="w-full px-4 py-2 bg-white border border-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-300 focus:border-stone-400 focus:ring-2 focus:ring-stone-200"
+                style={SANS}
+              >
                   {incidents.map((incident, idx) => (
                     <option key={incident.id} value={idx}>
                       {incident.name}
@@ -196,6 +198,6 @@ export default function Header({
           box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
       `}</style>
-    </div>
+    </>
   );
 }
