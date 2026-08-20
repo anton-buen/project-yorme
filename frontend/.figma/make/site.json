@@ -1,5 +1,9 @@
 {
+  "title": "Yormetrics",
   "description": "Monitors flood and weather conditions with AI-driven action recommendations to support timely decisions for education and local government safety measures.",
+  "icons": {
+    "icon": "/yormetrics-favicon.png"
+  },
   "robots": {
     "index": false
   },

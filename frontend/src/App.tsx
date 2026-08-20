@@ -1,11 +1,18 @@
+/**
+ * YORME-TRICS Dashboard
+ * 
+ * Main application component providing AI-powered class suspension decision support.
+ * Features historical replay and live monitoring modes with real-time weather integration.
+ * 
+ * @module App
+ */
+
 import { useState, useEffect } from "react";
 import { BarChart2 } from "lucide-react";
 
-// API imports
 import { fetchIncidents, getPrediction, checkApiHealth, ApiError } from './utils/api';
 import type { IncidentData, PredictionResponse } from './types/dashboard';
 
-// Component imports
 import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
 import SystemContextBanner from './components/SystemContextBanner';
@@ -16,8 +23,6 @@ import TimelineScrubber from './components/TimelineScrubber';
 import TechnicalAppendix from './components/TechnicalAppendix';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
-
-// ─── Types ────────────────────────────────────────────────────────────────────
 
 type PagasaLevel = "NONE" | "YELLOW" | "ORANGE" | "RED";
 type BiasMode = "strict" | "balanced" | "protective";
@@ -46,10 +51,10 @@ const HOUR_STEPS: HourStep[] = Array.from({ length: 19 }, (_, i) => {
   };
 });
 
-// ─── Main App Component ────────────────────────────────────────────────────────
-
+/**
+ * Main application component managing dashboard state and data fetching.
+ */
 export default function App() {
-  // ─── State Management ────────────────────────────────────────────────────────
 
   const [loadingState, setLoadingState] = useState<LoadingState>({
     isLoading: true,
@@ -70,21 +75,16 @@ export default function App() {
   const [predictionError, setPredictionError] = useState<string | null>(null);
   const [predictionLoading, setPredictionLoading] = useState(false);
 
-  // ─── Data Initialization ─────────────────────────────────────────────────────
-
   useEffect(() => {
     async function initializeApp() {
       try {
-        // Stage 1: Health check
         setLoadingState(prev => ({ ...prev, stage: 'health' }));
         await checkApiHealth();
 
-        // Stage 2: Load incidents
         setLoadingState(prev => ({ ...prev, stage: 'incidents' }));
         const incidentsData = await fetchIncidents();
         setIncidents(incidentsData);
 
-        // Stage 3: Complete
         setLoadingState(prev => ({ ...prev, stage: 'complete' }));
         await new Promise(resolve => setTimeout(resolve, 500));
 
@@ -105,8 +105,6 @@ export default function App() {
 
     initializeApp();
   }, []);
-
-  // ─── AI Prediction Fetching ──────────────────────────────────────────────────
 
   useEffect(() => {
     console.log('[App] 🔄 Prediction useEffect triggered', {
@@ -140,8 +138,6 @@ export default function App() {
       
       console.log('[App] ⏰ Current hour calculated:', currentHour, 'mode:', mode);
       
-      // FIX: Timeline only has whole hours (3.0, 4.0, 5.0), but scrubber creates half-hours (3.5, 4.5)
-      // Use Math.floor() to snap to the nearest whole hour, then format as "X.0"
       const timelineKey = Math.floor(currentHour).toFixed(1);
       console.log('[App] 🔑 Timeline key (floored):', timelineKey, 'from hour:', currentHour);
       
@@ -164,7 +160,6 @@ export default function App() {
         console.log('[App] ✅ Using cached prediction');
         setCurrentPrediction(predictionCache[cacheKey]);
         setPredictionError(null);
-        // Ensure loading is false when using cache
         if (predictionLoading) {
           setPredictionLoading(false);
         }
@@ -213,14 +208,11 @@ export default function App() {
     fetchPrediction();
   }, [incidentIdx, step, mode, bias, incidents, loadingState]);
 
-  // ─── Helper Functions ─────────────────────────────────────────────────────────
-
   const currentIncident = incidents[incidentIdx];
   const currentHour = mode === "live" 
     ? new Date().getHours() + new Date().getMinutes() / 60 
     : HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
   
-  // FIX: Use Math.floor() to snap to whole hours that exist in timeline data
   const timelineKey = Math.floor(currentHour).toFixed(1);
   const currentTimeline = currentIncident?.hourly_timeline[timelineKey];
 
@@ -231,8 +223,6 @@ export default function App() {
   const simulatedStranded = currentTimeline?.simulated_stranded_projection || 0;
   const pagasaWarning: PagasaLevel = currentTimeline?.pagasa_warning || "NONE";
 
-  // ─── Show loading screen while initializing ──────────────────────────────────
-
   if (loadingState.isLoading || loadingState.error) {
     return <LoadingScreen stage={loadingState.stage} error={loadingState.error} />;
   }
@@ -241,32 +231,24 @@ export default function App() {
     return <LoadingScreen stage="complete" error="No incidents data available from backend" />;
   }
 
-  // ─── Main Dashboard UI ───────────────────────────────────────────────────────
-
   return (
     <div className="min-h-screen w-full bg-[#F9F8F6] flex flex-col relative">
       
-      {/* Full width header */}
-      <div className="w-full">
-        <Header
-          mode={mode}
-          setMode={setMode}
-          incidents={incidents}
-          incidentIdx={incidentIdx}
-          setIncidentIdx={setIncidentIdx}
-          step={step}
-          setStep={setStep}
-          pagasaWarning={pagasaWarning}
-        />
-      </div>
+      <Header
+        mode={mode}
+        setMode={setMode}
+        incidents={incidents}
+        incidentIdx={incidentIdx}
+        setIncidentIdx={setIncidentIdx}
+        step={step}
+        setStep={setStep}
+        pagasaWarning={pagasaWarning}
+      />
 
-      {/* Constrained content area */}
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
         
-        {/* System Context Banner */}
         <SystemContextBanner />
 
-        {/* Timeline Scrubber - Seamless Integration (Historical Mode Only) */}
         {mode === "historical" && (
           <TimelineScrubber
             step={step}
@@ -275,12 +257,10 @@ export default function App() {
           />
         )}
 
-        {/* Main Content */}
         <div className="space-y-8">
         
         {mode === "historical" ? (
           <>
-            {/* Historical Mode: Dual Hero Comparison Cards */}
             <HeroCards
               currentIncident={currentIncident}
               prediction={currentPrediction}
@@ -293,12 +273,10 @@ export default function App() {
                 setPredictionError(null);
                 setPredictionLoading(false);
                 setCurrentPrediction(null);
-                // Force re-fetch by clearing cache
                 setPredictionCache({});
               }}
             />
 
-            {/* Visual Grounding Section - Historical Radar Only */}
             <div className="grid grid-cols-1 gap-6">
               <RadarGrid
                 step={step}
@@ -309,7 +287,6 @@ export default function App() {
           </>
         ) : (
           <>
-            {/* Live Watch Mode: AI Card + Live Radar Focus */}
             <HeroCards
               currentIncident={currentIncident}
               prediction={currentPrediction}
@@ -327,20 +304,18 @@ export default function App() {
               mode={mode}
             />
 
-            {/* Live Watch: Expanded Live Radar Only */}
             <div className="grid grid-cols-1 gap-6">
               <LiveMap />
             </div>
           </>
         )}
 
-        {/* Footer */}
         <div className="text-center text-slate-500 text-sm pt-4" style={SANS}>
           Yormetrics v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
         </div>
+      </div>
       </main>
 
-      {/* Technical Appendix Drawer */}
       <TechnicalAppendix
         isOpen={drawerOpen}
         onClose={() => setDrawerOpen(false)}
@@ -349,7 +324,6 @@ export default function App() {
         prediction={currentPrediction}
       />
 
-      {/* FAB Button - Bottom Center (Hidden when drawer is open) */}
       {!drawerOpen && (
         <button
           onClick={() => setDrawerOpen(true)}

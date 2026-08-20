@@ -1,3 +1,15 @@
+"""
+YORME-TRICS Backend API
+
+FastAPI server providing AI-powered class suspension predictions for Manila LGU.
+Uses a PPO-trained reinforcement learning model with real-time PAGASA radar integration.
+
+Main Dependencies:
+    - FastAPI: REST API framework
+    - PyTorch & Stable-Baselines3: RL model inference
+    - Custom LguSuspensionEnv: Gymnasium environment for suspension decisions
+"""
+
 import os
 import json
 import asyncio
@@ -12,19 +24,19 @@ from stable_baselines3 import PPO
 from src.env import LguSuspensionEnv
 from src.data_fetcher import ManilaDataPipeline
 
-# --- GLOBAL STATE & CACHE ---
 MODEL_PATH = "models/ppo_yorme_agent.zip"
 model = None
 data_pipeline = ManilaDataPipeline()
 
 async def refresh_radar_cache_loop():
     """
-    Background worker that pings PAGASA/GeoRiskPH every 5 minutes (300s)
-    to keep spatial tensor data fresh without blocking API requests.
+    Background task that refreshes PAGASA radar data every 5 minutes.
+    
+    Runs continuously to ensure the spatial tensor cache remains current
+    without blocking API requests. Failures are logged but don't crash the server.
     """
     while True:
         try:
-            # Force cache reset in pipeline to grab fresh image
             data_pipeline._cached_radar = None
             _ = data_pipeline.fetch_radar_reflectivity()
             print("[BACKGROUND CACHE] Updated PAGASA Doppler radar tensor.")
@@ -35,9 +47,17 @@ async def refresh_radar_cache_loop():
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Handles server startup and shutdown lifecycle events."""
+    """
+    Application lifecycle manager.
+    
+    Startup:
+        - Loads PPO model weights from disk
+        - Starts background radar refresh task
+    
+    Shutdown:
+        - Cancels background tasks cleanly
+    """
     global model
-    # 1. Load trained RL model weights
     if os.path.exists(MODEL_PATH):
         try:
             model = PPO.load(MODEL_PATH)
@@ -47,15 +67,12 @@ async def lifespan(app: FastAPI):
     else:
         print("[STARTUP] Warning: PPO model weights not found. Using fallback heuristics.")
 
-    # 2. Kick off background task for live data fetching
     fetch_task = asyncio.create_task(refresh_radar_cache_loop())
     
-    yield  # Server runs here
+    yield
     
-    # 3. Clean up on shutdown
     fetch_task.cancel()
 
-# --- FASTAPI APP SETUP ---
 app = FastAPI(title="WALANG PASOK AI - Backend API", lifespan=lifespan)
 
 app.add_middleware(
@@ -66,51 +83,82 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# --- REQUEST / RESPONSE SCHEMAS ---
+
 class PredictRequest(BaseModel):
+    """Request schema for AI prediction endpoint."""
     current_hour: float
     flood_active: bool
     pagasa_warning_red: bool
 
+
 class PredictResponse(BaseModel):
+    """Response schema containing AI decision and metadata."""
     ai_action_code: int
     action_probabilities: list[float]
     loaded_model_path: str
     obs_tensor_shapes: dict
 
-# --- API ENDPOINTS ---
 @app.get("/api/health")
 def health_check():
+    """
+    Health check endpoint.
+    
+    Returns:
+        dict: Server status, model load state, and radar cache status
+    """
     return {
         "status": "online",
         "model_loaded": model is not None,
         "radar_cached": data_pipeline._cached_radar is not None
     }
 
+
 @app.get("/api/incidents")
 def get_incidents():
+    """
+    Fetch historical incident data.
+    
+    Returns:
+        list: Array of incident objects from incidents.json
+        
+    Raises:
+        HTTPException: 404 if incidents.json not found
+    """
     file_path = "data/incidents.json"
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Incidents data not found")
     with open(file_path, "r") as f:
         return json.load(f)
 
+
 @app.post("/api/predict", response_model=PredictResponse)
 def get_prediction(req: PredictRequest):
-    # Initialize environment state
+    """
+    AI prediction endpoint for class suspension decisions.
+    
+    Args:
+        req: PredictRequest containing current_hour, flood_active, pagasa_warning_red
+        
+    Returns:
+        PredictResponse: AI action code (0-4), probability distribution, and tensor metadata
+        
+    Action Codes:
+        0: Status Quo (Normal operations)
+        1: Shift to ADM/Online
+        2: Suspend Basic Education
+        3: Suspend All Levels
+        4: Full LGU Lockdown
+    """
     env = LguSuspensionEnv()
     env.reset()
     
-    # Attach shared data pipeline instance (reuses memory cache)
     env.data_pipeline = data_pipeline
     env.current_hour = req.current_hour
     env._will_flood = req.flood_active
     env._has_pagasa_red_warning = req.pagasa_warning_red
     
-    # Retrieve pre-cached observation tensor instantly
     obs = env._get_obs()
     
-    # Run PyTorch inference
     if model:
         action, _ = model.predict(obs, deterministic=True)
         ai_code = int(action)
