@@ -13,6 +13,7 @@ Main Dependencies:
 import os
 import json
 import asyncio
+from pathlib import Path
 from contextlib import asynccontextmanager
 import torch
 import numpy as np
@@ -24,7 +25,10 @@ from stable_baselines3 import PPO
 from src.env import LguSuspensionEnv
 from src.data_fetcher import ManilaDataPipeline
 
-MODEL_PATH = "models/ppo_yorme_agent.zip"
+BASE_DIR = Path(__file__).resolve().parent
+MODEL_PATH = BASE_DIR / "models" / "ppo_yorme_agent.zip"
+INCIDENTS_PATH = BASE_DIR / "data" / "incidents.json"
+
 model = None
 data_pipeline = ManilaDataPipeline()
 
@@ -58,14 +62,21 @@ async def lifespan(app: FastAPI):
         - Cancels background tasks cleanly
     """
     global model
-    if os.path.exists(MODEL_PATH):
-        try:
-            model = PPO.load(MODEL_PATH)
-            print(f"[STARTUP] Successfully loaded PPO model from {MODEL_PATH}")
-        except Exception as e:
-            print(f"[STARTUP] Error loading PPO model: {e}")
-    else:
-        print("[STARTUP] Warning: PPO model weights not found. Using fallback heuristics.")
+    
+    try:
+        if MODEL_PATH.exists():
+            try:
+                model = PPO.load(str(MODEL_PATH))
+                print(f"[STARTUP] Successfully loaded PPO model from {MODEL_PATH}")
+            except Exception as e:
+                print(f"[STARTUP] Error loading PPO model: {e}")
+                print("[STARTUP] Server will continue with fallback predictions")
+        else:
+            print(f"[STARTUP] Warning: PPO model not found at {MODEL_PATH}")
+            print("[STARTUP] Server will continue with fallback predictions")
+    except Exception as e:
+        print(f"[STARTUP] Critical error during model loading: {e}")
+        print("[STARTUP] Server will continue with fallback predictions")
 
     fetch_task = asyncio.create_task(refresh_radar_cache_loop())
     
@@ -124,11 +135,25 @@ def get_incidents():
     Raises:
         HTTPException: 404 if incidents.json not found
     """
-    file_path = "data/incidents.json"
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Incidents data not found")
-    with open(file_path, "r") as f:
-        return json.load(f)
+    try:
+        if not INCIDENTS_PATH.exists():
+            raise HTTPException(
+                status_code=404, 
+                detail=f"Incidents data not found at {INCIDENTS_PATH}"
+            )
+        
+        with open(INCIDENTS_PATH, "r") as f:
+            return json.load(f)
+    except json.JSONDecodeError as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Invalid JSON in incidents file: {e}"
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error reading incidents: {e}"
+        )
 
 
 @app.post("/api/predict", response_model=PredictResponse)
@@ -149,37 +174,44 @@ def get_prediction(req: PredictRequest):
         3: Suspend All Levels
         4: Full LGU Lockdown
     """
-    env = LguSuspensionEnv()
-    env.reset()
-    
-    env.data_pipeline = data_pipeline
-    env.current_hour = req.current_hour
-    env._will_flood = req.flood_active
-    env._has_pagasa_red_warning = req.pagasa_warning_red
-    
-    obs = env._get_obs()
-    
-    if model:
-        action, _ = model.predict(obs, deterministic=True)
-        ai_code = int(action)
+    try:
+        env = LguSuspensionEnv()
+        env.reset()
         
-        with torch.no_grad():
-            obs_tensor = {
-                k: torch.as_tensor(v).unsqueeze(0).to(model.device) 
-                for k, v in obs.items()
-            }
-            distribution = model.policy.get_distribution(obs_tensor)
-            probs = distribution.distribution.probs.cpu().numpy()[0].tolist()
-    else:
-        ai_code = 3
-        probs = [0.05, 0.10, 0.15, 0.65, 0.05]
+        env.data_pipeline = data_pipeline
+        env.current_hour = req.current_hour
+        env._will_flood = req.flood_active
+        env._has_pagasa_red_warning = req.pagasa_warning_red
+        
+        obs = env._get_obs()
+        
+        if model:
+            action, _ = model.predict(obs, deterministic=True)
+            ai_code = int(action)
+            
+            with torch.no_grad():
+                obs_tensor = {
+                    k: torch.as_tensor(v).unsqueeze(0).to(model.device) 
+                    for k, v in obs.items()
+                }
+                distribution = model.policy.get_distribution(obs_tensor)
+                probs = distribution.distribution.probs.cpu().numpy()[0].tolist()
+        else:
+            ai_code = 3
+            probs = [0.05, 0.10, 0.15, 0.65, 0.05]
 
-    return PredictResponse(
-        ai_action_code=ai_code,
-        action_probabilities=probs,
-        loaded_model_path=MODEL_PATH if model else "Fallback",
-        obs_tensor_shapes={
-            "spatial": list(obs["spatial"].shape),
-            "vector": list(obs["vector"].shape)
-        }
-    )
+        return PredictResponse(
+            ai_action_code=ai_code,
+            action_probabilities=probs,
+            loaded_model_path=str(MODEL_PATH) if model else "Fallback",
+            obs_tensor_shapes={
+                "spatial": list(obs["spatial"].shape),
+                "vector": list(obs["vector"].shape)
+            }
+        )
+    except Exception as e:
+        print(f"[PREDICT ERROR] {e}")
+        raise HTTPException(
+            status_code=500,
+            detail=f"Prediction failed: {str(e)}"
+        )
