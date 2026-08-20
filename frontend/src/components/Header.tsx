@@ -165,9 +165,9 @@ export default function Header({
                 max={HOUR_STEPS.length - 1}
                 value={step}
                 onChange={(e) => setStep(Number(e.target.value))}
-                className="w-full h-2 bg-stone-800 rounded-full appearance-none cursor-pointer slider-thumb"
+                className="w-full h-2 bg-stone-800 rounded-full appearance-none cursor-pointer slider-gradient-thumb"
                 style={{
-                  background: `linear-gradient(to right, ${SAGE.line} 0%, ${SAGE.line} ${(step / (HOUR_STEPS.length - 1)) * 100}%, #292524 ${(step / (HOUR_STEPS.length - 1)) * 100}%, #292524 100%)`
+                  background: "#57534e"
                 }}
               />
             </div>
@@ -176,24 +176,42 @@ export default function Header({
       </div>
 
       <style>{`
-        .slider-thumb::-webkit-slider-thumb {
+        .slider-gradient-thumb::-webkit-slider-thumb {
           appearance: none;
-          width: 18px;
-          height: 18px;
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          background: ${SAGE.line};
+          background: linear-gradient(135deg, 
+            rgb(251, 191, 36) 0%, 
+            rgb(251, 146, 60) 25%,
+            rgb(100, 116, 139) 75%, 
+            rgb(30, 41, 59) 100%
+          );
           cursor: pointer;
-          border: 3px solid #1c1917;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          border: 2px solid #1c1917;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          transition: transform 0.2s ease;
         }
-        .slider-thumb::-moz-range-thumb {
-          width: 18px;
-          height: 18px;
+        .slider-gradient-thumb::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+        }
+        .slider-gradient-thumb::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
           border-radius: 50%;
-          background: ${SAGE.line};
+          background: linear-gradient(135deg, 
+            rgb(251, 191, 36) 0%, 
+            rgb(251, 146, 60) 25%,
+            rgb(100, 116, 139) 75%, 
+            rgb(30, 41, 59) 100%
+          );
           cursor: pointer;
-          border: 3px solid #1c1917;
-          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+          border: 2px solid #1c1917;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+          transition: transform 0.2s ease;
+        }
+        .slider-gradient-thumb::-moz-range-thumb:hover {
+          transform: scale(1.1);
         }
       `}</style>
     </>
