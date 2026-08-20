@@ -3,27 +3,8 @@
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
 
-/* ── Design tokens ─────────────────────────────────────────────────────────── */
-:root {
-  --bg:              #09090E;
-  --surface:         #0E1016;
-  --surface-high:    #141620;
-  --border:          rgba(255, 255, 255, 0.065);
-  --border-strong:   rgba(255, 255, 255, 0.12);
-  --label:           #F0F0F5;
-  --label-2:         rgba(240, 240, 245, 0.50);
-  --label-3:         rgba(240, 240, 245, 0.28);
-  --label-4:         rgba(240, 240, 245, 0.14);
-  --emerald:         #34D399;
-  --emerald-dim:     rgba(52, 211, 153, 0.10);
-  --red:             #F87171;
-  --red-dim:         rgba(248, 113, 113, 0.10);
-}
-
-/* ── Base ──────────────────────────────────────────────────────────────────── */
-*, *::before, *::after {
-  box-sizing: border-box;
-}
+/* ── Base ─────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
 
 html {
   -webkit-font-smoothing: antialiased;
@@ -32,78 +13,120 @@ html {
 }
 
 body {
-  background: var(--bg);
-  color: var(--label);
+  background: #FAF9F6;
+  color: #1C1917;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   margin: 0;
 }
 
-/* ── Scrollbar ─────────────────────────────────────────────────────────────── */
-* {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.06) transparent;
+/* ── Scrollbar ────────────────────────────────────────────────────────────── */
+* { scrollbar-width: thin; scrollbar-color: rgba(0,0,0,0.10) transparent; }
+::-webkit-scrollbar       { width: 4px; height: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.12); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.20); }
+
+/* ── Global interaction transitions ──────────────────────────────────────── */
+/* Applied at the CSS layer so Tailwind class overrides still win */
+button, select, a {
+  transition:
+    background-color 180ms ease,
+    color            180ms ease,
+    border-color     180ms ease,
+    box-shadow       180ms ease,
+    transform        150ms ease,
+    opacity          180ms ease;
 }
 
-::-webkit-scrollbar        { width: 4px; height: 4px; }
-::-webkit-scrollbar-track  { background: transparent; }
-::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.07); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+button:active:not(:disabled) { transform: scale(0.97); }
 
-/* ── Range input (simulation hour scrubber) ────────────────────────────────── */
+/* ── Focus rings — sage-tinted for light UI ───────────────────────────────── */
+button:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(107, 158, 122, 0.55);
+  outline-offset: 2px;
+}
+
+/* ── Card lift on hover ───────────────────────────────────────────────────── */
+.card-lift {
+  transition: box-shadow 220ms ease, transform 220ms ease;
+}
+.card-lift:hover {
+  box-shadow: 0 10px 40px rgba(0,0,0,0.11), 0 3px 10px rgba(0,0,0,0.06) !important;
+  transform: translateY(-2px);
+}
+
+/* ── Custom select caret ─────────────────────────────────────────────────── */
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2378716C' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Light-mode scrubber — thicker track, larger thumb, active halo
+   ═══════════════════════════════════════════════════════════════════════ */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
-  height: 1.5px;
   border-radius: 999px;
   outline: none;
   cursor: pointer;
 }
 
-/* Dark-mode scrubber */
-.dark-scrubber[type='range'] {
-  background: rgba(255,255,255,0.12);
-}
-.dark-scrubber[type='range']::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  appearance: none;
-  width: 13px; height: 13px; border-radius: 50%;
-  background: #34D399; cursor: pointer;
-  box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
-  transition: box-shadow 120ms ease, transform 120ms ease;
-}
-.dark-scrubber[type='range']:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(52,211,153,0.22); transform: scale(1.1); }
-
-/* Light-mode scrubber */
 .light-scrubber[type='range'] {
+  height: 3px;                      /* tactile thickness */
   background: #D6D3D1;
 }
+
+/* Webkit thumb */
 .light-scrubber[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 13px; height: 13px; border-radius: 50%;
-  background: #78716C; cursor: pointer;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
+  width:  20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #44403C;
+  cursor: pointer;
+  border: 2px solid #FFFFFF;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.22), 0 0 0 0 rgba(68,64,60,0);
+  transition:
+    background  150ms ease,
+    box-shadow  150ms ease,
+    transform   150ms ease;
 }
-.light-scrubber[type='range']:hover::-webkit-slider-thumb { background: #57534E; transform: scale(1.08); }
+
+.light-scrubber[type='range']:hover::-webkit-slider-thumb {
+  background: #292524;
+  box-shadow:
+    0 1px 4px rgba(0,0,0,0.22),
+    0 0 0 6px rgba(68,64,60,0.12);
+  transform: scale(1.08);
+}
+
+.light-scrubber[type='range']:active::-webkit-slider-thumb {
+  background: #1C1917;
+  box-shadow:
+    0 1px 4px rgba(0,0,0,0.22),
+    0 0 0 10px rgba(28,25,23,0.12);
+  transform: scale(1.14);
+}
+
+/* Moz thumb */
 .light-scrubber[type='range']::-moz-range-thumb {
-  width: 13px; height: 13px; border-radius: 50%;
-  background: #78716C; border: none; cursor: pointer;
+  width:  20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #44403C;
+  border: 2px solid #FFFFFF;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.22);
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
-/* ── Select — custom caret ─────────────────────────────────────────────────── */
-select {
-  -webkit-appearance: none;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l4 4 4-4' stroke='rgba%28240%2C240%2C245%2C0.3%29' stroke-width='1.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  padding-right: 28px !important;
-}
-
-/* ── Focus rings ────────────────────────────────────────────────────────────── */
-button:focus-visible,
-select:focus-visible {
-  outline: 2px solid rgba(52,211,153,0.45);
-  outline-offset: 2px;
+.light-scrubber[type='range']:hover::-moz-range-thumb {
+  background: #292524;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.22), 0 0 0 6px rgba(68,64,60,0.12);
 }

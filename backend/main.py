@@ -1,5 +1,7 @@
 import os
 import json
+import asyncio
+from contextlib import asynccontextmanager
 import torch
 import numpy as np
 from fastapi import FastAPI, HTTPException
@@ -8,34 +10,61 @@ from pydantic import BaseModel
 from stable_baselines3 import PPO
 
 from src.env import LguSuspensionEnv
+from src.data_fetcher import ManilaDataPipeline
 
-# --- API CONFIGURATION ---
-app = FastAPI(title="WALANG PASOK AI - Backend API")
+# --- GLOBAL STATE & CACHE ---
+MODEL_PATH = "models/ppo_yorme_agent.zip"
+model = None
+data_pipeline = ManilaDataPipeline()
 
-# Allow the frontend (Vite/React) to communicate with this backend
+async def refresh_radar_cache_loop():
+    """
+    Background worker that pings PAGASA/GeoRiskPH every 5 minutes (300s)
+    to keep spatial tensor data fresh without blocking API requests.
+    """
+    while True:
+        try:
+            # Force cache reset in pipeline to grab fresh image
+            data_pipeline._cached_radar = None
+            _ = data_pipeline.fetch_radar_reflectivity()
+            print("[BACKGROUND CACHE] Updated PAGASA Doppler radar tensor.")
+        except Exception as e:
+            print(f"[BACKGROUND CACHE] Warning: Radar refresh failed ({e})")
+        
+        await asyncio.sleep(300)
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handles server startup and shutdown lifecycle events."""
+    global model
+    # 1. Load trained RL model weights
+    if os.path.exists(MODEL_PATH):
+        try:
+            model = PPO.load(MODEL_PATH)
+            print(f"[STARTUP] Successfully loaded PPO model from {MODEL_PATH}")
+        except Exception as e:
+            print(f"[STARTUP] Error loading PPO model: {e}")
+    else:
+        print("[STARTUP] Warning: PPO model weights not found. Using fallback heuristics.")
+
+    # 2. Kick off background task for live data fetching
+    fetch_task = asyncio.create_task(refresh_radar_cache_loop())
+    
+    yield  # Server runs here
+    
+    # 3. Clean up on shutdown
+    fetch_task.cancel()
+
+# --- FASTAPI APP SETUP ---
+app = FastAPI(title="WALANG PASOK AI - Backend API", lifespan=lifespan)
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, restrict this to your Vercel domain
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# --- GLOBAL MODEL CACHE ---
-MODEL_PATH = "models/ppo_yorme_agent.zip"
-model = None
-
-@app.on_event("startup")
-def load_model():
-    global model
-    if os.path.exists(MODEL_PATH):
-        try:
-            model = PPO.load(MODEL_PATH)
-            print(f"Successfully loaded PPO model from {MODEL_PATH}")
-        except Exception as e:
-            print(f"Error loading model: {e}")
-    else:
-        print("Warning: PPO model weights not found. Using fallback heuristics.")
 
 # --- REQUEST / RESPONSE SCHEMAS ---
 class PredictRequest(BaseModel):
@@ -49,10 +78,14 @@ class PredictResponse(BaseModel):
     loaded_model_path: str
     obs_tensor_shapes: dict
 
-# --- ENDPOINTS ---
+# --- API ENDPOINTS ---
 @app.get("/api/health")
 def health_check():
-    return {"status": "online", "model_loaded": model is not None}
+    return {
+        "status": "online",
+        "model_loaded": model is not None,
+        "radar_cached": data_pipeline._cached_radar is not None
+    }
 
 @app.get("/api/incidents")
 def get_incidents():
@@ -72,24 +105,24 @@ def get_cctv_feeds():
 
 @app.post("/api/predict", response_model=PredictResponse)
 def get_prediction(req: PredictRequest):
-    # 1. Initialize environment temporarily to construct the correct state
+    # Initialize environment state
     env = LguSuspensionEnv()
     env.reset()
     
-    # Override environment with request state
+    # Attach shared data pipeline instance (reuses memory cache)
+    env.data_pipeline = data_pipeline
     env.current_hour = req.current_hour
     env._will_flood = req.flood_active
     env._has_pagasa_red_warning = req.pagasa_warning_red
     
-    # Generate the observation tensor (this triggers the DataFetcher)
+    # Retrieve pre-cached observation tensor instantly
     obs = env._get_obs()
     
-    # 2. Run Inference
+    # Run PyTorch inference
     if model:
         action, _ = model.predict(obs, deterministic=True)
         ai_code = int(action)
         
-        # Extract probabilities
         with torch.no_grad():
             obs_tensor = {
                 k: torch.as_tensor(v).unsqueeze(0).to(model.device) 
@@ -98,7 +131,6 @@ def get_prediction(req: PredictRequest):
             distribution = model.policy.get_distribution(obs_tensor)
             probs = distribution.distribution.probs.cpu().numpy()[0].tolist()
     else:
-        # Fallback if model is missing
         ai_code = 3
         probs = [0.05, 0.10, 0.15, 0.65, 0.05]
 
