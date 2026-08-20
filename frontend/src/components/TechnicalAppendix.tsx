@@ -59,10 +59,10 @@ export default function TechnicalAppendix({
       />
       
       <div 
-        className={`absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-stone-200 shadow-2xl transition-transform duration-300 pointer-events-auto ${
+        className={`absolute bottom-0 left-0 right-0 backdrop-blur-xl border-t border-stone-200/80 shadow-2xl transition-transform duration-300 pointer-events-auto ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
-        style={{ maxHeight: '70vh', overflowY: 'auto' }}
+        style={{ maxHeight: '70vh', overflowY: 'auto', backgroundColor: '#FBF9F6' }}
       >
         <div className="max-w-7xl mx-auto p-6">
           {/* Header */}
@@ -88,7 +88,7 @@ export default function TechnicalAppendix({
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             
             {/* Col 1: Mayor Policy Bias */}
-            <div className="bg-white rounded-2xl border border-stone-200 p-6">
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
               <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
                 Mayor Policy Bias Tuning
               </h3>
@@ -97,18 +97,18 @@ export default function TechnicalAppendix({
                   <button
                     key={mode}
                     onClick={() => setBias(mode)}
-                    className={`w-full p-3 rounded-xl text-left transition-all ${
+                    className={`w-full p-4 rounded-xl text-left transition-all ${
                       bias === mode 
-                        ? 'bg-stone-900 text-white shadow-lg' 
-                        : 'bg-stone-50 text-stone-700 hover:bg-stone-100'
+                        ? 'bg-stone-900 text-white shadow-md' 
+                        : 'bg-stone-50 text-stone-700 hover:bg-stone-100 border border-stone-200/50'
                     }`}
                     style={SANS}
                   >
-                    <div className="font-semibold capitalize">{mode}</div>
+                    <div className="font-bold capitalize text-base">{mode}</div>
                     <div className="text-xs opacity-75 mt-1">
-                      {mode === 'strict' && 'Minimize False Alarms'}
-                      {mode === 'balanced' && 'Default Operating Mode'}
-                      {mode === 'protective' && 'Err on Side of Caution'}
+                      {mode === 'strict' && 'Avoid false alarms'}
+                      {mode === 'balanced' && 'Default policy'}
+                      {mode === 'protective' && 'Err on side of caution'}
                     </div>
                   </button>
                 ))}
@@ -116,7 +116,7 @@ export default function TechnicalAppendix({
             </div>
 
             {/* Col 2: PPO Action Probability Distribution */}
-            <div className="bg-white rounded-2xl border border-stone-200 p-6">
+            <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
               <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
                 PPO Action Probability Distribution
               </h3>
@@ -154,56 +154,56 @@ export default function TechnicalAppendix({
 
             {/* Col 3: Tensor Inspector & Reward Matrix */}
             <div className="space-y-4">
-              <div className="bg-white rounded-2xl border border-stone-200 p-6">
+              <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
                   Active Observation Tensor
                 </h3>
                 {prediction ? (
-                  <div className="space-y-2 text-sm" style={SANS}>
-                    <div className="flex justify-between">
-                      <span className="text-stone-600">Spatial Shape:</span>
-                      <span className="font-mono text-stone-900">
+                  <div className="space-y-3 text-sm" style={SANS}>
+                    <div className="flex justify-between items-center py-2 border-b border-stone-100">
+                      <span className="text-stone-600 font-medium">Spatial Shape:</span>
+                      <span className="font-mono text-stone-900 font-semibold">
                         [{prediction.obs_tensor_shapes.spatial.join(', ')}]
                       </span>
                     </div>
-                    <div className="flex justify-between">
-                      <span className="text-stone-600">Vector Shape:</span>
-                      <span className="font-mono text-stone-900">
-                        [{prediction.obs_tensor_shapes.vector.join(', ')}]
+                    <div className="flex justify-between items-center py-2 border-b border-stone-100">
+                      <span className="text-stone-600 font-medium">Vector:</span>
+                      <span className="font-mono text-stone-900 text-xs">
+                        Hour, Commute Density
                       </span>
                     </div>
-                    <div className="pt-2 border-t border-stone-200 mt-3">
-                      <div className="text-stone-600 text-xs mb-1">Model Path:</div>
-                      <div className="font-mono text-xs text-stone-900 break-all bg-stone-50 p-2 rounded">
-                        {prediction.loaded_model_path}
-                      </div>
+                    <div className="flex justify-between items-center py-2">
+                      <span className="text-stone-600 font-medium">MCDRRMO Risk:</span>
+                      <span className="font-mono text-stone-900 text-xs">
+                        Channel Max
+                      </span>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center text-stone-400">Loading...</div>
+                  <div className="text-center text-stone-400 py-4">Loading...</div>
                 )}
               </div>
 
-              <div className="bg-white rounded-2xl border border-stone-200 p-6">
+              <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
                 <h3 className="text-lg font-bold text-stone-900 mb-4" style={SERIF}>
                   Reward Matrix Weights
                 </h3>
-                <div className="space-y-2 text-xs font-mono">
-                  <div className="flex justify-between py-1">
+                <div className="space-y-2.5 text-sm font-mono">
+                  <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">Early Warning (t &lt; 05:30):</span>
-                    <span className="text-green-600 font-bold">+100</span>
+                    <span className="text-green-600 font-bold text-base">+100</span>
                   </div>
-                  <div className="flex justify-between py-1">
+                  <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">Late Suspension (t &gt; 06:00):</span>
-                    <span className="text-red-600 font-bold">-1000</span>
+                    <span className="text-red-600 font-bold text-base">-1000</span>
                   </div>
-                  <div className="flex justify-between py-1">
+                  <div className="flex justify-between items-center py-2 border-b border-stone-100">
                     <span className="text-stone-600">False Alarm Penalty:</span>
-                    <span className="text-orange-600 font-bold">-50</span>
+                    <span className="text-orange-600 font-bold text-base">-50</span>
                   </div>
-                  <div className="flex justify-between py-1">
+                  <div className="flex justify-between items-center py-2">
                     <span className="text-stone-600">Status Quo Failure:</span>
-                    <span className="text-red-700 font-bold">-2000</span>
+                    <span className="text-red-700 font-bold text-base">-2000</span>
                   </div>
                 </div>
               </div>

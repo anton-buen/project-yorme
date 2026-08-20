@@ -63,14 +63,14 @@ export default function Header({
   }, [mode]);
 
   return (
-    <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-stone-200 shadow-sm">
+    <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b border-stone-200/80 shadow-sm">
       <div className="max-w-7xl mx-auto">
         
         {/* Row 1: Wordmark + Mode + Incident */}
         <div className="px-6 py-4 flex items-center justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-stone-900" style={SERIF}>
-              YORME-TRICS
+              Yormetrics
             </h1>
             <p className="text-sm text-stone-600 mt-0.5" style={SANS}>
               Predictive Early Suspension Advisor — City of Manila LGU

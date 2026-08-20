@@ -12,21 +12,21 @@ interface LoadingScreenProps {
 export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-stone-50">
+      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8F6F0' }}>
         <div className="text-center p-8 max-w-md">
           <AlertCircle className="mx-auto mb-4 w-16 h-16 text-red-500" />
           <h2 className="text-2xl font-bold text-stone-900 mb-4" style={SERIF}>
             Backend Unreachable
           </h2>
           <p className="text-stone-600 mb-6" style={SANS}>
-            The YORME-TRICS AI engine is currently unavailable. This may be due to:
+            The Yormetrics AI engine is currently unavailable. This may be due to:
           </p>
           <ul className="text-left text-stone-600 mb-6 space-y-2" style={SANS}>
             <li>• Server cold start (up to 50 seconds on free tier)</li>
             <li>• Network connectivity issues</li>
             <li>• Backend maintenance</li>
           </ul>
-          <div className="p-4 bg-red-50 rounded-xl border border-red-200">
+          <div className="p-4 rounded-xl border border-red-200" style={{ backgroundColor: '#FEF2F2' }}>
             <p className="text-red-800 text-sm" style={MONO}>
               {error}
             </p>
@@ -50,19 +50,20 @@ export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-stone-50">
+    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8F6F0' }}>
       <div className="text-center p-8">
-        <Loader2 className="mx-auto mb-6 w-16 h-16 text-blue-600 animate-spin" />
+        <Loader2 className="mx-auto mb-6 w-16 h-16 animate-spin" style={{ color: '#3A7050' }} />
         <h2 className="text-3xl font-bold text-stone-900 mb-4" style={SERIF}>
-          Waking up AI Engine...
+          Yormetrics
         </h2>
         <p className="text-xl text-stone-600 mb-8" style={SANS}>
           {stageMessages[stage] || "Initializing..."}
         </p>
-        <div className="w-64 mx-auto bg-stone-200 rounded-full h-2">
+        <div className="w-64 mx-auto rounded-full h-2" style={{ backgroundColor: '#E7E5E4' }}>
           <div
-            className="bg-blue-600 h-2 rounded-full transition-all duration-1000"
+            className="h-2 rounded-full transition-all duration-1000"
             style={{
+              backgroundColor: '#3A7050',
               width: stage === 'health' ? '33%' : 
                      stage === 'incidents' ? '66%' : '100%'
             }}

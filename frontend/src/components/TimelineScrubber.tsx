@@ -28,9 +28,9 @@ export default function TimelineScrubber({
   announcementStep,
 }: TimelineScrubberProps) {
   return (
-    <div className="bg-white rounded-2xl border border-stone-200 shadow-sm p-6">
-      <div className="mb-4">
-        <h3 className="text-lg font-bold text-stone-900 mb-1" style={SANS}>
+    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
+      <div className="mb-6">
+        <h3 className="text-xl font-bold text-stone-900 mb-2" style={SANS}>
           Simulation Timeline
         </h3>
         <p className="text-sm text-stone-600" style={SANS}>
@@ -41,11 +41,11 @@ export default function TimelineScrubber({
       {/* Timeline Strip */}
       <div className="relative">
         {/* Background line */}
-        <div className="absolute top-3 left-0 right-0 h-1 bg-stone-200 rounded-full" />
+        <div className="absolute top-4 left-0 right-0 h-1.5 bg-stone-200/60 rounded-full" />
 
         {/* Active progress line */}
         <div 
-          className="absolute top-3 left-0 h-1 rounded-full transition-all duration-300"
+          className="absolute top-4 left-0 h-1.5 rounded-full transition-all duration-300"
           style={{ 
             width: `${(step / (HOUR_STEPS.length - 1)) * 100}%`,
             backgroundColor: SAGE.line 
@@ -53,7 +53,7 @@ export default function TimelineScrubber({
         />
 
         {/* Step indicators */}
-        <div className="relative flex justify-between items-center mb-3">
+        <div className="relative flex justify-between items-center mb-4">
           {HOUR_STEPS.map((hourStep, idx) => {
             const isActive = idx === step;
             const isPassed = idx < step;
@@ -68,9 +68,9 @@ export default function TimelineScrubber({
               >
                 {/* Step circle */}
                 <div
-                  className={`w-6 h-6 rounded-full border-3 transition-all duration-200 ${
+                  className={`w-7 h-7 rounded-full border-3 transition-all duration-200 ${
                     isActive 
-                      ? 'scale-125 shadow-lg' 
+                      ? 'scale-125 shadow-md' 
                       : 'hover:scale-110'
                   }`}
                   style={{
@@ -97,12 +97,12 @@ export default function TimelineScrubber({
                 )}
 
                 {/* Tooltip */}
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-stone-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none"
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-3 px-3 py-2 bg-stone-900 text-white text-xs rounded-lg opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none shadow-lg"
                      style={MONO}>
                   {hourStep.label}
                   {isAnnouncement && (
-                    <span className="block text-orange-300 text-[10px]">
-                      Actual Announcement
+                    <span className="block text-orange-300 text-[11px] mt-0.5">
+                      ⚡ Actual Announcement
                     </span>
                   )}
                 </div>
@@ -121,22 +121,22 @@ export default function TimelineScrubber({
       </div>
 
       {/* Legend */}
-      <div className="mt-6 flex items-center justify-center gap-6 text-xs" style={SANS}>
+      <div className="mt-8 flex items-center justify-center gap-8 text-sm" style={SANS}>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border-2" style={{ backgroundColor: SAGE.line, borderColor: SAGE.line }} />
-          <span className="text-stone-600">Active Step</span>
+          <div className="w-5 h-5 rounded-full border-2" style={{ backgroundColor: SAGE.line, borderColor: SAGE.line }} />
+          <span className="text-stone-700 font-medium">Active Step</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border-2 bg-white" style={{ borderColor: TERRA.line }} />
-          <span className="text-stone-600">Actual Announcement</span>
+          <div className="w-5 h-5 rounded-full border-3 bg-white" style={{ borderColor: TERRA.line }} />
+          <span className="text-stone-700 font-medium">Actual Announcement</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border-2 bg-stone-300 border-stone-300" />
-          <span className="text-stone-600">Passed</span>
+          <div className="w-5 h-5 rounded-full border-2 bg-stone-300 border-stone-300" />
+          <span className="text-stone-700 font-medium">Passed</span>
         </div>
         <div className="flex items-center gap-2">
-          <div className="w-4 h-4 rounded-full border-2 bg-white border-stone-200" />
-          <span className="text-stone-600">Future</span>
+          <div className="w-5 h-5 rounded-full border-2 bg-white border-stone-200" />
+          <span className="text-stone-700 font-medium">Future</span>
         </div>
       </div>
     </div>

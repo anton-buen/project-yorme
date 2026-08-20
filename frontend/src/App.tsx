@@ -9,7 +9,8 @@ import type { IncidentData, PredictionResponse } from './types/dashboard';
 import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
 import HeroCards from './components/HeroCards';
-import VisualGrounding from './components/VisualGrounding';
+import RadarGrid from './components/RadarGrid';
+import LiveMap from './components/LiveMap';
 import TimelineScrubber from './components/TimelineScrubber';
 import TechnicalAppendix from './components/TechnicalAppendix';
 
@@ -183,7 +184,7 @@ export default function App() {
   // ─── Main Dashboard UI ───────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="min-h-screen" style={{ backgroundColor: '#F8F6F0' }}>
       
       {/* Header */}
       <Header
@@ -209,10 +210,14 @@ export default function App() {
         />
 
         {/* Visual Grounding Section */}
-        <VisualGrounding
-          step={step}
-          incidentIdx={incidentIdx}
-        />
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <RadarGrid
+            step={step}
+            incidentIdx={incidentIdx}
+            pagasaWarning={pagasaWarning}
+          />
+          <LiveMap />
+        </div>
 
         {/* Timeline Scrubber (Historical Mode Only) */}
         {mode === "historical" && (
@@ -225,7 +230,7 @@ export default function App() {
 
         {/* Footer */}
         <div className="text-center text-stone-500 text-sm pt-4" style={SANS}>
-          YORME-TRICS v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
+          Yormetrics v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
         </div>
       </div>
 
