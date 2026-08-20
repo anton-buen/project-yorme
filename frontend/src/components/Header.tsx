@@ -65,21 +65,20 @@ export default function Header({
   return (
     <>
       <div className="sticky top-0 z-50 bg-stone-950 shadow-lg">
-      <div className="max-w-7xl mx-auto">
         
         {/* Row 1: Wordmark (Left) + Controls (Right: Incident Dropdown + Mode Toggle) */}
-        <div className="px-6 py-4 flex items-center justify-between w-full gap-6 border-b border-stone-800">
-          {/* Left Anchor: Logo and Subtitle */}
-          <div>
-            <h1 className="text-3xl font-bold text-white" style={SERIF}>
+        <header className="w-full bg-stone-950 px-8 py-4 flex justify-between items-center border-b border-stone-800">
+          {/* LEFT SIDE: Logo & Subtitle */}
+          <div className="flex flex-col text-left">
+            <h1 className="text-white text-3xl font-bold" style={SERIF}>
               Yormetrics
             </h1>
-            <p className="text-sm text-stone-400 mt-0.5" style={SANS}>
+            <p className="text-stone-400 text-sm" style={SANS}>
               Predictive Early Suspension Advisor — City of Manila LGU
             </p>
           </div>
-
-          {/* Right Anchor: Incident Dropdown + Mode Toggle */}
+          
+          {/* RIGHT SIDE: Controls */}
           <div className="flex items-center gap-4">
             {/* Incident Selector */}
             {mode === "historical" && (
@@ -126,10 +125,10 @@ export default function Header({
               </button>
             </div>
           </div>
-        </div>
+        </header>
 
         {/* Row 2: PAGASA Status + Clock + Timeline Scrubber */}
-        <div className="px-6 py-4 flex items-center gap-4 bg-stone-900 border-b border-stone-800">
+        <div className="w-full bg-stone-900 px-8 py-3 flex items-center border-b border-stone-800">
           {/* PAGASA Status Badge */}
           <div 
             className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white whitespace-nowrap"
@@ -139,7 +138,7 @@ export default function Header({
           </div>
 
           {/* Clock Display */}
-          <div className="px-3 py-1.5 bg-stone-800 rounded-lg text-sm text-stone-200 whitespace-nowrap" style={MONO}>
+          <div className="px-3 py-1.5 bg-stone-800 rounded-lg text-sm text-stone-200 whitespace-nowrap ml-4" style={MONO}>
             {mode === "live" ? (
               <>
                 {currentTime.toLocaleTimeString('en-US', { 
@@ -159,7 +158,7 @@ export default function Header({
 
           {/* Timeline Scrubber - Historical Mode Only */}
           {mode === "historical" && (
-            <div className="flex-1">
+            <div className="flex-1 ml-4">
               <input
                 type="range"
                 min="0"
@@ -174,7 +173,6 @@ export default function Header({
             </div>
           )}
         </div>
-      </div>
       </div>
 
       <style>{`
