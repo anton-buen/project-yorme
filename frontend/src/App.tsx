@@ -208,10 +208,19 @@ export default function App() {
     fetchPrediction();
   }, [incidentIdx, step, mode, bias, incidents, loadingState]);
 
+  if (loadingState.isLoading || loadingState.error) {
+    return <LoadingScreen stage={loadingState.stage} error={loadingState.error} />;
+  }
+
+  if (incidents.length === 0) {
+    return <LoadingScreen stage="complete" error="No incidents data available from backend" />;
+  }
+
   const currentIncident = incidents[incidentIdx];
   
   if (!currentIncident) {
-    return <LoadingScreen stage="complete" error="Invalid incident selection. Please select a valid incident." />;
+    console.error('[App] Invalid incidentIdx:', incidentIdx, 'total incidents:', incidents.length);
+    return <LoadingScreen stage="complete" error={`Invalid incident selection (index ${incidentIdx}). Please reload the page.`} />;
   }
   
   const currentHour = mode === "live" 
@@ -233,14 +242,6 @@ export default function App() {
     ? currentTimeline.simulated_stranded_projection 
     : 0;
   const pagasaWarning: PagasaLevel = currentTimeline?.pagasa_warning ?? "NONE";
-
-  if (loadingState.isLoading || loadingState.error) {
-    return <LoadingScreen stage={loadingState.stage} error={loadingState.error} />;
-  }
-
-  if (incidents.length === 0) {
-    return <LoadingScreen stage="complete" error="No incidents data available from backend" />;
-  }
 
   return (
     <div className="min-h-screen w-full bg-[#F9F8F6] flex flex-col relative">
