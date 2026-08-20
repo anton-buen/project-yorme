@@ -64,12 +64,13 @@ export default function Header({
 
   return (
     <>
-      <div className="sticky top-0 z-50 bg-stone-950 border-b border-stone-800 shadow-lg">
+      <div className="sticky top-0 z-50 bg-stone-950 shadow-lg">
       <div className="max-w-7xl mx-auto">
         
-        {/* Row 1: Wordmark + Mode Toggle (Centered) + Incident */}
-        <div className="px-6 py-4 flex items-center justify-between gap-6">
-          <div className="flex-1">
+        {/* Row 1: Wordmark (Left) + Controls (Right: Incident Dropdown + Mode Toggle) */}
+        <div className="px-6 py-4 flex items-center justify-between w-full gap-6 border-b border-stone-800">
+          {/* Left Anchor: Logo and Subtitle */}
+          <div>
             <h1 className="text-3xl font-bold text-white" style={SERIF}>
               Yormetrics
             </h1>
@@ -78,8 +79,25 @@ export default function Header({
             </p>
           </div>
 
-          {/* Segmented Control - Centered */}
-          <div className="flex items-center justify-center">
+          {/* Right Anchor: Incident Dropdown + Mode Toggle */}
+          <div className="flex items-center gap-4">
+            {/* Incident Selector */}
+            {mode === "historical" && (
+              <select
+                value={incidentIdx}
+                onChange={(e) => setIncidentIdx(Number(e.target.value))}
+                className="min-w-[280px] px-4 py-2 bg-stone-800 border border-stone-700 text-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-600 focus:border-stone-500 focus:ring-2 focus:ring-stone-600"
+                style={SANS}
+              >
+                {incidents.map((incident, idx) => (
+                  <option key={incident.id} value={idx}>
+                    {incident.name}
+                  </option>
+                ))}
+              </select>
+            )}
+
+            {/* Segmented Control */}
             <div className="inline-flex bg-stone-800 rounded-full p-1 shadow-inner">
               <button
                 onClick={() => setMode("historical")}
@@ -108,29 +126,10 @@ export default function Header({
               </button>
             </div>
           </div>
-
-          {/* Incident Selector - Fixed Width Container */}
-          <div className="w-[300px] flex justify-end">
-            {mode === "historical" && (
-              <select
-                value={incidentIdx}
-                onChange={(e) => setIncidentIdx(Number(e.target.value))}
-                className="w-full px-4 py-2 bg-stone-800 border border-stone-700 text-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-600 focus:border-stone-500 focus:ring-2 focus:ring-stone-600"
-                style={SANS}
-              >
-                  {incidents.map((incident, idx) => (
-                    <option key={incident.id} value={idx}>
-                      {incident.name}
-                    </option>
-                  ))}
-                </select>
-              )}
-            </div>
-          </div>
         </div>
 
         {/* Row 2: PAGASA Status + Clock + Timeline Scrubber */}
-        <div className="px-6 pb-4 flex items-center gap-4">
+        <div className="px-6 py-4 flex items-center gap-4 bg-stone-900 border-b border-stone-800">
           {/* PAGASA Status Badge */}
           <div 
             className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white whitespace-nowrap"
@@ -175,6 +174,7 @@ export default function Header({
             </div>
           )}
         </div>
+      </div>
       </div>
 
       <style>{`

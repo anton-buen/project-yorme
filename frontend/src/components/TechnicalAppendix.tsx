@@ -101,7 +101,7 @@ export default function TechnicalAppendix({
         }`}
         style={{ maxHeight: '70vh', overflowY: 'auto' }}
       >
-        <div className="max-w-7xl mx-auto p-6">
+        <div className="max-w-7xl mx-auto p-6 pb-12">
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
