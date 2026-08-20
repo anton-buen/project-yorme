@@ -7,16 +7,56 @@
       "actual_announcement_time": 7.0,
       "actual_action_code": 3,
       "hourly_timeline": {
-        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
-        "4.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
-        "5.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
-        "6.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
-        "7.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 450},
-        "8.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1200},
-        "9.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 2100},
-        "10.0": {"flood_active": true, "pagasa_warning": "RED", "simulated_stranded_projection": 2800},
-        "11.0": {"flood_active": true, "pagasa_warning": "RED", "simulated_stranded_projection": 3200},
-        "12.0": {"flood_active": true, "pagasa_warning": "RED", "simulated_stranded_projection": 3500}
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 450
+        },
+        "8.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1200
+        },
+        "9.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2100
+        },
+        "10.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 2800
+        },
+        "11.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3200
+        },
+        "12.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3500
+        }
       }
     },
     {
@@ -26,372 +66,1201 @@
       "actual_announcement_time": 7.0,
       "actual_action_code": 3,
       "hourly_timeline": {
-        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
-        "4.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
-        "5.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
-        "6.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
-        "7.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 180},
-        "8.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 650},
-        "9.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 980},
-        "10.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1200},
-        "11.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1300},
-        "12.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1400}
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 180
+        },
+        "8.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 650
+        },
+        "9.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 980
+        },
+        "10.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1200
+        },
+        "11.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1300
+        },
+        "12.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1400
+        }
       }
     },
     {
-    "id": "20240315-sunny-control",
-    "name": "March 15, 2024 Normal Dry Season",
-    "date": "2024-03-15",
-    "lgu_decision": {
-      "action_code": "A0",
-      "action_label": "Status Quo (No Suspension)",
-      "announcement_time": "05:00",
-      "source_log": "Manila PIO Official Log (No Action)"
+      "id": "20240315-sunny-control",
+      "name": "March 15, 2024 Normal Dry Season",
+      "description": "Manila PIO Official Log (No Action)",
+      "actual_announcement_time": 5.0,
+      "actual_action_code": 0,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 }
-    }
-  },
-  {
-    "id": "20230712-mild-monsoon",
-    "name": "July 12, 2023 Mild Southwest Monsoon",
-    "date": "2023-07-12",
-    "lgu_decision": {
-      "action_code": "A0",
-      "action_label": "Status Quo (No Suspension)",
-      "announcement_time": "05:00",
-      "source_log": "Manila PIO Official Log (Classes Maintained)"
+    {
+      "id": "20230712-mild-monsoon",
+      "name": "July 12, 2023 Mild Southwest Monsoon",
+      "description": "Manila PIO Official Log (Classes Maintained)",
+      "actual_announcement_time": 5.0,
+      "actual_action_code": 0,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "4.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.5 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.0 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 4.5 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 5.0 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 4.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.0 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.5 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 }
-    }
-  },
-  {
-    "id": "20230810-localized-rain",
-    "name": "August 10, 2023 Localized Morning Showers",
-    "date": "2023-08-10",
-    "lgu_decision": {
-      "action_code": "A2",
-      "action_label": "Suspend Basic Ed (Kinder to Grade 12)",
-      "announcement_time": "04:30",
-      "source_log": "Manila PIO Official Log (Partial Suspension)"
+    {
+      "id": "20230810-localized-rain",
+      "name": "August 10, 2023 Localized Morning Showers",
+      "description": "Manila PIO Official Log (Partial Suspension)",
+      "actual_announcement_time": 4.5,
+      "actual_action_code": 2,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 150
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 450
+        },
+        "4.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 825
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1200
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 450
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 6.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 8.0 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.5 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 9.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 6.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 5.0 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 3.0 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 }
-    }
-  },
-  [
-  {
-    "id": "20201112-ulysses",
-    "name": "November 12, 2020 Typhoon Ulysses",
-    "date": "2020-11-12",
-    "lgu_decision": {
-      "action_code": "A3",
-      "action_label": "Suspend All Levels (Basic Ed + Tertiary)",
-      "announcement_time": "02:56",
-      "source_log": "Manila PIO Official Log"
+    {
+      "id": "20201112-ulysses",
+      "name": "November 12, 2020 Typhoon Ulysses",
+      "description": "Manila PIO Official Log",
+      "actual_announcement_time": 2.9333333333333336,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "3.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "4.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "4.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "5.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "5.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "6.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "6.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "7.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "7.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "8.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "8.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "9.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3150
+        },
+        "9.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "10.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "10.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "11.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "11.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        },
+        "12.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1575
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 15.5 }
-    }
-  },
-  {
-    "id": "20220926-karding",
-    "name": "September 26, 2022 Super Typhoon Karding",
-    "date": "2022-09-26",
-    "lgu_decision": {
-      "action_code": "A3",
-      "action_label": "Suspend All Levels (Basic Ed + Tertiary)",
-      "announcement_time": "08:00",
-      "source_log": "Manila PIO Official Log"
+    {
+      "id": "20220926-karding",
+      "name": "September 26, 2022 Super Typhoon Karding",
+      "description": "Manila PIO Official Log",
+      "actual_announcement_time": 8.0,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "3.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "4.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "4.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "5.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "5.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "6.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "6.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "7.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "7.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "8.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "8.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "9.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 3300
+        },
+        "9.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "10.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "10.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "11.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "11.5": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        },
+        "12.0": {
+          "flood_active": true,
+          "pagasa_warning": "RED",
+          "simulated_stranded_projection": 1650
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "Red Warning", "precipitation_estimate_mm": 16.0 }
-    }
-  },
-  {
-    "id": "20221029-paeng",
-    "name": "October 29, 2022 Severe Tropical Storm Paeng",
-    "date": "2022-10-29",
-    "lgu_decision": {
-      "action_code": "A3",
-      "action_label": "Suspend All Levels (Basic Ed + Tertiary)",
-      "announcement_time": "05:00",
-      "source_log": "Manila PIO Official Log"
+    {
+      "id": "20221029-paeng",
+      "name": "October 29, 2022 Severe Tropical Storm Paeng",
+      "description": "Manila PIO Official Log",
+      "actual_announcement_time": 5.0,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "3.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "4.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "4.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "5.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "5.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "6.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "6.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "7.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "7.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "8.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "8.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "9.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 2250
+        },
+        "9.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "10.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "10.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "11.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "11.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        },
+        "12.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1125
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 12.5 }
-    }
-  },
-  {
-    "id": "20240902-enteng",
-    "name": "September 2, 2024 Tropical Storm Enteng",
-    "date": "2024-09-02",
-    "lgu_decision": {
-      "action_code": "A3",
-      "action_label": "Suspend All Levels (Basic Ed + Tertiary)",
-      "announcement_time": "05:00",
-      "source_log": "Manila PIO Official Log"
+    {
+      "id": "20240902-enteng",
+      "name": "September 2, 2024 Tropical Storm Enteng",
+      "description": "Manila PIO Official Log",
+      "actual_announcement_time": 5.0,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "4.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 750
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 375
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 7.5 }
-    }
-  },
-  {
-    "id": "20241024-kristine",
-    "name": "October 24, 2024 Severe Tropical Storm Kristine",
-    "date": "2024-10-24",
-    "lgu_decision": {
-      "action_code": "A3",
-      "action_label": "Suspend All Levels (Basic Ed + Tertiary)",
-      "announcement_time": "17:00",
-      "source_log": "Manila PIO Official Log"
+    {
+      "id": "20241024-kristine",
+      "name": "October 24, 2024 Severe Tropical Storm Kristine",
+      "description": "Manila PIO Official Log",
+      "actual_announcement_time": 17.0,
+      "actual_action_code": 3,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "3.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "4.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "4.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "5.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "5.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "6.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "6.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "7.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "7.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "8.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "8.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "9.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 1500
+        },
+        "9.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "10.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "10.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "11.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "11.5": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        },
+        "12.0": {
+          "flood_active": true,
+          "pagasa_warning": "ORANGE",
+          "simulated_stranded_projection": 750
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "Orange Warning", "precipitation_estimate_mm": 10.0 }
-    }
-  }
-],
-{
-    "id": "20230915-afternoon-thunderstorm",
-    "name": "September 15, 2023 Localized Convective Storm",
-    "date": "2023-09-15",
-    "lgu_decision": {
-      "action_code": "A0",
-      "action_label": "Status Quo (No Suspension)",
-      "announcement_time": "05:00",
-      "source_log": "Manila PIO Official Log (No Action)"
+    {
+      "id": "20230915-afternoon-thunderstorm",
+      "name": "September 15, 2023 Localized Convective Storm",
+      "description": "Manila PIO Official Log (No Action)",
+      "actual_announcement_time": 5.0,
+      "actual_action_code": 0,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "4.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.5 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 4.0 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.5 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 }
-    }
-  },
-  {
-    "id": "20231108-high-tide-adm",
-    "name": "November 8, 2023 Coastal High Tide & Rain",
-    "date": "2023-11-08",
-    "lgu_decision": {
-      "action_code": "A1",
-      "action_label": "Shift to Alternative Delivery Mode (Online)",
-      "announcement_time": "05:15",
-      "source_log": "Manila PIO Official Log (Modular Learning)"
+    {
+      "id": "20231108-high-tide-adm",
+      "name": "November 8, 2023 Coastal High Tide & Rain",
+      "description": "Manila PIO Official Log (Modular Learning)",
+      "actual_announcement_time": 5.25,
+      "actual_action_code": 1,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "4.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 75
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        }
+      }
     },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 4.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 4.5 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 5.0 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 5.5 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 5.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 4.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.5 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.5 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 }
+    {
+      "id": "20240520-distant-typhoon",
+      "name": "May 20, 2024 Distant Tropical Depression",
+      "description": "Manila PIO Official Log (Normal Operations)",
+      "actual_announcement_time": 5.0,
+      "actual_action_code": 0,
+      "hourly_timeline": {
+        "3.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "3.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "4.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "4.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "5.0": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "5.5": {
+          "flood_active": false,
+          "pagasa_warning": "YELLOW",
+          "simulated_stranded_projection": 0
+        },
+        "6.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "6.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "7.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "8.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "9.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "10.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "11.5": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        },
+        "12.0": {
+          "flood_active": false,
+          "pagasa_warning": "NONE",
+          "simulated_stranded_projection": 0
+        }
+      }
     }
-  },
-  {
-    "id": "20240520-distant-typhoon",
-    "name": "May 20, 2024 Distant Tropical Depression",
-    "date": "2024-05-20",
-    "lgu_decision": {
-      "action_code": "A0",
-      "action_label": "Status Quo (No Suspension)",
-      "announcement_time": "05:00",
-      "source_log": "Manila PIO Official Log (Normal Operations)"
-    },
-    "hourly_timeline": {
-      "3.0": { "time_label": "03:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.0 },
-      "3.5": { "time_label": "03:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.0 },
-      "4.0": { "time_label": "04:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.5 },
-      "4.5": { "time_label": "04:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.5 },
-      "5.0": { "time_label": "05:00 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 3.0 },
-      "5.5": { "time_label": "05:30 AM", "pagasa_warning": "Yellow Warning", "precipitation_estimate_mm": 2.5 },
-      "6.0": { "time_label": "06:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 2.0 },
-      "6.5": { "time_label": "06:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.5 },
-      "7.0": { "time_label": "07:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 1.0 },
-      "7.5": { "time_label": "07:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.5 },
-      "8.0": { "time_label": "08:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "8.5": { "time_label": "08:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.0": { "time_label": "09:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "9.5": { "time_label": "09:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.0": { "time_label": "10:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "10.5": { "time_label": "10:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.0": { "time_label": "11:00 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "11.5": { "time_label": "11:30 AM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 },
-      "12.0": { "time_label": "12:00 PM", "pagasa_warning": "No Warning", "precipitation_estimate_mm": 0.0 }
-    }
-  }
-
   ]
 }
