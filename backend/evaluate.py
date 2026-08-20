@@ -24,7 +24,7 @@ def evaluate_model(episodes=100):
                 total_rewards.append(ep_reward)
                 if info.get("false_alarm"): false_alarms += 1
                 if info.get("early_call"): lead_times.append(11.5 - env.current_hour)
-                protected_students += max(0, 5000 - info.get("stranded_count", 0))
+                protected_students += max(0, 5000 - info.get("simulated_stranded_projection", 0))
 
     print(f"\n--- AI POLICY REPORT CARD ({episodes} Storms) ---")
     print(f"Average Reward:       {np.mean(total_rewards):.2f}")

@@ -7,7 +7,10 @@
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
-    "format": "oxfmt"
+    "format": "oxfmt",
+    "type-check": "tsc --noEmit",
+    "build:prod": "npm run type-check && vite build",
+    "start": "npm run build:prod && npm run preview"
   },
   "dependencies": {
     "lucide-react": "^1.33.0",

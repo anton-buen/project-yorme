@@ -1,6 +1,6 @@
 // @ts-ignore — keep this file type-checkable until @types/react is installed.
 import { useState, useRef, useEffect } from "react";
-import { ChevronDown, BarChart2 } from "lucide-react";
+import { ChevronDown, BarChart2, AlertCircle, Loader2 } from "lucide-react";
 import {
   BarChart,
   Bar,
@@ -10,6 +10,11 @@ import {
   ResponsiveContainer,
   Tooltip as ReTooltip,
 } from "recharts";
+
+// API imports
+import { fetchIncidents, getPrediction, checkApiHealth, ApiError } from './utils/api';
+import type { IncidentData, PredictionResponse, ActionCode } from './types/dashboard';
+import { ACTION_NAMES } from './types/dashboard';
 
 // ─── Design tokens ────────────────────────────────────────────────────────────
 
@@ -38,18 +43,9 @@ const selectStyle: React.CSSProperties = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
-type ActionCode    = 0 | 1 | 2 | 3 | 4;
 type PagasaLevel   = "NONE" | "YELLOW" | "ORANGE" | "RED";
 type BiasMode      = "strict" | "balanced" | "protective";
 type DashboardMode = "historical" | "live";
-
-const ACTION_NAMES: Record<ActionCode, string> = {
-  0: "Status Quo (Normal F2F)",
-  1: "Shift to ADM / Online (All Levels)",
-  2: "Suspend Basic Education (K-12)",
-  3: "Suspend All Levels (Basic Ed + Tertiary)",
-  4: "Full LGU Lockdown (School + City Govt Work)",
-};
 
 const ACTION_SHORT: Record<ActionCode, string> = {
   0: "A0 — Status Quo",
@@ -74,676 +70,579 @@ const HOUR_STEPS: HourStep[] = Array.from({ length: 19 }, (_, i) => {
   };
 });
 
-// ─── Incidents ────────────────────────────────────────────────────────────────
+// ─── Loading States ────────────────────────────────────────────────────────────
 
-interface IncidentDef {
-  id: string; label: string; modelWeights: string;
-  announcementStep: number; actualActionCode: ActionCode;
-  aiPolicy:        (s: number) => ActionCode;
-  pagasa:          (s: number) => PagasaLevel;
-  strandedActual:  (s: number) => number;
-  strandedAI:      (s: number) => number;
-  probabilities:   (s: number) => number[];
+interface LoadingState {
+  isLoading: boolean;
+  error: string | null;
+  stage: 'health' | 'incidents' | 'complete';
 }
 
-function norm(raw: number[]): number[] {
-  const s = raw.reduce((a, b) => a + b, 0);
-  return raw.map((p) => +(p / s).toFixed(3));
+// ─── AI Prediction Cache ────────────────────────────────────────────────────────
+
+interface PredictionCache {
+  [key: string]: PredictionResponse;
 }
 
-const INCIDENTS: IncidentDef[] = [
-  {
-    id: "carina_2024", label: "July 23, 2024 — Typhoon Carina",
-    modelWeights: "models/carina_ppo_v3/best_model.zip",
-    announcementStep: 7, actualActionCode: 3,
-    aiPolicy:       (s) => (s < 4 ? 0 : s < 6 ? 1 : s < 8 ? 2 : 3),
-    pagasa:         (s) => (s < 4 ? "NONE" : s < 8 ? "YELLOW" : s < 13 ? "ORANGE" : "RED"),
-    strandedActual: (s) => (s < 7 ? 0 : Math.min(5200, (s - 7) * 650)),
-    strandedAI:     (s) => (s < 6 ? 0 : Math.min(120,  (s - 6) * 15)),
-    probabilities: (s) => {
-      const t = Math.min(1, s / 14);
-      return norm([Math.max(0.01,0.6-t*0.6), Math.max(0.01,0.18-t*0.12),
-                   Math.min(0.3,0.05+t*0.25), Math.min(0.6,t*0.62), Math.min(0.08,t*0.07)]);
-    },
-  },
-  {
-    id: "habagat_2024", label: "August 28, 2024 — Habagat Surge",
-    modelWeights: "models/habagat_ppo_v2/best_model.zip",
-    announcementStep: 8, actualActionCode: 2,
-    aiPolicy:       (s) => (s < 5 ? 0 : s < 7 ? 2 : 3),
-    pagasa:         (s) => (s < 5 ? "NONE" : s < 9 ? "YELLOW" : s < 14 ? "ORANGE" : "RED"),
-    strandedActual: (s) => (s < 8 ? 0 : Math.min(3100, (s - 8) * 390)),
-    strandedAI:     (s) => (s < 7 ? 0 : Math.min(80,   (s - 7) * 10)),
-    probabilities: (s) => {
-      const t = Math.min(1, s / 13);
-      return norm([Math.max(0.01,0.55-t*0.54), Math.max(0.01,0.15-t*0.1),
-                   Math.min(0.45,0.08+t*0.38), Math.min(0.48,t*0.5), Math.min(0.04,t*0.035)]);
-    },
-  },
-];
+// ─── Live Weather Component ────────────────────────────────────────────────────
 
-const CCTV_FEEDS = [
-  {
-    id: "espana",   name: "España Blvd cor. Lacson Ave (UST Front)", corridor: "España Corridor",
-    criticalInches: 18, floodStep: 8,  floodInches: 18, dryInches: 2,
-    imgFlood: "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=640&h=360&fit=crop&auto=format",
-    imgDry:   "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?w=640&h=360&fit=crop&auto=format",
-  },
-  {
-    id: "taft",     name: "Taft Ave cor. UN Ave", corridor: "Taft Corridor",
-    criticalInches: 14, floodStep: 10, floodInches: 14, dryInches: 1,
-    imgFlood: "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=640&h=360&fit=crop&auto=format",
-    imgDry:   "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=640&h=360&fit=crop&auto=format",
-  },
-  {
-    id: "mendiola", name: "Mendiola St cor. C.M. Recto Ave", corridor: "Recto Corridor",
-    criticalInches: 22, floodStep: 12, floodInches: 22, dryInches: 3,
-    imgFlood: "https://images.unsplash.com/photo-1547683905-f686c993aae5?w=640&h=360&fit=crop&auto=format",
-    imgDry:   "https://images.unsplash.com/photo-1444723121867-7a241cacace9?w=640&h=360&fit=crop&auto=format",
-  },
-];
-
-// ─── Radar Canvas — muted academic palette ────────────────────────────────────
-
-function RadarCanvas({ step, incidentIdx }: { step: number; incidentIdx: number }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const SIZE = 32;
-    const CELL = canvas.width / SIZE;
-    const intensity = step / 18;
-
-    ctx.fillStyle = "#F7F5F0";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = "rgba(0,0,0,0.06)";
-    ctx.lineWidth = 0.4;
-    for (let i = 0; i <= SIZE; i++) {
-      ctx.beginPath(); ctx.moveTo(i * CELL, 0); ctx.lineTo(i * CELL, canvas.height); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(0, i * CELL); ctx.lineTo(canvas.width, i * CELL); ctx.stroke();
-    }
-
-    for (let idx = 0; idx < SIZE * SIZE; idx++) {
-      const x = idx % SIZE;
-      const y = Math.floor(idx / SIZE);
-      const cx  = 9  + (incidentIdx === 0 ? step * 0.55 : step * 0.3);
-      const cy  = 15 + Math.sin(step * 0.38 + incidentIdx * 1.4) * 6;
-      const cx2 = 23 - step * 0.18;
-      const cy2 = 11 + Math.cos(step * 0.3  + incidentIdx) * 5;
-      const core  = Math.max(0, 1 - Math.sqrt((x-cx)**2  + (y-cy)**2)  / (7 + intensity * 7));
-      const band  = Math.max(0, 1 - Math.sqrt((x-cx2)**2 + (y-cy2)**2) / (4 + intensity * 4)) * 0.55;
-      const noise = ((Math.sin(x*3.7+step*0.5+incidentIdx) + Math.cos(y*2.9+step*0.4)) * 0.5 + 0.5) * 0.14;
-      const val   = Math.min(1, core + band + noise) * intensity;
-      if (val < 0.04) continue;
-
-      let r = 0, g = 0, b = 0, a = val;
-      if (val < 0.3) {
-        r = Math.floor(180 - val * 60); g = Math.floor(188 - val * 40); b = Math.floor(200 - val * 20); a = val * 0.7;
-      } else if (val < 0.65) {
-        const t = (val - 0.3) / 0.35;
-        r = Math.floor(120 - t * 40); g = Math.floor(148 - t * 20); b = Math.floor(160 - t * 30); a = 0.55 + t * 0.25;
-      } else {
-        const t = (val - 0.65) / 0.35;
-        r = Math.floor(80 + t * 54); g = Math.floor(128 - t * 60); b = Math.floor(130 - t * 60); a = 0.8 + t * 0.15;
-      }
-      ctx.fillStyle = `rgba(${r},${g},${b},${a})`;
-      ctx.fillRect(x * CELL, y * CELL, CELL, CELL);
-    }
-
-    [0.28, 0.45].forEach((r) => {
-      ctx.beginPath();
-      ctx.arc(canvas.width / 2, canvas.height / 2, canvas.width * r, 0, Math.PI * 2);
-      ctx.strokeStyle = "rgba(100,130,120,0.2)"; ctx.lineWidth = 0.7; ctx.stroke();
-    });
-    ctx.strokeStyle = "rgba(100,130,120,0.15)"; ctx.lineWidth = 0.4;
-    ctx.beginPath(); ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height); ctx.stroke();
-    ctx.beginPath(); ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2); ctx.stroke();
-  }, [step, incidentIdx]);
-
+function LiveWeatherRadar() {
   return (
-    <canvas ref={ref} width={288} height={288}
-      className="w-full aspect-square rounded" style={{ imageRendering: "pixelated" }} />
+    <div className="bg-white rounded-xl shadow-sm border p-6">
+      <h3 className="text-lg font-bold text-gray-900 mb-4" style={SERIF}>
+        Live Meteorological Radar
+      </h3>
+      
+      <div className="relative w-full h-80 rounded-lg overflow-hidden border border-gray-200">
+        <iframe
+          src="https://embed.windy.com/embed2.html?lat=14.5995&lon=120.9842&detailLat=14.5995&detailLon=120.9842&width=650&height=450&zoom=10&level=surface&overlay=rain&product=ecmwf&menu=&message=true&marker=&calendar=now&pressure=&type=map&location=coordinates&detail=&metricWind=default&metricTemp=default&radarRange=-1"
+          className="w-full h-full"
+          frameBorder="0"
+          title="Live Weather Radar - Metro Manila"
+          style={{
+            border: 'none',
+            backgroundColor: '#f8fafc'
+          }}
+        />
+      </div>
+      
+      <div className="mt-4 text-sm text-gray-600" style={SANS}>
+        <p>Real-time precipitation data over Metro Manila from Windy.com</p>
+        <p className="text-xs mt-1 text-gray-500">
+          Data sourced from ECMWF weather models • Updates every hour
+        </p>
+      </div>
+    </div>
   );
 }
 
-// ─── PagasaBadge ─────────────────────────────────────────────────────────────
+// ─── Chart Data Helpers ────────────────────────────────────────────────────────
 
-function PagasaBadge({ level }: { level: PagasaLevel }) {
-  const cfg = {
-    NONE:   { wrap: "bg-stone-100 text-stone-500 border-stone-200",   dot: "bg-stone-400",             label: "PAGASA: No Warning"      },
-    YELLOW: { wrap: "bg-amber-50 text-amber-700 border-amber-200",    dot: "bg-amber-500",             label: "PAGASA: Yellow Warning"  },
-    ORANGE: { wrap: "bg-orange-50 text-orange-700 border-orange-200", dot: "bg-orange-500",            label: "PAGASA: Orange Warning"  },
-    RED:    { wrap: "bg-red-50 text-red-700 border-red-200",          dot: "bg-red-500 animate-pulse", label: "PAGASA: Red Warning"     },
-  }[level];
-  return (
-    <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium tracking-wide transition-colors duration-300 ${cfg.wrap}`} style={SANS}>
-      <span className={`w-2 h-2 rounded-full shrink-0 ${cfg.dot}`} />
-      {cfg.label}
-    </span>
-  );
-}
-
-// ─── StatusPill ───────────────────────────────────────────────────────────────
-
-function StatusPill({ variant }: { variant: "critical" | "protected" | "nominal" }) {
-  const cfg = {
-    critical:  { label: "Critical",  bg: TERRA.bg, border: TERRA.border, color: TERRA.text },
-    protected: { label: "Protected", bg: SAGE.bg,  border: SAGE.border,  color: SAGE.text  },
-    nominal:   { label: "Nominal",   bg: "#F5F5F4", border: "#D6D3D1", color: "#78716C"   },
-  }[variant];
-  return (
-    <span className="inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-semibold border tracking-wide" style={{ background: cfg.bg, borderColor: cfg.border, color: cfg.color, ...SANS }}>
-      {cfg.label}
-    </span>
-  );
-}
-
-// ─── Technical Appendix — bottom drawer ──────────────────────────────────────
-
-interface AppendixProps {
-  open: boolean; onClose: () => void;
-  probabilities: number[]; aiAction: ActionCode;
-  biasMode: BiasMode; onBiasChange: (b: BiasMode) => void;
-  incident: IncidentDef; step: number;
-}
-
-function TechnicalAppendix({ open, onClose, probabilities, aiAction, biasMode, onBiasChange, incident, step }: AppendixProps) {
-  const hourStep = HOUR_STEPS[step];
-  const chartData = probabilities.map((p, i) => ({
-    name: `A${i}`, value: +(p * 100).toFixed(1), isWinner: i === aiAction,
+function getChartData(probabilities: number[]): Array<{ name: string; value: number; color: string }> {
+  const colors = ["#A3A3A3", "#F59E0B", "#EF4444", "#DC2626", "#7F1D1D"];
+  
+  return probabilities.map((prob, idx) => ({
+    name: ACTION_SHORT[idx as ActionCode] || `A${idx}`,
+    value: Math.round(prob * 100),
+    color: colors[idx] || "#A3A3A3",
   }));
+}
 
-  return (
-    <>
-      <div
-        onClick={onClose}
-        className={`fixed inset-0 z-40 transition-opacity duration-300 ${open ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}
-        style={{
-          background:           "rgba(28,25,23,0.14)",
-          backdropFilter:       "blur(6px) saturate(150%)",
-          WebkitBackdropFilter: "blur(6px) saturate(150%)",
-        }}
-      />
-      <div
-        className={`fixed bottom-0 left-0 right-0 z-50 will-change-transform transition-transform duration-[320ms] ease-[cubic-bezier(0.32,0.72,0,1)] ${open ? "translate-y-0" : "translate-y-full"}`}
-        style={{
-          height: "42vh", minHeight: 320,
-          background:           "rgba(255,255,255,0.92)",
-          backdropFilter:       "blur(24px) saturate(180%)",
-          WebkitBackdropFilter: "blur(24px) saturate(180%)",
-          boxShadow: "0 -12px 48px rgba(28,25,23,0.10), 0 -1px 0 rgba(255,255,255,0.8)",
-        }}
-      >
-        <div className="flex items-center justify-between px-8 py-4" style={{ borderBottom: "1px solid rgba(231,229,228,0.7)" }}>
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-1 rounded-full bg-stone-200" />
-            <div>
-              <h3 className="text-base font-semibold text-stone-800 tracking-tight" style={SERIF}>Technical Appendix</h3>
-              <p className="text-xs text-stone-400 mt-0.5" style={SANS}>Reinforcement Learning Metrics · PPO Policy Weights</p>
-            </div>
+// ─── Loading Screen Component ────────────────────────────────────────────────
+
+function LoadingScreen({ stage, error }: { stage: string; error: string | null }) {
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center p-8 max-w-md">
+          <AlertCircle className="mx-auto mb-4 w-16 h-16 text-red-500" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-4" style={SERIF}>
+            Backend Unreachable
+          </h2>
+          <p className="text-gray-600 mb-6" style={SANS}>
+            The YORME-TRICS AI engine is currently unavailable. This may be due to:
+          </p>
+          <ul className="text-left text-gray-600 mb-6 space-y-2" style={SANS}>
+            <li>• Server cold start (up to 50 seconds on free tier)</li>
+            <li>• Network connectivity issues</li>
+            <li>• Backend maintenance</li>
+          </ul>
+          <div className="p-4 bg-red-50 rounded-lg border border-red-200">
+            <p className="text-red-800 text-sm" style={MONO}>
+              {error}
+            </p>
           </div>
-          <button onClick={onClose} className="flex items-center gap-1 text-xs text-stone-400 hover:text-stone-700 transition-colors duration-150 px-3 py-1.5 rounded-full hover:bg-stone-100" style={SANS}>
-            Close <ChevronDown size={13} className="ml-0.5" />
+          <button
+            onClick={() => window.location.reload()}
+            className="mt-6 px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            style={SANS}
+          >
+            Retry Connection
           </button>
         </div>
-
-        <div className="grid grid-cols-3 h-[calc(100%-57px)] overflow-hidden divide-x divide-stone-100">
-          <div className="px-7 py-5 overflow-y-auto">
-            <p className="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase mb-4" style={SANS}>Mayor Policy Bias</p>
-            <div className="space-y-2">
-              {(["strict", "balanced", "protective"] as BiasMode[]).map((m) => {
-                const meta = { strict: { label: "Strict", sub: "Avoid false alarms" }, balanced: { label: "Balanced", sub: "Default policy" }, protective: { label: "Protective", sub: "Zero stranded priority" } };
-                const active = biasMode === m;
-                return (
-                  <label key={m} className={`flex items-start gap-3 px-3.5 py-2.5 rounded-xl cursor-pointer transition-all duration-150 border ${active ? "border-stone-300 bg-stone-50" : "border-transparent hover:border-stone-200 hover:bg-stone-50/60"}`} onClick={() => onBiasChange(m)}>
-                    <div className="mt-0.5 w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-150" style={{ borderColor: active ? SAGE.line : "#D6D3D1", background: active ? SAGE.line : "transparent" }}>
-                      {active && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-stone-700" style={SANS}>{meta[m].label}</p>
-                      <p className="text-xs text-stone-400 mt-0.5" style={SANS}>{meta[m].sub}</p>
-                    </div>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="px-7 py-5 overflow-y-auto">
-            <p className="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase mb-4" style={SANS}>PPO Action Probability</p>
-            <div className="h-28">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={chartData} margin={{ top: 0, right: 0, left: -28, bottom: 12 }}>
-                  <XAxis dataKey="name" tick={{ fill: "#A8A29E", fontSize: 10, fontFamily: "Inter, sans-serif" }} axisLine={{ stroke: "#E7E5E4" }} tickLine={false} />
-                  <YAxis domain={[0, 100]} tick={{ fill: "#A8A29E", fontSize: 9, fontFamily: "Inter, sans-serif" }} axisLine={false} tickLine={false} tickFormatter={(v: any) => `${v}%`} />
-                  <ReTooltip cursor={{ fill: "rgba(0,0,0,0.03)" }} contentStyle={{ background: "#FFF", border: "1px solid #E7E5E4", borderRadius: 8, fontFamily: "Inter, sans-serif", fontSize: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.08)" }} labelStyle={{ color: "#78716C" }} formatter={(v: any) => [`${v}%`, "Probability"]} />
-                  <Bar dataKey="value" maxBarSize={32} radius={[3, 3, 0, 0]}>
-                    {chartData.map((e, i) => <Cell key={i} fill={e.isWinner ? SAGE.line : "#E7E5E4"} />)}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="space-y-1 mt-2">
-              {chartData.map((d, i) => (
-                <div key={i} className="flex items-center justify-between text-xs" style={SANS}>
-                  <span style={{ color: d.isWinner ? SAGE.text : "#A8A29E", fontWeight: d.isWinner ? 500 : 400 }}>{ACTION_SHORT[i as ActionCode]}</span>
-                  <span style={{ color: d.isWinner ? SAGE.text : "#C4BDB9", fontWeight: d.isWinner ? 600 : 400 }}>{d.value}%</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="px-7 py-5 overflow-y-auto">
-            <p className="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase mb-3" style={SANS}>Tensor Inspector</p>
-            <table className="w-full text-xs mb-5" style={SANS}>
-              <tbody className="divide-y divide-stone-100">
-                {[
-                  ["Spatial Shape",    "[4, 32, 32]"],
-                  ["Vector: Hour",     `${hourStep.hour}:${String(hourStep.minute).padStart(2,"0")}`],
-                  ["Commute Density",  (0.28 + step * 0.038).toFixed(4)],
-                  ["MCDRRMO Risk Max", (step * 0.0531 + 0.0012).toFixed(4)],
-                  ["Model Weights",    incident.modelWeights.split("/").pop()!],
-                ].map(([k, v]) => (
-                  <tr key={k}>
-                    <td className="py-1.5 text-stone-400 pr-4">{k}</td>
-                    <td className="py-1.5 text-stone-700 text-right" style={MONO}>{v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p className="text-[11px] font-semibold tracking-[0.14em] text-stone-400 uppercase mb-3" style={SANS}>Reward Matrix</p>
-            <table className="w-full text-xs" style={SANS}>
-              <tbody className="divide-y divide-stone-100">
-                {[
-                  ["Early Warning (t < 05:30)",  "+100",   SAGE.text],
-                  ["Late Suspension (t > 06:00)", "−1000",  TERRA.text],
-                  ["False Alarm",                 "−50",    "#92400E"],
-                  ["Status Quo Failure",           "−2000",  TERRA.text],
-                  ["Legal Override",               "Active", "#78716C"],
-                ].map(([k, v, col]) => (
-                  <tr key={k}>
-                    <td className="py-1.5 text-stone-400 pr-4">{k}</td>
-                    <td className="py-1.5 text-right font-semibold" style={{ color: col, ...MONO }}>{v}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
       </div>
-    </>
+    );
+  }
+
+  const stageMessages = {
+    health: "Checking AI Engine Status...",
+    incidents: "Loading Historical Incidents...",
+    complete: "Initializing Dashboard...",
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+      <div className="text-center p-8">
+        <Loader2 className="mx-auto mb-6 w-16 h-16 text-blue-600 animate-spin" />
+        <h2 className="text-3xl font-bold text-gray-900 mb-4" style={SERIF}>
+          Waking up AI Engine...
+        </h2>
+        <p className="text-xl text-gray-600 mb-8" style={SANS}>
+          {stageMessages[stage as keyof typeof stageMessages] || "Initializing..."}
+        </p>
+        <div className="w-64 mx-auto bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-blue-600 h-2 rounded-full transition-all duration-1000"
+            style={{
+              width: stage === 'health' ? '33%' : 
+                     stage === 'incidents' ? '66%' : '100%'
+            }}
+          />
+        </div>
+        <p className="text-sm text-gray-500 mt-4" style={SANS}>
+          Initial requests may take up to 50 seconds due to cold start
+        </p>
+      </div>
+    </div>
   );
 }
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
+// ─── Main App Component ────────────────────────────────────────────────────────
 
 export default function App() {
-  const [mode, setMode] = useState<DashboardMode>("historical");
-  const [incidentIdx, setIncidentIdx] = useState(0);
-  const [step, setStep] = useState(6);
-  const [appendixOpen, setAppendixOpen] = useState(false);
-  const [biasMode, setBiasMode] = useState<BiasMode>("balanced");
-  const [cctvIdx, setCctvIdx] = useState(0);
+  // ─── State Management ────────────────────────────────────────────────────────
 
-  const [apiPrediction, setApiPrediction] = useState<{
-    ai_action_code: ActionCode;
-    action_probabilities: number[];
-    loaded_model_path: string;
-  } | null>(null);
+  const [loadingState, setLoadingState] = useState<LoadingState>({
+    isLoading: true,
+    error: null,
+    stage: 'health'
+  });
+
+  const [incidents, setIncidents] = useState<IncidentData[]>([]);
+  const [predictionCache, setPredictionCache] = useState<PredictionCache>({});
+
+  const [incidentIdx, setIncidentIdx] = useState(0);
+  const [step, setStep] = useState(7);
+  const [mode, setMode] = useState<DashboardMode>("historical");
+  const [bias, setBias] = useState<BiasMode>("balanced");
+
+  const [currentPrediction, setCurrentPrediction] = useState<PredictionResponse | null>(null);
+
+  // ─── Data Initialization ─────────────────────────────────────────────────────
 
   useEffect(() => {
-    const fetchPrediction = async () => {
+    async function initializeApp() {
       try {
-        const current_hour = HOUR_STEPS[step].hour + (HOUR_STEPS[step].minute / 60);
-        const isFlooded = step >= CCTV_FEEDS[cctvIdx].floodStep;
-        const isRed = INCIDENTS[incidentIdx].pagasa(step) === "RED";
+        // Stage 1: Health check
+        setLoadingState(prev => ({ ...prev, stage: 'health' }));
+        await checkApiHealth();
 
-        const response = await fetch("https://yorme-trics.onrender.com/api/predict", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            current_hour,
-            flood_active: isFlooded,
-            pagasa_warning_red: isRed
-          }),
-        });
+        // Stage 2: Load incidents
+        setLoadingState(prev => ({ ...prev, stage: 'incidents' }));
+        const incidentsData = await fetchIncidents();
+        setIncidents(incidentsData);
 
-        if (response.ok) {
-          const data = await response.json();
-          setApiPrediction(data);
-        }
+        // Stage 3: Complete
+        setLoadingState(prev => ({ ...prev, stage: 'complete' }));
+        
+        // Small delay to show completion
+        await new Promise(resolve => setTimeout(resolve, 500));
+
+        setLoadingState({ isLoading: false, error: null, stage: 'complete' });
+
       } catch (error) {
-        console.error("Failed to fetch PyTorch API:", error);
+        const errorMessage = error instanceof ApiError 
+          ? error.message 
+          : 'Unknown error occurred while initializing the application';
+        
+        setLoadingState({
+          isLoading: false,
+          error: errorMessage,
+          stage: 'health'
+        });
       }
-    };
+    }
+
+    initializeApp();
+  }, []);
+
+  // ─── AI Prediction Fetching ──────────────────────────────────────────────────
+
+  useEffect(() => {
+    if (loadingState.isLoading || loadingState.error || incidents.length === 0) {
+      return;
+    }
+
+    async function fetchPrediction() {
+      const currentIncident = incidents[incidentIdx];
+      if (!currentIncident) return;
+
+      const currentHour = HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
+      const timelineKey = currentHour.toString();
+      const timeline = currentIncident.hourly_timeline[timelineKey];
+
+      if (!timeline) return;
+
+      const cacheKey = `${incidentIdx}-${step}-${mode}-${bias}`;
+      
+      if (predictionCache[cacheKey]) {
+        setCurrentPrediction(predictionCache[cacheKey]);
+        return;
+      }
+
+      try {
+        const request = {
+          current_hour: currentHour,
+          flood_active: timeline.flood_active,
+          pagasa_warning_red: timeline.pagasa_warning === "RED",
+        };
+
+        const prediction = await getPrediction(request);
+        
+        setPredictionCache(prev => ({
+          ...prev,
+          [cacheKey]: prediction
+        }));
+        
+        setCurrentPrediction(prediction);
+
+      } catch (error) {
+        console.error('Failed to fetch prediction:', error);
+        // Don't show error to user for prediction failures, just log it
+      }
+    }
 
     fetchPrediction();
-  }, [step, incidentIdx, cctvIdx]);
+  }, [incidentIdx, step, mode, bias, incidents, loadingState, predictionCache]);
 
-  const incident = INCIDENTS[incidentIdx];
-  const hourStep = HOUR_STEPS[step];
-  const pagasaLevel = incident.pagasa(step);
-  const actualAction: ActionCode = step >= incident.announcementStep ? incident.actualActionCode : 0;
-  const cctv = CCTV_FEEDS[cctvIdx];
-  const flooded = step >= cctv.floodStep;
-  const waterLevel = flooded ? cctv.floodInches : cctv.dryInches;
+  // ─── Helper Functions ─────────────────────────────────────────────────────────
 
-  const aiAction: ActionCode = apiPrediction?.ai_action_code ?? incident.aiPolicy(step);
-  const probabilities: number[] = apiPrediction?.action_probabilities ?? incident.probabilities(step);
-  const modelWeights: string = apiPrediction?.loaded_model_path ?? incident.modelWeights;
+  const currentIncident = incidents[incidentIdx];
+  const currentHour = mode === "live" ? new Date().getHours() + new Date().getMinutes() / 60 : 
+                      HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
+  const timelineKey = currentHour.toString();
+  const currentTimeline = currentIncident?.hourly_timeline[timelineKey];
 
-  const strandedActual = incident.strandedActual(step);
-  const strandedAI = aiAction >= 2 ? 0 : (aiAction === 1 ? Math.floor(strandedActual * 0.3) : strandedActual);
+  const getPagasaColor = (level: PagasaLevel): string => {
+    switch (level) {
+      case "NONE": return "#A3A3A3";
+      case "YELLOW": return "#F59E0B";
+      case "ORANGE": return "#EF4444";
+      case "RED": return "#DC2626";
+      default: return "#A3A3A3";
+    }
+  };
 
-  const leadTimeHours = ((Math.max(0, incident.announcementStep - step)) * 0.5).toFixed(1);
-  const aiConfidence = (probabilities[aiAction] * 100).toFixed(1);
+  // ─── Show loading screen while initializing ──────────────────────────────────
 
-  const activeIncident = { ...incident, modelWeights };
+  if (loadingState.isLoading || loadingState.error) {
+    return <LoadingScreen stage={loadingState.stage} error={loadingState.error} />;
+  }
+
+  // Ensure we have data before rendering
+  if (incidents.length === 0) {
+    return <LoadingScreen stage="complete" error="No incidents data available from backend" />;
+  }
+
+  // ─── Main Dashboard UI ───────────────────────────────────────────────────────
 
   return (
-    <div className="min-h-screen text-stone-800" style={{ background: "#FAF9F6", ...SANS }}>
-      <header
-        className="sticky top-0 z-30"
-        style={{
-          background: "rgba(250,249,246,0.72)",
-          backdropFilter: "blur(16px) saturate(180%)",
-          WebkitBackdropFilter: "blur(16px) saturate(180%)",
-          borderBottom: "1px solid rgba(255,255,255,0.55)",
-          boxShadow: "0 1px 0 rgba(0,0,0,0.06), 0 4px 24px rgba(0,0,0,0.05)",
-        }}
-      >
-        <div className="px-7 py-0">
-          <div className="flex items-center justify-between gap-8 py-3.5" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-            <div className="shrink-0">
-              <h1 className="text-lg font-semibold text-stone-800 tracking-tight leading-none" style={SERIF}>
-                Yormetrics
-              </h1>
-              <p className="text-xs text-stone-400 tracking-wide mt-0.5" style={SANS}>
-                Predictive Early Suspension Advisor — City of Manila LGU
-              </p>
-            </div>
+    <div className="min-h-screen bg-gray-50 p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        
+        {/* Header */}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2" style={SERIF}>
+            YORME-TRICS
+          </h1>
+          <p className="text-gray-600" style={SANS}>
+            AI-Powered Class Suspension Decision Support System for Manila LGU
+          </p>
+        </div>
 
-            <div className="flex items-center gap-3 shrink-0">
-              <div className="flex rounded-full p-1 text-xs font-medium" style={{ background: "#E8E5E1", border: "1px solid #D6D3D0" }}>
-                {(["historical", "live"] as DashboardMode[]).map((m) => (
-                  <button
-                    key={m}
-                    onClick={() => setMode(m)}
-                    className={`px-4 py-2 rounded-full font-medium transition-none ${
-                      mode === m
-                        ? "bg-stone-800 text-white shadow-sm"
-                        : "text-stone-400 hover:text-stone-600 hover:bg-stone-200/50"
-                    }`}
-                    style={SANS}
-                  >
-                    {m === "historical" ? "Historical Replay" : "Live Watch"}
-                  </button>
-                ))}
-              </div>
+        {/* Controls */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg shadow-sm border p-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2" style={SANS}>
+              Dashboard Mode
+            </label>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as DashboardMode)}
+              className="w-full px-3 py-2 rounded-md text-sm"
+              style={selectStyle}
+            >
+              <option value="historical">Historical Analysis</option>
+              <option value="live">Live Watch Mode</option>
+            </select>
+          </div>
 
-              {mode === "historical" ? (
+          {mode === "historical" && (
+            <>
+              <div className="bg-white rounded-lg shadow-sm border p-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={SANS}>
+                  Historical Incident
+                </label>
                 <select
                   value={incidentIdx}
-                  onChange={(e) => { setIncidentIdx(+e.target.value); setStep(6); }}
-                  className="rounded-full px-4 py-2 text-xs text-stone-600 outline-none cursor-pointer transition-all duration-150 hover:border-stone-300"
+                  onChange={(e) => setIncidentIdx(Number(e.target.value))}
+                  className="w-full px-3 py-2 rounded-md text-sm"
                   style={selectStyle}
                 >
-                  {INCIDENTS.map((inc, i) => (
-                    <option key={inc.id} value={i}>{inc.label}</option>
+                  {incidents.map((incident, idx) => (
+                    <option key={incident.id} value={idx}>
+                      {incident.name}
+                    </option>
                   ))}
                 </select>
+              </div>
+
+              <div className="bg-white rounded-lg shadow-sm border p-4">
+                <label className="block text-sm font-medium text-gray-700 mb-2" style={SANS}>
+                  Time Step
+                </label>
+                <select
+                  value={step}
+                  onChange={(e) => setStep(Number(e.target.value))}
+                  className="w-full px-3 py-2 rounded-md text-sm"
+                  style={selectStyle}
+                >
+                  {HOUR_STEPS.map((hourStep, idx) => (
+                    <option key={idx} value={idx}>
+                      {hourStep.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </>
+          )}
+
+          {mode === "live" && (
+            <div className="bg-white rounded-lg shadow-sm border p-4">
+              <label className="block text-sm font-medium text-gray-700 mb-2" style={SANS}>
+                Current Time
+              </label>
+              <div className="text-lg font-mono text-gray-900 py-2">
+                {new Date().toLocaleTimeString('en-US', { 
+                  timeZone: 'Asia/Manila',
+                  hour12: true,
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })} MNL
+              </div>
+            </div>
+          )}
+
+          <div className="bg-white rounded-lg shadow-sm border p-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2" style={SANS}>
+              AI Bias Mode
+            </label>
+            <select
+              value={bias}
+              onChange={(e) => setBias(e.target.value as BiasMode)}
+              className="w-full px-3 py-2 rounded-md text-sm"
+              style={selectStyle}
+            >
+              <option value="strict">Strict (Minimize False Alarms)</option>
+              <option value="balanced">Balanced (Default)</option>
+              <option value="protective">Protective (Err on Caution)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          
+          {/* Left Column - AI Decision & Probabilities */}
+          <div className="space-y-6">
+            
+            {/* AI Decision Card */}
+            <div className="bg-white rounded-xl shadow-sm border p-6">
+              <h3 className="text-xl font-bold text-gray-900 mb-4" style={SERIF}>
+                AI Recommendation
+              </h3>
+              
+              {currentPrediction ? (
+                <>
+                  <div className="text-center mb-6">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full mb-3"
+                         style={{ backgroundColor: TERRA.bg, color: TERRA.text }}>
+                      <span className="text-2xl font-bold" style={MONO}>
+                        A{currentPrediction.ai_action_code}
+                      </span>
+                    </div>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2" style={SANS}>
+                      {ACTION_NAMES[currentPrediction.ai_action_code as ActionCode]}
+                    </h4>
+                    <p className="text-sm text-gray-600" style={MONO}>
+                      Confidence: {Math.max(...currentPrediction.action_probabilities).toFixed(1)}%
+                    </p>
+                  </div>
+
+                  {/* Action Probabilities Chart */}
+                  <div className="h-48">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <BarChart data={getChartData(currentPrediction.action_probabilities)} layout="horizontal">
+                        <XAxis type="number" domain={[0, 100]} tickFormatter={(value) => `${value}%`} />
+                        <YAxis type="category" dataKey="name" width={80} />
+                        <ReTooltip formatter={(value) => [`${value}%`, 'Probability']} />
+                        <Bar dataKey="value">
+                          {getChartData(currentPrediction.action_probabilities).map((entry, index) => (
+                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          ))}
+                        </Bar>
+                      </BarChart>
+                    </ResponsiveContainer>
+                  </div>
+                </>
               ) : (
-                <div className="rounded-full px-4 py-2 text-xs text-stone-400" style={{ background: "#EFEDE9", border: "1px solid #E2E0DC" }}>
-                  Metro Manila (District 1–6)
+                <div className="text-center py-8">
+                  <Loader2 className="mx-auto mb-2 w-6 h-6 text-gray-400 animate-spin" />
+                  <p className="text-gray-500" style={SANS}>Loading AI prediction...</p>
                 </div>
               )}
             </div>
-          </div>
 
-          <div className="flex items-center justify-between gap-8 py-2.5">
-            <div className="flex items-center gap-3 min-w-0">
-              <PagasaBadge level={pagasaLevel} />
-              <span className="text-xs text-stone-400 truncate" style={SANS}>
-                {incident.label} · Sim {hourStep.label}
-              </span>
-            </div>
-
-            <div className="flex items-center gap-4 shrink-0">
-              <span className="text-sm font-medium text-stone-700 tabular-nums w-20 text-right" style={MONO}>
-                {hourStep.label}
-              </span>
-              <div className="flex flex-col gap-1">
-                <input
-                  type="range" min={0} max={18} step={1} value={step}
-                  onChange={(e) => setStep(+e.target.value)}
-                  className="light-scrubber w-40 cursor-pointer"
-                />
-                <div className="flex justify-between text-[10px] text-stone-400 px-0.5" style={SANS}>
-                  <span>03:00 AM</span>
-                  <span>12:00 PM</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <main className="px-7 py-6 space-y-5 max-w-[1400px] mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className="card-lift rounded-2xl overflow-hidden" style={{ background: "#FFFFFF", border: "1px solid #E7E5E4", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
-            <div style={{ height: 3, background: TERRA.line }} />
-            <div className="px-6 py-5">
-              <div className="flex items-start justify-between mb-4 gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase mb-2" style={SANS}>
-                    Official LGU Decision
-                  </p>
-                  <h2 className="text-2xl font-semibold text-stone-800 leading-snug" style={SERIF}>
-                    {ACTION_NAMES[actualAction]}
-                  </h2>
-                  <p className="text-xs text-stone-400 mt-1" style={SANS}>
-                    Source: Manila PIO Official Log
-                  </p>
-                </div>
-                <span className="text-[11px] font-semibold tracking-widest px-3 py-1.5 rounded-full shrink-0" style={{ background: TERRA.bg, color: TERRA.text, border: `1px solid ${TERRA.border}` }}>
-                  A{actualAction}
-                </span>
-              </div>
-
-              {step < incident.announcementStep && (
-                <div className="mb-4 px-4 py-2.5 rounded-xl text-xs flex items-center gap-2" style={{ background: "#FFFBEB", border: "1px solid #FDE68A", color: "#92400E", ...SANS }}>
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                  Pending — Official announcement at {HOUR_STEPS[incident.announcementStep].label}
-                </div>
-              )}
-
-              <div className="grid grid-cols-2 gap-3 mt-4">
-                <div className="rounded-xl px-4 py-3" style={{ background: "#FAFAF9", border: "1px solid #E7E5E4" }}>
-                  <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-400 uppercase mb-1.5" style={SANS}>Estimated Stranded</p>
-                  <p className="text-3xl font-semibold tabular-nums leading-none" style={{ color: TERRA.text, ...SERIF }}>{strandedActual.toLocaleString()}</p>
-                  <p className="text-[11px] text-stone-400 mt-1" style={SANS}>students</p>
-                </div>
-                <div className="rounded-xl px-4 py-3" style={{ background: "#FAFAF9", border: "1px solid #E7E5E4" }}>
-                  <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-400 uppercase mb-1.5" style={SANS}>Commuter Safety</p>
-                  <StatusPill variant={strandedActual > 0 ? "critical" : "nominal"} />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="card-lift rounded-2xl overflow-hidden" style={{ background: "#FFFFFF", border: "1px solid #E7E5E4", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
-            <div style={{ height: 3, background: SAGE.line }} />
-            <div className="px-6 py-5">
-              <div className="flex items-start justify-between mb-4 gap-3">
-                <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase mb-2" style={SANS}>
-                    AI Policy Recommendation
-                  </p>
-                  <h2 className="text-2xl font-semibold text-stone-800 leading-snug" style={SERIF}>
-                    {ACTION_NAMES[aiAction]}
-                  </h2>
-                  <p className="text-xs text-stone-400 mt-1" style={SANS}>
-                    Confidence: <span style={{ color: SAGE.text }}>{aiConfidence}%</span>
-                    {parseFloat(leadTimeHours) > 0 && <> · Lead Time: <span style={{ color: SAGE.text }}>{leadTimeHours}h</span></>}
-                  </p>
-                </div>
-                <span className="text-[11px] font-semibold tracking-widest px-3 py-1.5 rounded-full shrink-0" style={{ background: SAGE.bg, color: SAGE.text, border: `1px solid ${SAGE.border}` }}>
-                  A{aiAction}
-                </span>
-              </div>
-
-              <p className="text-[11px] text-stone-400 mb-4" style={SANS}>Weights: {incident.modelWeights}</p>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div className="rounded-xl px-4 py-3" style={{ background: "#FAFAF9", border: "1px solid #E7E5E4" }}>
-                  <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-400 uppercase mb-1.5" style={SANS}>Estimated Stranded</p>
-                  <p className="text-3xl font-semibold tabular-nums leading-none" style={{ color: SAGE.text, ...SERIF }}>{strandedAI.toLocaleString()}</p>
-                  <p className="text-[11px] text-stone-400 mt-1" style={SANS}>students</p>
-                </div>
-                <div className="rounded-xl px-4 py-3" style={{ background: "#FAFAF9", border: "1px solid #E7E5E4" }}>
-                  <p className="text-[11px] font-semibold tracking-[0.12em] text-stone-400 uppercase mb-1.5" style={SANS}>Commuter Safety</p>
-                  <StatusPill variant="protected" />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          <div className="card-lift rounded-2xl" style={{ background: "#FFFFFF", border: "1px solid #E7E5E4", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
-            <div className="px-6 py-4 flex items-start justify-between gap-3" style={{ borderBottom: "1px solid #F5F4F2" }}>
-              <div>
-                <p className="text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase mb-0.5" style={SANS}>PAGASA Radar Input Grid</p>
-                <p className="text-base font-medium text-stone-700 tracking-tight" style={SERIF}>Local Manila dBZ Reflectivity</p>
-                <p className="text-xs text-stone-400 mt-0.5" style={SANS}>32×32 Tensor Input</p>
-              </div>
-              <PagasaBadge level={pagasaLevel} />
-            </div>
-            <div className="p-5">
-              <div className="relative rounded-lg overflow-hidden mx-auto" style={{ background: "#F7F5F0", maxHeight: 240, maxWidth: 240 }}>
-                <RadarCanvas step={step} incidentIdx={incidentIdx} />
-                <span className="absolute top-2 left-2 text-[9px] text-stone-400 leading-none" style={SANS}>14.5995°N 120.9842°E</span>
-                <span className="absolute bottom-2 right-2 text-[9px] text-stone-400 leading-none" style={SANS}>{hourStep.label}</span>
-              </div>
-              <div className="mt-3 flex items-center gap-2">
-                <span className="text-[10px] text-stone-400" style={SANS}>Low</span>
-                <div className="flex-1 h-1 rounded-full" style={{ background: "linear-gradient(to right, #E2E8F0, #94A3B8, #64748B, #3D7A68, #5C5454)" }} />
-                <span className="text-[10px] text-stone-400" style={SANS}>High dBZ</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="card-lift rounded-2xl" style={{ background: "#FFFFFF", border: "1px solid #E7E5E4", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
-            <div className="px-6 py-4" style={{ borderBottom: "1px solid #F5F4F2" }}>
-              <p className="text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase mb-2.5" style={SANS}>Traffic CCTV Feed</p>
-              <select
-                value={cctvIdx}
-                onChange={(e) => setCctvIdx(+e.target.value)}
-                className="w-full rounded-xl px-4 py-2.5 text-sm text-stone-600 outline-none cursor-pointer transition-all duration-150"
-                style={{ background: "#FAFAF9", border: "1px solid #E7E5E4", ...selectStyle, backgroundPosition: "right 14px center" }}
-              >
-                {CCTV_FEEDS.map((f, i) => (
-                  <option key={f.id} value={i}>{f.name}</option>
-                ))}
-              </select>
-            </div>
-            <div className="p-5">
-              <div
-                className="relative rounded-xl overflow-hidden bg-stone-200 mx-auto"
-                style={{
-                  backgroundImage: `url('${flooded ? cctv.imgFlood : cctv.imgDry}')`,
-                  backgroundSize: "cover", backgroundPosition: "center",
-                  filter: "grayscale(25%) saturate(0.8)",
-                  maxHeight: 200, aspectRatio: "16/9",
-                }}
-              >
-                <div className="absolute inset-0" style={{ background: "rgba(250,249,246,0.15)" }} />
-                <div className="absolute top-0 left-0 right-0 flex items-center justify-between px-3 py-1.5" style={{ background: "rgba(250,249,246,0.82)", backdropFilter: "blur(6px)", borderBottom: "1px solid rgba(0,0,0,0.06)" }}>
-                  <span className="text-xs font-medium text-stone-600" style={SANS}>{cctv.corridor}</span>
-                  <span className="text-xs text-stone-400" style={MONO}>{hourStep.label}</span>
-                </div>
-                <div className="absolute bottom-2.5 left-1/2 -translate-x-1/2">
-                  <div className="flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap" style={{ background: "rgba(255,255,255,0.92)", border: `1px solid ${flooded ? TERRA.border : SAGE.border}`, color: flooded ? TERRA.text : SAGE.text, backdropFilter: "blur(8px)", boxShadow: "0 2px 8px rgba(0,0,0,0.10)", ...SANS }}>
-                    <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${flooded ? "animate-pulse" : ""}`} style={{ background: flooded ? TERRA.line : SAGE.line }} />
-                    {flooded ? `Water Level: ${waterLevel}" — Non-Passable` : "Status: Road Clear (Dry)"}
+            {/* Model Info */}
+            {currentPrediction && (
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4" style={SERIF}>
+                  Model Information
+                </h3>
+                <div className="space-y-3 text-sm" style={SANS}>
+                  <div>
+                    <span className="text-gray-600">Model Path:</span>
+                    <p className="font-mono text-xs text-gray-800 mt-1 break-all">
+                      {currentPrediction.loaded_model_path}
+                    </p>
+                  </div>
+                  <div>
+                    <span className="text-gray-600">Observation Shape:</span>
+                    <p className="font-mono text-xs text-gray-800 mt-1">
+                      Spatial: [{currentPrediction.obs_tensor_shapes.spatial.join(', ')}]<br />
+                      Vector: [{currentPrediction.obs_tensor_shapes.vector.join(', ')}]
+                    </p>
                   </div>
                 </div>
               </div>
-              <p className="mt-2 flex justify-between text-[10px] text-stone-400" style={SANS}>
-                <span>Critical threshold: {cctv.criticalInches}" water level</span>
-                <span>Manila CCTV Network v2.1</span>
-              </p>
-            </div>
+            )}
           </div>
-        </div>
 
-        <div className="card-lift rounded-2xl px-6 py-5" style={{ background: "#FFFFFF", border: "1px solid #E7E5E4", boxShadow: "0 2px 16px rgba(0,0,0,0.06)" }}>
-          <p className="text-[11px] font-semibold tracking-[0.16em] text-stone-400 uppercase mb-4" style={SANS}>Simulation Timeline — Click to Scrub</p>
-          <div className="flex items-end gap-px">
-            {HOUR_STEPS.map((hs, i) => {
-              const isActive       = i === step;
-              const isAnnouncement = i === incident.announcementStep;
-              const past           = i <= step;
-              return (
-                <button key={i} onClick={() => setStep(i)} title={hs.label} className="flex flex-col items-center gap-0.5 flex-1 group">
-                  <div className="w-full h-5 flex items-end justify-center rounded-sm transition-colors duration-100"
-                    style={{ background: isActive ? SAGE.bg : past ? "#F5F4F2" : "transparent", borderBottom: `1.5px solid ${isActive ? SAGE.line : past ? "#E7E5E4" : "transparent"}` }}>
-                    {isAnnouncement && <div className="w-px h-full" style={{ background: TERRA.line + "CC" }} />}
-                  </div>
-                  <div className="w-1 h-1 rounded-full transition-colors duration-150" style={{ background: isActive ? SAGE.line : past ? "#D6D3D1" : "#EFEDE9" }} />
-                  {i % 4 === 0 && (
-                    <span className="text-[9px] whitespace-nowrap transition-colors duration-150" style={{ color: isActive ? SAGE.text : "#A8A29E", ...SANS }}>
-                      {hs.label.replace(" AM","").replace(" PM","")}
+          {/* Middle Column - Weather Radar & System Info */}
+          <div className="space-y-6">
+            
+            {/* Live Weather Radar */}
+            <LiveWeatherRadar />
+
+            {/* Current Weather Status */}
+            {currentTimeline && (
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4" style={SERIF}>
+                  Current Conditions
+                </h3>
+                
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" style={SANS}>PAGASA Warning:</span>
+                    <span 
+                      className="font-semibold px-3 py-1 rounded text-sm text-white"
+                      style={{ backgroundColor: getPagasaColor(currentTimeline.pagasa_warning) }}
+                    >
+                      {currentTimeline.pagasa_warning}
                     </span>
-                  )}
-                </button>
-              );
-            })}
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <span className="text-gray-600" style={SANS}>Flood Status:</span>
+                    <span className={`font-semibold ${
+                      currentTimeline.flood_active ? 'text-red-600' : 'text-green-600'
+                    }`}>
+                      {currentTimeline.flood_active ? 'ACTIVE FLOODING' : 'CLEAR ROADS'}
+                    </span>
+                  </div>
+                  
+                  <div className="flex justify-between items-center border-t pt-3">
+                    <span className="text-gray-600" style={SANS}>Simulated Stranded Projection:</span>
+                    <span className="font-mono font-semibold text-orange-600">
+                      {currentTimeline.simulated_stranded_projection.toLocaleString()}
+                    </span>
+                  </div>
+                  
+                  <div className="text-xs text-gray-500 mt-2 p-2 bg-gray-50 rounded" style={SANS}>
+                    * Stranded count is a mathematical projection based on RL environment modeling 
+                    of 5:00-8:00 AM commute densities, not actual reported figures.
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="mt-3 flex items-center gap-5 text-xs text-stone-400" style={SANS}>
-            <span className="flex items-center gap-1.5"><span className="w-3 h-px inline-block" style={{ background: TERRA.line + "AA" }} /> LGU announcement ({HOUR_STEPS[incident.announcementStep].label})</span>
-            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full inline-block" style={{ background: SAGE.line }} /> Current step</span>
+
+          {/* Right Column - Incident Timeline */}
+          <div className="space-y-6">
+            
+            {/* Current Incident Info */}
+            {currentIncident && (
+              <div className="bg-white rounded-xl shadow-sm border p-6">
+                <h3 className="text-lg font-bold text-gray-900 mb-4" style={SERIF}>
+                  Incident Details
+                </h3>
+                
+                <div className="space-y-4 text-sm" style={SANS}>
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-2">{currentIncident.name}</h4>
+                    <p className="text-gray-600">{currentIncident.description}</p>
+                  </div>
+                  
+                  <div className="border-t pt-4">
+                    <div className="flex justify-between mb-2">
+                      <span className="text-gray-600">Actual Announcement:</span>
+                      <span className="font-mono">{currentIncident.actual_announcement_time}:00</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Actual Action:</span>
+                      <span className="font-semibold">
+                        {ACTION_SHORT[currentIncident.actual_action_code]}
+                      </span>
+                    </div>
+                  </div>
+
+                  {currentTimeline && (
+                    <div className="border-t pt-4">
+                      <h5 className="font-semibold text-gray-900 mb-3">
+                        Current Status ({mode === "live" ? "Live" : HOUR_STEPS[step]?.label})
+                      </h5>
+                      <div className="space-y-2">
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Simulated Stranded Projection:</span>
+                          <span className="font-mono text-orange-600">{currentTimeline.simulated_stranded_projection.toLocaleString()}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">PAGASA Warning:</span>
+                          <span 
+                            className="font-semibold px-2 py-1 rounded text-xs text-white"
+                            style={{ backgroundColor: getPagasaColor(currentTimeline.pagasa_warning) }}
+                          >
+                            {currentTimeline.pagasa_warning}
+                          </span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-gray-600">Flood Active:</span>
+                          <span className={`font-semibold ${
+                            currentTimeline.flood_active ? 'text-red-600' : 'text-green-600'
+                          }`}>
+                            {currentTimeline.flood_active ? 'YES' : 'NO'}
+                          </span>
+                        </div>
+                        
+                        <div className="text-xs text-gray-500 mt-3 p-2 bg-amber-50 border border-amber-200 rounded">
+                          <strong>Academic Note:</strong> Stranded count is a simulated projection 
+                          generated by our RL environment based on standard commute patterns, 
+                          not actual reported student counts.
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </div>
 
-        <div className="h-4" />
-        {appendixOpen && <div style={{ height: "42vh" }} />}
-      </main>
-
-      <button
-        onClick={() => setAppendixOpen((v) => !v)}
-        className="fixed bottom-6 right-6 z-20 flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium select-none"
-        style={{
-          background:           "rgba(255,255,255,0.78)",
-          backdropFilter:       "blur(14px) saturate(180%)",
-          WebkitBackdropFilter: "blur(14px) saturate(180%)",
-          border:      `1px solid ${appendixOpen ? "rgba(107,158,122,0.4)" : "rgba(255,255,255,0.7)"}`,
-          color:       appendixOpen ? SAGE.text : "#44403C",
-          boxShadow: appendixOpen
-            ? `0 8px 32px rgba(0,0,0,0.14), 0 0 0 3px ${SAGE.bg}, inset 0 1px 0 rgba(255,255,255,0.9)`
-            : "0 4px 20px rgba(0,0,0,0.11), 0 1px 4px rgba(0,0,0,0.07), inset 0 1px 0 rgba(255,255,255,0.9)",
-          ...SANS,
-        }}
-      >
-        <BarChart2 size={15} />
-        {appendixOpen ? "Close Metrics" : "Metrics"}
-      </button>
-
-      <TechnicalAppendix
-        open={appendixOpen}
-        onClose={() => setAppendixOpen(false)}
-        probabilities={probabilities}
-        aiAction={aiAction}
-        biasMode={biasMode}
-        onBiasChange={setBiasMode}
-        incident={activeIncident}
-        step={step}
-      />
+        {/* Footer */}
+        <div className="text-center text-gray-500 text-sm" style={SANS}>
+          YORME-TRICS v2.0 • Powered by PyTorch PPO • Real-time PAGASA Integration
+        </div>
+      </div>
     </div>
   );
 }

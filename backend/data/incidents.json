@@ -1,41 +1,41 @@
 {
   "incidents": [
     {
-      "id": "carina_2024_july23",
-      "name": "July 23, 2024 Monsoon / Typhoon Carina Inundation",
-      "description": "Heavy monsoon surge inundated España Blvd and Taft Ave. Late afternoon LGU suspension stranded thousands of college students.",
-      "actual_announcement_time": 14.0,
+      "id": "carina_2024_july24",
+      "name": "July 24, 2024 Southwest Monsoon / Typhoon Carina",
+      "description": "Enhanced Southwest Monsoon and Typhoon Carina brought heavy rainfall over Metro Manila. NDRRMC recommended class suspension effective 7:00 AM due to forecast rain and flood risks.",
+      "actual_announcement_time": 7.0,
       "actual_action_code": 3,
       "hourly_timeline": {
-        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "stranded_count": 0},
-        "4.0": {"flood_active": false, "pagasa_warning": "YELLOW", "stranded_count": 0},
-        "5.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 450},
-        "6.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1200},
-        "7.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 2800},
-        "8.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 4100},
-        "9.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 4900},
-        "10.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 5200},
-        "11.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 5300},
-        "12.0": {"flood_active": true, "pagasa_warning": "RED", "stranded_count": 5300}
+        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
+        "4.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
+        "5.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
+        "6.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
+        "7.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 450},
+        "8.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1200},
+        "9.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 2100},
+        "10.0": {"flood_active": true, "pagasa_warning": "RED", "simulated_stranded_projection": 2800},
+        "11.0": {"flood_active": true, "pagasa_warning": "RED", "simulated_stranded_projection": 3200},
+        "12.0": {"flood_active": true, "pagasa_warning": "RED", "simulated_stranded_projection": 3500}
       }
     },
     {
-      "id": "august_28_2024_monsoon",
-      "name": "August 28, 2024 Habagat Manila Surge",
-      "description": "Early morning Yellow Rainfall warning over Metro Manila caused severe Taft Avenue flooding during peak morning commute.",
-      "actual_announcement_time": 6.0,
+      "id": "habagat_2024_august28",
+      "name": "August 28, 2024 Southwest Monsoon (Habagat)",
+      "description": "Southwest Monsoon brought continuous rainfall over Metro Manila with flash flood risks. NDRRMC recommended suspension of classes and work effective 7:00 AM.",
+      "actual_announcement_time": 7.0,
       "actual_action_code": 3,
       "hourly_timeline": {
-        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "stranded_count": 0},
-        "4.0": {"flood_active": false, "pagasa_warning": "YELLOW", "stranded_count": 0},
-        "5.0": {"flood_active": true, "pagasa_warning": "YELLOW", "stranded_count": 150},
-        "6.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 800},
-        "7.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1400},
-        "8.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
-        "9.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
-        "10.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
-        "11.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600},
-        "12.0": {"flood_active": true, "pagasa_warning": "ORANGE", "stranded_count": 1600}
+        "3.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
+        "4.0": {"flood_active": false, "pagasa_warning": "NONE", "simulated_stranded_projection": 0},
+        "5.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
+        "6.0": {"flood_active": false, "pagasa_warning": "YELLOW", "simulated_stranded_projection": 0},
+        "7.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 180},
+        "8.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 650},
+        "9.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 980},
+        "10.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1200},
+        "11.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1300},
+        "12.0": {"flood_active": true, "pagasa_warning": "ORANGE", "simulated_stranded_projection": 1400}
       }
     }
   ]

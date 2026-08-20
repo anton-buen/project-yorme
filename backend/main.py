@@ -95,14 +95,6 @@ def get_incidents():
     with open(file_path, "r") as f:
         return json.load(f)
 
-@app.get("/api/cctv")
-def get_cctv_feeds():
-    file_path = "data/cctv_feeds.json"
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="CCTV data not found")
-    with open(file_path, "r") as f:
-        return json.load(f)
-
 @app.post("/api/predict", response_model=PredictResponse)
 def get_prediction(req: PredictRequest):
     # Initialize environment state

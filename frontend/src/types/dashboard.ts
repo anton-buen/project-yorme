@@ -11,7 +11,7 @@ export const ACTION_NAMES: Record<ActionCode, string> = {
 export interface HourlyTimelineState {
   flood_active: boolean;
   pagasa_warning: "NONE" | "YELLOW" | "ORANGE" | "RED";
-  stranded_count: number;
+  simulated_stranded_projection: number;
 }
 
 export interface IncidentData {
@@ -21,14 +21,6 @@ export interface IncidentData {
   actual_announcement_time: number;
   actual_action_code: ActionCode;
   hourly_timeline: Record<string, HourlyTimelineState>;
-}
-
-export interface CctvFeed {
-  id: string;
-  location_name: string;
-  corridor: string;
-  critical_water_level_inches: number;
-  stream_snapshot_url: string;
 }
 
 export interface PredictionResponse {
