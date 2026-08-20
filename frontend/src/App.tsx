@@ -66,6 +66,8 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const [currentPrediction, setCurrentPrediction] = useState<PredictionResponse | null>(null);
+  const [predictionError, setPredictionError] = useState<string | null>(null);
+  const [predictionLoading, setPredictionLoading] = useState(false);
 
   // ─── Data Initialization ─────────────────────────────────────────────────────
 
@@ -121,16 +123,23 @@ export default function App() {
       const timelineKey = currentHour.toString();
       const timeline = currentIncident.hourly_timeline[timelineKey];
 
-      if (!timeline) return;
+      if (!timeline) {
+        setPredictionError("No timeline data available for current hour");
+        return;
+      }
 
       const cacheKey = `${incidentIdx}-${step}-${mode}-${bias}`;
       
       if (predictionCache[cacheKey]) {
         setCurrentPrediction(predictionCache[cacheKey]);
+        setPredictionError(null);
         return;
       }
 
       try {
+        setPredictionLoading(true);
+        setPredictionError(null);
+
         const request = {
           current_hour: currentHour,
           flood_active: timeline.flood_active,
@@ -145,9 +154,17 @@ export default function App() {
         }));
         
         setCurrentPrediction(prediction);
+        setPredictionError(null);
 
       } catch (error) {
         console.error('Failed to fetch prediction:', error);
+        const errorMsg = error instanceof ApiError 
+          ? error.message 
+          : 'Failed to connect to AI backend. Server may be waking up.';
+        setPredictionError(errorMsg);
+        setCurrentPrediction(null);
+      } finally {
+        setPredictionLoading(false);
       }
     }
 
@@ -207,6 +224,12 @@ export default function App() {
           prediction={currentPrediction}
           currentHour={currentHour}
           simulatedStranded={simulatedStranded}
+          predictionError={predictionError}
+          predictionLoading={predictionLoading}
+          onRetry={() => {
+            setPredictionError(null);
+            setStep(step); // Trigger re-fetch
+          }}
         />
 
         {/* Visual Grounding Section */}

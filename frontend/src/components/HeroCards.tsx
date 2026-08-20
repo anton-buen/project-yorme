@@ -17,6 +17,9 @@ interface HeroCardsProps {
   prediction: PredictionResponse | null;
   currentHour: number;
   simulatedStranded: number;
+  predictionError?: string | null;
+  predictionLoading?: boolean;
+  onRetry?: () => void;
 }
 
 export default function HeroCards({
@@ -24,6 +27,9 @@ export default function HeroCards({
   prediction,
   currentHour,
   simulatedStranded,
+  predictionError = null,
+  predictionLoading = false,
+  onRetry,
 }: HeroCardsProps) {
   const wasAnnounced = currentHour >= currentIncident.actual_announcement_time;
   const confidence = prediction 
@@ -189,12 +195,44 @@ export default function HeroCards({
                 </div>
               </div>
             </>
+          ) : predictionError ? (
+            /* Error State */
+            <div className="flex flex-col items-center justify-center h-96 px-6">
+              <div className="text-center max-w-md">
+                <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-bold text-stone-900 mb-2" style={SANS}>
+                  Backend Offline or Waking Up
+                </h3>
+                <p className="text-sm text-stone-600 mb-4" style={SANS}>
+                  {predictionError}
+                </p>
+                <p className="text-xs text-stone-500 mb-6" style={SANS}>
+                  The AI engine may be starting up (cold start can take up to 50 seconds on free tier)
+                </p>
+                {onRetry && (
+                  <button
+                    onClick={onRetry}
+                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-colors hover:opacity-90"
+                    style={{ backgroundColor: SAGE.text, ...SANS }}
+                  >
+                    Retry Connection
+                  </button>
+                )}
+              </div>
+            </div>
           ) : (
             /* Loading State */
             <div className="flex items-center justify-center h-96">
               <div className="text-center">
-                <div className="w-10 h-10 border-4 border-stone-200 border-t-stone-600 rounded-full animate-spin mx-auto mb-4" />
-                <p className="text-stone-500" style={SANS}>Loading AI prediction...</p>
+                <div className="w-10 h-10 border-4 border-stone-200 rounded-full animate-spin mx-auto mb-4"
+                     style={{ borderTopColor: SAGE.text }} />
+                <p className="text-stone-500" style={SANS}>
+                  {predictionLoading ? 'Fetching AI prediction...' : 'Loading AI prediction...'}
+                </p>
               </div>
             </div>
           )}

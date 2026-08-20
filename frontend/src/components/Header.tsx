@@ -63,7 +63,7 @@ export default function Header({
   }, [mode]);
 
   return (
-    <div className="sticky top-0 z-40 bg-white/90 backdrop-blur-lg border-b border-stone-200/80 shadow-sm">
+    <div className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-stone-200/80 shadow-sm">
       <div className="max-w-7xl mx-auto">
         
         {/* Row 1: Wordmark + Mode + Incident */}
@@ -82,7 +82,7 @@ export default function Header({
             <div className="flex bg-stone-100 rounded-xl p-1">
               <button
                 onClick={() => setMode("historical")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
                   mode === "historical" 
                     ? 'bg-white text-stone-900 shadow-sm' 
                     : 'text-stone-600 hover:text-stone-900'
@@ -93,7 +93,7 @@ export default function Header({
               </button>
               <button
                 onClick={() => setMode("live")}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1 ${
                   mode === "live" 
                     ? 'bg-white text-stone-900 shadow-sm' 
                     : 'text-stone-600 hover:text-stone-900'
@@ -101,6 +101,9 @@ export default function Header({
                 style={SANS}
               >
                 Live Watch
+                {mode === "live" && (
+                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
+                )}
               </button>
             </div>
 
@@ -133,7 +136,7 @@ export default function Header({
           </div>
 
           {/* Clock Display */}
-          <div className="px-3 py-1.5 bg-stone-100 rounded-lg text-sm font-mono text-stone-900 whitespace-nowrap">
+          <div className="px-3 py-1.5 bg-stone-100 rounded-lg text-sm text-stone-900 whitespace-nowrap" style={MONO}>
             {mode === "live" ? (
               <>
                 {currentTime.toLocaleTimeString('en-US', { 
@@ -151,23 +154,20 @@ export default function Header({
             )}
           </div>
 
-          {/* Timeline Scrubber */}
+          {/* Timeline Scrubber - Historical Mode Only */}
           {mode === "historical" && (
-            <div className="flex-1 flex items-center gap-2">
+            <div className="flex-1">
               <input
                 type="range"
                 min="0"
                 max={HOUR_STEPS.length - 1}
                 value={step}
                 onChange={(e) => setStep(Number(e.target.value))}
-                className="flex-1 h-2 bg-stone-200 rounded-full appearance-none cursor-pointer slider-thumb"
+                className="w-full h-2 bg-stone-200 rounded-full appearance-none cursor-pointer slider-thumb"
                 style={{
                   background: `linear-gradient(to right, ${SAGE.line} 0%, ${SAGE.line} ${(step / (HOUR_STEPS.length - 1)) * 100}%, #E7E5E4 ${(step / (HOUR_STEPS.length - 1)) * 100}%, #E7E5E4 100%)`
                 }}
               />
-              <span className="text-xs text-stone-500 font-mono min-w-[60px]">
-                Step {step + 1}/19
-              </span>
             </div>
           )}
         </div>

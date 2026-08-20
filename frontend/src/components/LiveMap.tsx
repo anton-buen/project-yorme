@@ -4,14 +4,15 @@ const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-se
 export default function LiveMap() {
   return (
     <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
-      <div className="mb-6">
-        <h3 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
+      <div className="mb-6 flex items-center gap-2">
+        <h3 className="text-2xl font-bold text-stone-900" style={SERIF}>
           Live Meteorological Radar
         </h3>
-        <p className="text-sm text-stone-600" style={SANS}>
-          Real-time Precipitation Data • Metro Manila Region
-        </p>
+        <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
       </div>
+      <p className="text-sm text-stone-600 mb-6" style={SANS}>
+        Real-time Precipitation Data • Metro Manila Region
+      </p>
 
       <div className="relative w-full rounded-xl overflow-hidden border-2 border-stone-200/80" style={{ height: '400px' }}>
         <iframe

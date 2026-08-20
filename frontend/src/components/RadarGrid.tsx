@@ -157,33 +157,37 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning }: RadarGri
         </p>
       </div>
 
-      {/* Tensor Heatmap with Annotations */}
-      <div className="relative inline-block">
-        {/* Top-left coordinate metadata */}
-        <div 
-          className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-10"
-          style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
-        >
-          14.5995°N 120.9842°E
-        </div>
+      {/* Tensor Heatmap with Annotations - Scaled Up */}
+      <div className="w-full max-w-md mx-auto">
+        <div className="relative aspect-square w-full">
+          {/* Top-left coordinate metadata */}
+          <div 
+            className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-10"
+            style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
+          >
+            14.5995°N 120.9842°E
+          </div>
 
-        {/* Top-right timestamp */}
-        <div 
-          className="absolute top-3 right-3 px-2 py-1 rounded text-xs font-medium text-white z-10"
-          style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
-        >
-          {currentTime}
-        </div>
+          {/* Top-right timestamp */}
+          <div 
+            className="absolute top-3 right-3 px-2 py-1 rounded text-xs font-medium text-white z-10"
+            style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
+          >
+            {currentTime}
+          </div>
 
-        {/* Bottom-right PAGASA warning pill */}
-        <div 
-          className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold text-white z-10"
-          style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
-        >
-          PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
-        </div>
+          {/* Bottom-right PAGASA warning pill */}
+          <div 
+            className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold text-white z-10"
+            style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
+          >
+            PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
+          </div>
 
-        <TensorHeatmapCanvas step={step} incidentIdx={incidentIdx} />
+          <div className="w-full h-full flex items-center justify-center">
+            <TensorHeatmapCanvas step={step} incidentIdx={incidentIdx} />
+          </div>
+        </div>
       </div>
 
       {/* Color Scale Bar */}
