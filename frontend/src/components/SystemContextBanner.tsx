@@ -20,7 +20,7 @@ export default function SystemContextBanner() {
             </div>
             
             <p className="text-base text-slate-700 leading-relaxed" style={SANS}>
-              Yormetrics is a <span className="font-semibold text-slate-900">Reinforcement Learning agent</span> trained to recommend class suspension policies for Manila LGU. The system balances two competing objectives: <span className="font-medium text-emerald-800">protecting commuter safety</span> through early warnings, and <span className="font-medium text-rose-900">avoiding false alarms</span> that disrupt the economy.
+              Yormetrics is a <span className="font-semibold text-slate-900">Reinforcement Learning agent</span> trained to recommend class suspension policies for Manila LGU. The system balances two competing objectives: <span className="font-medium text-emerald-800">protecting commuter safety</span> through early warnings, and <span className="font-medium text-rose-900">avoiding false alarms</span> to ensure safe, productive days.
             </p>
             
             <p className="text-sm text-slate-600 leading-relaxed" style={SANS}>

@@ -1,5 +1,6 @@
 import type { ActionCode, PredictionResponse, IncidentData } from '../types/dashboard';
 import { ACTION_NAMES } from '../types/dashboard';
+import LiveSystemTelemetry from './LiveSystemTelemetry';
 
 const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
@@ -50,11 +51,14 @@ export default function HeroCards({
     ? Math.round(Math.max(...prediction.action_probabilities) * 100)
     : null;
 
+  const currentTime = new Date();
+  const currentHourOfDay = currentTime.getHours() + currentTime.getMinutes() / 60;
+  const commuteDensity = (currentHourOfDay >= 5.0 && currentHourOfDay <= 7.0) ? 1.0 : 0.2;
+
   return (
-    <div className={mode === 'live' ? "grid grid-cols-1 gap-6" : "grid grid-cols-1 lg:grid-cols-2 gap-6"}>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
-      {/* Left Hero: Official LGU Decision - Historical Mode Only */}
-      {mode === 'historical' && (
+      {mode === 'historical' ? (
         <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 border-t-rose-900">
           
           <div className="p-8">
@@ -129,9 +133,10 @@ export default function HeroCards({
             </div>
           </div>
         </div>
+      ) : (
+        <LiveSystemTelemetry currentTime={currentTime} commuteDensity={commuteDensity} />
       )}
 
-      {/* Right Hero: AI Policy Recommendation */}
       <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 border-t-emerald-800">
         
         <div className="p-8">
@@ -142,9 +147,17 @@ export default function HeroCards({
                   <h2 className="text-2xl font-bold text-slate-900 mb-2" style={SERIF}>
                     AI Policy Recommendation
                   </h2>
-                  <p className="text-xs text-slate-500" style={SANS}>
-                    PyTorch PPO Agent
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <p className="text-xs text-slate-500" style={SANS}>
+                      PyTorch PPO Agent
+                    </p>
+                    {mode === 'live' && (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        LIVE FEED
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div 
                   className="px-3 py-1.5 rounded-lg font-bold text-lg"

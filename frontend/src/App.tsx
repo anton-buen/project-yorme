@@ -304,7 +304,13 @@ export default function App() {
               mode={mode}
             />
 
-            <div className="grid grid-cols-1 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <RadarGrid
+                step={step}
+                incidentIdx={incidentIdx}
+                pagasaWarning={pagasaWarning}
+                mode={mode}
+              />
               <LiveMap />
             </div>
           </>

@@ -23,6 +23,7 @@ interface RadarGridProps {
   step: number;
   incidentIdx: number;
   pagasaWarning: PagasaLevel;
+  mode?: 'historical' | 'live';
 }
 
 function getPagasaColor(level: PagasaLevel): string {
@@ -143,17 +144,24 @@ function TensorHeatmapCanvas({ step, incidentIdx }: { step: number; incidentIdx:
   );
 }
 
-export default function RadarGrid({ step, incidentIdx, pagasaWarning }: RadarGridProps) {
-  const currentTime = HOUR_STEPS[step]?.label || "12:00 PM";
+export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical' }: RadarGridProps) {
+  const currentTime = mode === 'live' 
+    ? new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: true })
+    : HOUR_STEPS[step]?.label || "12:00 PM";
+
+  const title = mode === 'live' ? 'Active Observation Tensor' : 'PAGASA Radar Input Grid';
+  const subtitle = mode === 'live' 
+    ? 'Real-Time Satellite Telemetry • Metro Manila Grid (32×32 Tensor Input)'
+    : 'Channel 0: dBZ Reflectivity • Local Manila Grid (32×32 Tensor Input)';
 
   return (
     <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
       <div className="mb-6">
         <h3 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
-          PAGASA Radar Input Grid
+          {title}
         </h3>
         <p className="text-sm text-stone-600" style={SANS}>
-          Channel 0: dBZ Reflectivity • Local Manila Grid (32×32 Tensor Input)
+          {subtitle}
         </p>
       </div>
 
@@ -218,10 +226,11 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning }: RadarGri
         </div>
       </div>
 
-      {/* Elegant Caption */}
-      <p className="text-xs text-stone-500 italic mt-3 text-center" style={SANS}>
-        The PPO agent processes this 32×32 spatial tensor to identify storm density and trajectory relative to the Metro Manila grid.
-      </p>
+      <div className="mt-4 p-4 bg-stone-50 border border-stone-200 rounded-lg">
+        <p className="text-sm font-sans text-stone-700 leading-relaxed">
+          <strong>Data Source:</strong> The PPO agent processes this 32×32 spatial tensor to identify storm density and trajectory relative to the Metro Manila grid.
+        </p>
+      </div>
     </div>
   );
 }
