@@ -3,8 +3,8 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import EvalCallback
-from data.src.env import LguSuspensionEnv
-from data.src.cnn_encoder import LguFeaturesExtractor
+from src.env import LguSuspensionEnv
+from src.cnn_encoder import LguFeaturesExtractor
 
 def train_agent(total_timesteps: int = 100_000, model_save_path: str = "models/ppo_yorme_agent"):
 

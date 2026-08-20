@@ -1,3 +1,4 @@
+from src.data_fetcher import ManilaDataPipeline
 import gymnasium as gym
 from gymnasium import spaces
 import numpy as np
@@ -11,6 +12,8 @@ class LguSuspensionEnv(gym.Env):
 
     def __init__(self):
         super(LguSuspensionEnv, self).__init__()
+
+        self.data_pipeline = ManilaDataPipeline()
 
         # --- ACTION SPACE ---
 
@@ -63,26 +66,10 @@ class LguSuspensionEnv(gym.Env):
         return obs, info
 
     def _get_obs(self):
-        """Generates the mocked state tensor for the current step."""
-        # 1. Spatial Tensor (4, 32, 32)
-        # in final build, this will be populated by actual PAGASA radar scrapers
-        spatial_tensor = np.zeros((4, 32, 32), dtype=np.float32)
+        # Fetch real 4x32x32 spatial tensor and cast to float32
+        spatial_tensor = self.data_pipeline.get_observation_tensor(self.current_hour).astype(np.float32)
         
-        # Channel 0: Radar Reflectivity (Mocked based on flood probability)
-        if self._will_flood:
-            spatial_tensor[0, :, :] = self.np_random.uniform(0.5, 1.0, (32, 32))
-            
-        # Channel 1: Regional Trajectory
-        spatial_tensor[1, :, :] = self.np_random.uniform(0.0, 0.5, (32, 32))
-        
-        # Channel 2: Static Barangay Vulnerability (Elevation)
-        spatial_tensor[2, :, :] = self.np_random.uniform(0.0, 1.0, (32, 32))
-        
-        # Channel 3: MCDRRMO Risk Index (Tide + Drainage)
-        spatial_tensor[3, :, :] = 0.8 if self._will_flood else 0.2
-
-        # 2. Vector Input [current_hour, commute_density]
-        # density spikes between 5:00 AM so (5.0) and 7:00 AM(7.0)
+        # Vector Input [current_hour, commute_density]
         commute_density = 1.0 if 5.0 <= self.current_hour <= 7.0 else 0.2
         vector_tensor = np.array([self.current_hour, commute_density], dtype=np.float32)
 

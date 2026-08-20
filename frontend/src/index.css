@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 @import 'tailwindcss';
@@ -48,43 +49,46 @@ body {
 ::-webkit-scrollbar-thumb  { background: rgba(255,255,255,0.07); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
 
-/* ── Range input (the simulation hour scrubber) ────────────────────────────── */
+/* ── Range input (simulation hour scrubber) ────────────────────────────────── */
 input[type='range'] {
   -webkit-appearance: none;
   appearance: none;
-  height: 3px;
+  height: 1.5px;
   border-radius: 999px;
-  background: rgba(255,255,255,0.1);
   outline: none;
   cursor: pointer;
 }
 
-input[type='range']::-webkit-slider-thumb {
+/* Dark-mode scrubber */
+.dark-scrubber[type='range'] {
+  background: rgba(255,255,255,0.12);
+}
+.dark-scrubber[type='range']::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--emerald);
-  cursor: pointer;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: #34D399; cursor: pointer;
   box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
   transition: box-shadow 120ms ease, transform 120ms ease;
 }
+.dark-scrubber[type='range']:hover::-webkit-slider-thumb { box-shadow: 0 0 0 5px rgba(52,211,153,0.22); transform: scale(1.1); }
 
-input[type='range']:hover::-webkit-slider-thumb,
-input[type='range']:focus::-webkit-slider-thumb {
-  box-shadow: 0 0 0 5px rgba(52,211,153,0.22);
-  transform: scale(1.12);
+/* Light-mode scrubber */
+.light-scrubber[type='range'] {
+  background: #D6D3D1;
 }
-
-input[type='range']::-moz-range-thumb {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--emerald);
-  border: none;
-  cursor: pointer;
-  box-shadow: 0 0 0 3px rgba(52,211,153,0.18);
+.light-scrubber[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px; height: 13px; border-radius: 50%;
+  background: #78716C; cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: box-shadow 120ms ease, transform 120ms ease, background 120ms ease;
+}
+.light-scrubber[type='range']:hover::-webkit-slider-thumb { background: #57534E; transform: scale(1.08); }
+.light-scrubber[type='range']::-moz-range-thumb {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: #78716C; border: none; cursor: pointer;
 }
 
 /* ── Select — custom caret ─────────────────────────────────────────────────── */
