@@ -460,11 +460,8 @@ export default function App() {
         <div className="px-7 py-0">
           <div className="flex items-center justify-between gap-8 py-3.5" style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
             <div className="shrink-0">
-              <h1 
-                className="text-[17px] font-bold text-stone-800 tracking-[0.15em] leading-none uppercase" 
-                style={SERIF}
-              >
-                YORMETRICS
+              <h1 className="text-lg font-semibold text-stone-800 tracking-tight leading-none" style={SERIF}>
+                Yormetrics
               </h1>
               <p className="text-xs text-stone-400 tracking-wide mt-0.5" style={SANS}>
                 Predictive Early Suspension Advisor — City of Manila LGU
