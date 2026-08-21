@@ -16,6 +16,18 @@ const ACTION_ICONS: Record<ActionCode, React.ComponentType<{ className?: string 
   4: ShieldAlert,
 };
 
+// Subtle KPI box backgrounds (ultra-light, borderless)
+const getKpiBackground = (actionCode: ActionCode): string => {
+  const bgMap: Record<ActionCode, string> = {
+    0: 'bg-slate-500/5',
+    1: 'bg-blue-500/5',
+    2: 'bg-amber-500/5',
+    3: 'bg-orange-500/5',
+    4: 'bg-red-500/5',
+  };
+  return bgMap[actionCode];
+};
+
 // Semantic Action Severity Colors with WCAG AA contrast
 const ACTION_COLORS: Record<ActionCode, { bg: string; text: string; border: string; textOnBg: string }> = {
   0: { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1', textOnBg: '#1e293b' },  // slate - Status Quo
@@ -144,8 +156,7 @@ export default function HeroCards({
               {currentIncident.actual_action_code === 1 ? (
                 // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
                 <>
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Commuters Protected
                     </div>
@@ -158,8 +169,7 @@ export default function HeroCards({
                     </div>
                   </div>
 
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Instructional Hours
                     </div>
@@ -175,8 +185,7 @@ export default function HeroCards({
               ) : (
                 // Other Actions - Show Standard Metrics
                 <>
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Estimated Stranded
                     </div>
@@ -189,8 +198,7 @@ export default function HeroCards({
                     </div>
                   </div>
 
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Commuter Safety
                     </div>
@@ -232,17 +240,24 @@ export default function HeroCards({
         <DecisionCardSkeleton type="ai" />
       ) : (
         <div 
-          className={`bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 h-full ${
-            prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4)
-              ? 'animate-pulse'
-              : ''
-          }`}
+          className="bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 h-full"
           style={{ 
             borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
             borderColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
             '--tw-ring-color': prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
           } as React.CSSProperties}
         >
+          {/* Anxiety Pulse - Border Ring Only (High Severity Actions) */}
+          {prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4) && (
+            <div 
+              className="absolute inset-0 rounded-2xl border-2 animate-pulse pointer-events-none z-10"
+              style={{ 
+                borderColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].text,
+                opacity: 0.5
+              }}
+              aria-hidden="true"
+            />
+          )}
           
           <div className="p-8">
             {prediction ? (
@@ -282,8 +297,13 @@ export default function HeroCards({
                 </div>
               </div>
 
-              <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-2" 
-                  style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
+              <h3 className="text-3xl font-extrabold font-sans tracking-tight leading-tight mb-2" 
+                  style={{ 
+                    color: prediction && (prediction.ai_action_code >= 3) 
+                      ? prediction.ai_action_code === 4 ? '#dc2626' : '#f97316'  // High contrast red/orange
+                      : ACTION_COLORS[prediction.ai_action_code as ActionCode].text,
+                    ...SANS 
+                  }}>
                 {ACTION_NAMES[prediction.ai_action_code as ActionCode]}
               </h3>
 
@@ -304,10 +324,10 @@ export default function HeroCards({
                   </span>
                 )}
                 <span className="mx-2">•</span>
-                <span className="font-semibold">Weights:</span>
-                <span className="text-xs font-mono ml-1 text-slate-500">
-                  {prediction.loaded_model_path.split('/').pop()}
-                </span>
+                <div className="inline-flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+                  <span className="text-xs font-medium text-slate-500">Model: Active (Policy v2.1)</span>
+                </div>
               </div>
 
               {/* Legal Override Banner - DepEd Order 37 */}
@@ -349,8 +369,7 @@ export default function HeroCards({
                 {prediction.ai_action_code === 1 ? (
                   // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
                   <>
-                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         Commuters Protected
                       </div>
@@ -363,8 +382,7 @@ export default function HeroCards({
                       </div>
                     </div>
 
-                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         Instructional Hours
                       </div>
@@ -380,8 +398,7 @@ export default function HeroCards({
                 ) : (
                   // Other Actions - Show Standard Metrics
                   <>
-                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         AI Projected Stranded
                       </div>
@@ -394,8 +411,7 @@ export default function HeroCards({
                       </div>
                     </div>
 
-                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
-                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         Risk Reduction
                       </div>

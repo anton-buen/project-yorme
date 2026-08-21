@@ -205,7 +205,7 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
       </div>
 
       {/* Map Container with Tensor Overlay */}
-      <div className="h-64 md:h-80 lg:flex-1 lg:min-h-[400px] relative rounded-xl overflow-hidden border-2 border-stone-200">
+      <div className="h-64 md:h-80 lg:flex-1 lg:min-h-[400px] relative z-0 rounded-xl overflow-hidden border-2 border-stone-200">
         {/* Map metadata overlays */}
         <div 
           className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-[1000]"
@@ -228,41 +228,47 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
           PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
         </div>
 
+        {/* Integrated dBZ Intensity Legend */}
+        <div className="absolute bottom-3 left-3 z-[400] bg-slate-900/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700">
+          <div className="text-xs font-semibold text-slate-300 mb-2" style={SANS}>
+            dBZ Intensity
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-32 h-4 rounded overflow-hidden"
+                 style={{
+                   background: 'linear-gradient(to right, #94A3B8 0%, #FCD34D 25%, #FB923C 50%, #EF4444 75%, #991B1B 100%)'
+                 }}
+            />
+            <div className="flex gap-2 text-xs font-mono text-slate-300">
+              <span>Low</span>
+              <span>Med</span>
+              <span>High</span>
+            </div>
+          </div>
+        </div>
+
         <MapContainer
           center={[14.5995, 120.9842]}
           zoom={11}
+          minZoom={10}
+          maxZoom={14}
+          maxBounds={[[14.3, 120.8], [14.9, 121.2]]}
+          maxBoundsViscosity={1.0}
+          scrollWheelZoom={false}
           style={{ height: '100%', width: '100%' }}
           zoomControl={false}
           attributionControl={false}
         >
-          {/* Dark mode tile layer - CartoDB Dark Matter */}
+          {/* Dark mode tile layer - CartoDB Dark Matter with brightness adjustment */}
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            className="map-tiles-brightened"
           />
           
           <TensorOverlay step={step} incidentIdx={incidentIdx} />
           <ManilaMarker />
         </MapContainer>
-      </div>
-
-      {/* Color Scale Bar */}
-      <div className="mt-6">
-        <div className="flex items-center gap-3">
-          <span className="text-xs font-medium text-stone-600" style={SANS}>
-            dBZ Intensity
-          </span>
-          <div className="flex-1 h-6 rounded-lg overflow-hidden border border-stone-200"
-               style={{
-                 background: 'linear-gradient(to right, #94A3B8 0%, #FCD34D 25%, #FB923C 50%, #EF4444 75%, #991B1B 100%)'
-               }}
-          />
-          <div className="flex gap-4 text-xs" style={MONO}>
-            <span className="text-stone-500">Low</span>
-            <span className="text-stone-500">Med</span>
-            <span className="text-stone-500">High</span>
-          </div>
-        </div>
       </div>
 
       <div className="mt-4 p-4 bg-stone-50 border border-stone-200 rounded-xl">

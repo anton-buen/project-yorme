@@ -153,3 +153,21 @@ input[type='range'] {
   white-space: nowrap;
   border-width: 0;
 }
+
+
+/* ── Leaflet Z-Index Fix ──────────────────────────────────────────────────── */
+/* Prevent map from bleeding through modals and drawers */
+.leaflet-container {
+  z-index: 0 !important;
+}
+
+.leaflet-pane {
+  z-index: auto !important;
+}
+
+
+/* ── Map Tile Brightening ─────────────────────────────────────────────────── */
+/* Enhance readability of dark mode map tiles while maintaining command-center aesthetic */
+.map-tiles-brightened {
+  filter: saturate(0.5) brightness(1.25) contrast(1.25);
+}

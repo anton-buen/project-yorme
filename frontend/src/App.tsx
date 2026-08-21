@@ -76,6 +76,15 @@ export default function App() {
   const [predictionError, setPredictionError] = useState<string | null>(null);
   const [predictionLoading, setPredictionLoading] = useState(false);
 
+  // Auto-open onboarding for first-time users
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+    if (!hasSeenOnboarding) {
+      setTechVaultOpen(true);
+      localStorage.setItem('hasSeenOnboarding', 'true');
+    }
+  }, []);
+
   useEffect(() => {
     async function initializeApp() {
       try {
@@ -272,9 +281,9 @@ export default function App() {
           <div className="mb-6">
             <TimelineScrubber
               step={step}
-              setStep={setStep}
-              announcementStep={announcementStep}
-            />
+              announcementStep={announcementStep} setStep={function (step: number): void {
+                throw new Error("Function not implemented.");
+              } }            />
           </div>
         )}
 
@@ -369,27 +378,27 @@ export default function App() {
         onClose={() => setTechVaultOpen(false)} 
       />
 
-      {/* Floating Action Buttons */}
+      {/* Floating Action Buttons - Labeled Pills */}
       {!drawerOpen && !techVaultOpen && (
         <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3">
-          {/* Technical Vault FAB */}
+          {/* How it Works FAB */}
           <button
             onClick={() => setTechVaultOpen(true)}
-            className="p-4 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-100 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
-            aria-label="Open Technical Vault"
-            title="Technical Vault"
+            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-200 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
+            aria-label="Open How it Works"
           >
-            <BookOpen className="w-6 h-6" />
+            <BookOpen className="w-5 h-5" />
+            <span className="font-medium text-sm">How it Works</span>
           </button>
 
           {/* RL Metrics FAB */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="p-4 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-100 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
-            aria-label="Open RL metrics"
-            title="RL Metrics"
+            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-200 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
+            aria-label="Open RL Metrics"
           >
-            <BarChart2 className="w-6 h-6" />
+            <BarChart2 className="w-5 h-5" />
+            <span className="font-medium text-sm">RL Metrics</span>
           </button>
         </div>
       )}
