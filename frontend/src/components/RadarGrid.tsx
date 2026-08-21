@@ -1,6 +1,5 @@
 import { useRef, useEffect } from 'react';
 
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -157,7 +156,7 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
   return (
     <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
       <div className="mb-6">
-        <h3 className="text-2xl font-bold text-stone-900 mb-2" style={SERIF}>
+        <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-2" style={SANS}>
           {title}
         </h3>
         <p className="text-sm text-stone-600" style={SANS}>

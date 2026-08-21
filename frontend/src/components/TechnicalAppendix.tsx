@@ -11,7 +11,6 @@ import {
 } from 'recharts';
 import type { ActionCode, PredictionResponse } from '../types/dashboard';
 
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
 const ACTION_SHORT: Record<ActionCode, string> = {
@@ -105,7 +104,7 @@ export default function TechnicalAppendix({
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-2xl font-bold text-slate-900" style={SERIF}>
+              <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
                 RL Metrics
               </h2>
               <p className="text-sm text-slate-600 mt-1" style={SANS}>
@@ -126,7 +125,7 @@ export default function TechnicalAppendix({
             
             {/* Col 1: Mayor Policy Bias */}
             <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
+              <h3 className="text-lg font-bold font-sans tracking-tight text-slate-900 mb-4" style={SANS}>
                 Mayor Policy Bias Tuning
               </h3>
               <div className="space-y-3">
@@ -154,7 +153,7 @@ export default function TechnicalAppendix({
 
             {/* Col 2: PPO Action Probability Distribution */}
             <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-              <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
+              <h3 className="text-lg font-bold font-sans tracking-tight text-slate-900 mb-4" style={SANS}>
                 PPO Action Probability Distribution
               </h3>
               {prediction ? (
@@ -205,7 +204,7 @@ export default function TechnicalAppendix({
             {/* Col 3: Tensor Inspector & Reward Matrix */}
             <div className="space-y-4">
               <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
+                <h3 className="text-lg font-bold font-sans tracking-tight text-slate-900 mb-4" style={SANS}>
                   Active Observation Tensor
                 </h3>
                 {prediction ? (
@@ -235,7 +234,7 @@ export default function TechnicalAppendix({
               </div>
 
               <div className="bg-white rounded-2xl border border-stone-200/80 p-6 shadow-sm">
-                <h3 className="text-lg font-bold text-slate-900 mb-4" style={SERIF}>
+                <h3 className="text-lg font-bold font-sans tracking-tight text-slate-900 mb-4" style={SANS}>
                   Reward Matrix Weights
                 </h3>
                 <div className="space-y-2.5 text-sm font-mono">

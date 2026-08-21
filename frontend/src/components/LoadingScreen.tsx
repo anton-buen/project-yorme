@@ -1,6 +1,5 @@
 import { AlertCircle, Loader2 } from 'lucide-react';
 
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -15,7 +14,7 @@ export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
       <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8F6F0' }}>
         <div className="text-center p-8 max-w-md">
           <AlertCircle className="mx-auto mb-4 w-16 h-16 text-red-500" />
-          <h2 className="text-2xl font-bold text-stone-900 mb-4" style={SERIF}>
+          <h2 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-4" style={SANS}>
             Backend Unreachable
           </h2>
           <p className="text-stone-600 mb-6" style={SANS}>
@@ -53,7 +52,7 @@ export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
     <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#F8F6F0' }}>
       <div className="text-center p-8">
         <Loader2 className="mx-auto mb-6 w-16 h-16 animate-spin" style={{ color: '#3A7050' }} />
-        <h2 className="text-3xl font-bold text-stone-900 mb-4" style={SERIF}>
+        <h2 className="text-3xl font-bold font-sans tracking-tight text-stone-900 mb-4" style={SANS}>
           Yormetrics
         </h2>
         <p className="text-xl text-stone-600 mb-8" style={SANS}>

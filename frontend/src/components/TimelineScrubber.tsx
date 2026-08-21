@@ -1,6 +1,5 @@
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 
 interface HourStep { label: string; hour: number; minute: number }
 
@@ -44,7 +43,7 @@ export default function TimelineScrubber({
   return (
     <div className="py-8 bg-gradient-to-b from-stone-50 to-white rounded-2xl border border-stone-200 shadow-sm">
       <div className="mb-8 text-center px-6">
-        <h3 className="text-xl font-bold text-slate-800 mb-2" style={SERIF}>
+        <h3 className="text-xl font-bold font-sans tracking-tight text-slate-800 mb-2" style={SANS}>
           Timeline Control
         </h3>
         <p className="text-xs text-slate-500 tracking-wider uppercase" style={MONO}>

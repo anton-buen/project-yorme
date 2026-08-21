@@ -11,7 +11,6 @@ interface State {
 }
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 
 class ErrorBoundary extends Component<Props, State> {
   public state: State = {
@@ -44,7 +43,7 @@ class ErrorBoundary extends Component<Props, State> {
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-slate-900" style={SERIF}>
+                <h1 className="text-2xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
                   Application Error
                 </h1>
                 <p className="text-sm text-slate-500" style={SANS}>

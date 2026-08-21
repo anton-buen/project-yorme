@@ -23,8 +23,12 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit, timeoutMs: n
 
   try {
     const response = await fetch(url, {
+      cache: 'no-store',
       headers: {
         'Content-Type': 'application/json',
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0',
         ...options?.headers,
       },
       ...options,
@@ -94,7 +98,8 @@ export async function checkApiHealth(): Promise<{ status: string; message: strin
 
 // Fetch all incidents
 export async function fetchIncidents(): Promise<IncidentData[]> {
-  const response = await fetchApi<{ incidents: IncidentData[] }>('/api/incidents');
+  const timestamp = new Date().getTime();
+  const response = await fetchApi<{ incidents: IncidentData[] }>(`/api/incidents?t=${timestamp}`);
   const validIncidents = (response.incidents || []).filter((inc) => 
     inc && 
     inc.id && 

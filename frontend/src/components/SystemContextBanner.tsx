@@ -1,6 +1,5 @@
 import { Activity } from 'lucide-react';
 
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -14,7 +13,7 @@ export default function SystemContextBanner() {
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-1 h-12 bg-slate-800 rounded-full" />
-              <h2 className="text-2xl font-bold text-slate-800" style={SERIF}>
+              <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-800" style={SANS}>
                 How it Works
               </h2>
             </div>

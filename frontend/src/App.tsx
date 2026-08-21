@@ -82,8 +82,12 @@ export default function App() {
         await checkApiHealth();
 
         setLoadingState(prev => ({ ...prev, stage: 'incidents' }));
+        console.log('[App] Fetching incidents from API...');
         const incidentsData = await fetchIncidents();
+        console.log('[App] Received incidents from API:', incidentsData.length, 'items');
+        console.log('[App] Incident IDs:', incidentsData.map(inc => inc.id));
         setIncidents(incidentsData);
+        console.log('[App] State updated with', incidentsData.length, 'incidents');
 
         setLoadingState(prev => ({ ...prev, stage: 'complete' }));
         await new Promise(resolve => setTimeout(resolve, 500));

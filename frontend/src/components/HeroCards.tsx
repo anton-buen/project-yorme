@@ -2,7 +2,6 @@ import type { ActionCode, PredictionResponse, IncidentData } from '../types/dash
 import { ACTION_NAMES } from '../types/dashboard';
 import LiveSystemTelemetry from './LiveSystemTelemetry';
 
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -64,7 +63,7 @@ export default function HeroCards({
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold text-slate-900 mb-2" style={SERIF}>
+                <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900 mb-2" style={SANS}>
                   Official LGU Decision
                 </h2>
                 <p className="text-xs text-slate-500" style={SANS}>
@@ -79,7 +78,7 @@ export default function HeroCards({
               </div>
             </div>
 
-            <h3 className="text-3xl font-bold leading-tight mb-4" style={{ color: LGU.text, ...SERIF }}>
+            <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-4" style={{ color: LGU.text, ...SANS }}>
               {ACTION_NAMES[currentIncident.actual_action_code]}
             </h3>
 
@@ -104,7 +103,7 @@ export default function HeroCards({
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Estimated Stranded
                 </div>
-                <div className="text-3xl font-bold leading-none" style={{ color: LGU.text, ...SERIF }}>
+                <div className="text-3xl font-bold font-sans tracking-tight leading-none" style={{ color: LGU.text, ...SANS }}>
                   {simulatedStranded.toLocaleString()}
                 </div>
                 <div className="text-xs text-slate-500 mt-2" style={SANS}>
@@ -148,7 +147,7 @@ export default function HeroCards({
             <>
               <div className="flex items-start justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-slate-900 mb-2" style={SERIF}>
+                  <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900 mb-2" style={SANS}>
                     AI Policy Recommendation
                   </h2>
                   <div className="flex items-center gap-2">
@@ -171,7 +170,7 @@ export default function HeroCards({
                 </div>
               </div>
 
-              <h3 className="text-3xl font-bold leading-tight mb-2" style={{ color: AI.text, ...SERIF }}>
+              <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-2" style={{ color: AI.text, ...SANS }}>
                 {ACTION_NAMES[prediction.ai_action_code as ActionCode]}
               </h3>
 
@@ -188,7 +187,7 @@ export default function HeroCards({
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Simulated Stranded
                   </div>
-                  <div className="text-3xl font-bold leading-none" style={{ color: AI.text, ...SERIF }}>
+                  <div className="text-3xl font-bold font-sans tracking-tight leading-none" style={{ color: AI.text, ...SANS }}>
                     {Math.round(simulatedStranded * 0.15).toLocaleString()}
                   </div>
                   <div className="text-xs text-slate-500 mt-2" style={SANS}>

@@ -1,4 +1,3 @@
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -13,7 +12,7 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
       <div className="p-8">
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-2xl font-bold text-stone-100" style={SERIF}>
+            <h2 className="text-2xl font-bold font-sans tracking-tight text-stone-100" style={SANS}>
               Live System Telemetry
             </h2>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono bg-rose-900/30 text-rose-400 border border-rose-800">

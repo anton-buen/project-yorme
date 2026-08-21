@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { IncidentData } from '../types/dashboard';
 
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 const SAGE = { line: "#6B9E7A" };
@@ -84,7 +83,7 @@ export default function Header({
         <header className="w-full bg-stone-950 px-8 py-4 flex justify-between items-center border-b border-stone-800">
           {/* LEFT SIDE: Logo & Subtitle */}
           <div className="flex flex-col text-left">
-            <h1 className="text-white text-3xl font-bold" style={SERIF}>
+            <h1 className="text-white text-3xl font-bold font-sans tracking-tight" style={SANS}>
               Yormetrics
             </h1>
             <p className="text-stone-400 text-sm" style={SANS}>

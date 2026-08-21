@@ -1,11 +1,10 @@
-const SERIF: React.CSSProperties = { fontFamily: "'Playfair Display', Georgia, serif" };
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
 export default function LiveMap() {
   return (
     <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
       <div className="mb-6 flex items-center gap-2">
-        <h3 className="text-2xl font-bold text-stone-900" style={SERIF}>
+        <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900" style={SANS}>
           Live Meteorological Radar
         </h3>
         <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
