@@ -5,35 +5,49 @@ interface TimelineScrubberProps {
   announcementStep: number;
 }
 
-// Total steps: 0-18 (19 intervals from 03:00 AM to 12:00 PM)
+// Total steps: 0-18 (19 intervals from 03:00 AM to 12:00 PM = 540 minutes)
 const TOTAL_STEPS = 18;
+const START_HOUR = 3; // 3:00 AM
+const TOTAL_MINUTES = 9 * 60; // 9-hour window
 
-// Time blocks for segmented ruler (every 3 hours = 6 steps)
-const TIME_BLOCKS = [
-  { step: 0, hour: 3, label: '03:00', period: 'AM' },
-  { step: 6, hour: 6, label: '06:00', period: 'AM' },
-  { step: 12, hour: 9, label: '09:00', period: 'AM' },
-  { step: 18, hour: 12, label: '12:00', period: 'PM' },
-];
-
-function getTimeLabel(step: number): { hour: string; period: string } {
-  const totalMinutes = 3 * 60 + step * 30;
+// Generate all tick marks (19 total: 0, 1, 2, ... 18)
+const TICK_MARKS = Array.from({ length: 19 }, (_, i) => {
+  const totalMinutes = START_HOUR * 60 + i * 30;
   const h = Math.floor(totalMinutes / 60);
   const m = totalMinutes % 60;
   const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
-  const formattedTime = m === 0 ? String(h12).padStart(2, "0") : `${String(h12).padStart(2, "0")}:${String(m).padStart(2, "0")}`;
+  const isHourMark = m === 0;
+  
   return {
-    hour: formattedTime,
-    period: h < 12 ? "AM" : "PM"
+    step: i,
+    hour: h,
+    minute: m,
+    hour12: h12,
+    period: h < 12 ? 'AM' : 'PM',
+    isHourMark,
+    label: isHourMark ? `${String(h12).padStart(2, '0')}:00` : null,
   };
+});
+
+function getTimeLabel(step: number): string {
+  const totalMinutes = START_HOUR * 60 + step * 30;
+  const h = Math.floor(totalMinutes / 60);
+  const m = totalMinutes % 60;
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${String(h12).padStart(2, '0')}:${String(m).padStart(2, '0')} ${h < 12 ? 'AM' : 'PM'}`;
 }
 
 export default function TimelineScrubber({
   step,
   announcementStep,
 }: TimelineScrubberProps) {
-  const currentTime = getTimeLabel(step);
   const progressPercent = (step / TOTAL_STEPS) * 100;
+  const currentTimeLabel = getTimeLabel(step);
+  
+  // Calculate elapsed minutes for precise positioning
+  const elapsedMinutes = step * 30;
+  const decisionWindowPercent = (6 / TOTAL_STEPS) * 100; // 06:00 AM is step 6
+  const announcementPercent = announcementStep >= 0 ? (announcementStep / TOTAL_STEPS) * 100 : null;
   
   return (
     <div className="py-6 bg-white rounded-2xl border border-slate-200 shadow-sm ring-1 ring-slate-900/5" role="region" aria-label="Incident Timeline">
@@ -48,89 +62,90 @@ export default function TimelineScrubber({
       </div>
 
       <div className="px-8">
-        {/* Segmented Ruler Track */}
-        <div className="relative">
-          {/* Time block segments */}
-          <div className="grid grid-cols-3 h-12 mb-8">
-            {[0, 1, 2].map((blockIdx) => {
-              const blockStart = blockIdx * 6;
-              const blockEnd = (blockIdx + 1) * 6;
-              const isFilled = step >= blockEnd;
-              const isPartial = step > blockStart && step < blockEnd;
-              const partialPercent = isPartial ? ((step - blockStart) / 6) * 100 : 0;
+        {/* Tick-Mark Ruler with Badges */}
+        <div className="relative pt-16 pb-12">
+          
+          {/* Progress Fill (Behind Axis) */}
+          <div 
+            className="absolute top-16 left-0 h-1 bg-blue-600 transition-all duration-300"
+            style={{ width: `${progressPercent}%` }}
+          />
+          
+          {/* Main Axis Line */}
+          <div className="relative border-b-2 border-slate-900 h-1">
+            
+            {/* Tick Marks */}
+            {TICK_MARKS.map((tick) => {
+              const position = (tick.step / TOTAL_STEPS) * 100;
               
               return (
                 <div
-                  key={blockIdx}
-                  className={`relative border-r-2 border-slate-300 last:border-r-0 ${
-                    isFilled ? 'bg-blue-100' : isPartial ? 'bg-gradient-to-r from-blue-100 to-transparent' : 'bg-slate-50'
-                  }`}
-                  style={isPartial ? { 
-                    background: `linear-gradient(to right, rgb(219 234 254) ${partialPercent}%, rgb(248 250 252) ${partialPercent}%)`
-                  } : undefined}
+                  key={tick.step}
+                  className="absolute -translate-x-1/2"
+                  style={{ left: `${position}%`, bottom: 0 }}
                 >
-                  {/* Vertical divider lines for visual precision */}
-                  <div className="absolute inset-y-0 right-0 w-px bg-slate-400" />
+                  {/* Tick Line */}
+                  <div 
+                    className={`${
+                      tick.isHourMark 
+                        ? 'h-4 border-l-2 border-slate-900' 
+                        : 'h-2 border-l border-slate-400'
+                    }`}
+                  />
+                  
+                  {/* Hour Label (only for hour marks) */}
+                  {tick.isHourMark && (
+                    <div className="absolute top-6 -translate-x-1/2 left-1/2 whitespace-nowrap">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-lg font-bold text-slate-900" style={SANS}>
+                          {tick.label}
+                        </span>
+                        <span className="text-sm font-semibold text-slate-500" style={SANS}>
+                          {tick.period}
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })}
           </div>
-
-          {/* Direct Badge Injection */}
-          <div className="absolute top-0 left-0 right-0 h-12 pointer-events-none">
-            {/* Decision Window Badge (06:00 AM) */}
+          
+          {/* Badges Above Axis */}
+          <div className="absolute top-0 left-0 right-0 pointer-events-none">
+            
+            {/* Decision Window Badge (Static) - Staggered Lower */}
             <div 
               className="absolute -translate-x-1/2"
-              style={{ left: `${(6 / TOTAL_STEPS) * 100}%`, top: '-2rem' }}
+              style={{ left: `${decisionWindowPercent}%`, top: '2.5rem' }}
             >
-              <div className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full border border-emerald-200 whitespace-nowrap">
+              <div className="bg-emerald-100 text-emerald-800 text-xs font-bold px-3 py-1.5 rounded-full border border-emerald-300 whitespace-nowrap shadow-sm">
                 Decision Window
               </div>
             </div>
 
-            {/* LGU Announcement Badge */}
-            {announcementStep >= 0 && (
+            {/* LGU Announcement Badge (Static) - Staggered Higher */}
+            {announcementPercent !== null && (
               <div 
                 className="absolute -translate-x-1/2"
-                style={{ left: `${(announcementStep / TOTAL_STEPS) * 100}%`, top: '-2rem' }}
+                style={{ left: `${announcementPercent}%`, top: '0rem' }}
               >
-                <div className="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1 rounded-full border border-rose-200 animate-pulse whitespace-nowrap">
+                <div className="bg-rose-100 text-rose-800 text-xs font-bold px-3 py-1.5 rounded-full border border-rose-300 animate-pulse whitespace-nowrap shadow-sm">
                   LGU Announcement
                 </div>
               </div>
             )}
 
-            {/* Current Time Badge */}
+            {/* Current Time Badge (Dynamic) - Top Layer */}
             <div 
-              className="absolute -translate-x-1/2 z-10"
-              style={{ left: `${progressPercent}%`, top: '-2rem' }}
+              className="absolute -translate-x-1/2 z-10 transition-all duration-300"
+              style={{ left: `${progressPercent}%`, top: '0.5rem' }}
             >
-              <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg whitespace-nowrap">
-                Current: {currentTime.hour} {currentTime.period}
+              <div className="bg-blue-600 text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-lg whitespace-nowrap border-2 border-white">
+                Current: {currentTimeLabel}
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Elevated Time Labels */}
-        <div className="grid grid-cols-4 relative -mt-2">
-          {TIME_BLOCKS.map((block, idx) => (
-            <div key={idx} className="flex flex-col items-start" style={{ gridColumn: idx === 3 ? '4' : `${idx + 1}` }}>
-              <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-black text-slate-900" style={SANS}>
-                  {block.label.split(':')[0]}
-                </span>
-                {block.label.includes(':') && (
-                  <span className="text-lg font-black text-slate-900" style={SANS}>
-                    :{block.label.split(':')[1]}
-                  </span>
-                )}
-                <span className="text-sm font-semibold text-slate-500 ml-1" style={SANS}>
-                  {block.period}
-                </span>
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     </div>

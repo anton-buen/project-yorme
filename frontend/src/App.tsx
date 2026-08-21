@@ -383,7 +383,7 @@ export default function App() {
           {/* How it Works FAB */}
           <button
             onClick={() => setTechVaultOpen(true)}
-            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-200 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
+            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
             aria-label="Open How it Works"
           >
             <BookOpen className="w-5 h-5" />
@@ -393,7 +393,7 @@ export default function App() {
           {/* RL Metrics FAB */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-200 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
+            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
             aria-label="Open RL Metrics"
           >
             <BarChart2 className="w-5 h-5" />

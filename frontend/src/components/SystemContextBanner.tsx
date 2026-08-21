@@ -17,7 +17,7 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
     return (
       <div className="fixed inset-0 z-50 pointer-events-none">
         <div 
-          className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
+          className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity duration-300 pointer-events-auto"
           onClick={onClose}
         />
         
@@ -45,17 +45,17 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
               {/* Left Column: The What */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-6">
-                  <div className="w-1 h-12 bg-slate-800 rounded-full" />
-                  <h3 className="text-2xl font-bold font-sans tracking-tight text-slate-800" style={SANS}>
+                  <div className="w-1 h-12 bg-slate-900 rounded-full" />
+                  <h3 className="text-lg font-bold text-slate-900" style={SANS}>
                     The AI Decision System
                   </h3>
                 </div>
                 
-                <p className="text-base text-slate-700 leading-relaxed" style={SANS}>
+                <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
                   YORME-TRICS uses an AI trained on historical disaster response data from NDRRMC to recommend class suspension policies for Manila. The system balances two critical objectives: <span className="font-semibold text-emerald-800">protecting commuter safety</span> through early warnings, and <span className="font-semibold text-amber-800">minimizing false alarms</span> to preserve instructional days.
                 </p>
                 
-                <p className="text-sm text-slate-600 leading-relaxed" style={SANS}>
+                <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
                   All incident dates, PAGASA warnings, and official LGU decisions shown in the dashboard are <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
                 </p>
 
@@ -70,37 +70,37 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
               <div className="space-y-3">
                 <div className="flex items-center gap-2 mb-4">
                   <Activity className="w-4 h-4 text-slate-600" />
-                  <h4 className="text-sm font-semibold text-slate-700 uppercase tracking-wide" style={SANS}>
+                  <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-wider" style={SANS}>
                     System Configuration
                   </h4>
                 </div>
                 
-                <div className="space-y-2 text-sm" style={SANS}>
-                  <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                    <span className="text-slate-600">AI Model Type</span>
-                    <span className="text-slate-900 font-semibold">PPO Neural Network</span>
+                <div className="space-y-2" style={SANS}>
+                  <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                    <span className="text-sm text-slate-700">AI Model Type</span>
+                    <span className="text-sm text-slate-900 font-semibold">PPO Neural Network</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                    <span className="text-slate-600">Data Input</span>
-                    <span className="text-slate-900 font-semibold">Radar + Weather Grid</span>
+                  <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                    <span className="text-sm text-slate-700">Data Input</span>
+                    <span className="text-sm text-slate-900 font-semibold">Radar + Weather Grid</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                    <span className="text-slate-600">Decision Options</span>
-                    <span className="text-slate-900 font-semibold">5 Action Levels (A0-A4)</span>
+                  <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                    <span className="text-sm text-slate-700">Decision Options</span>
+                    <span className="text-sm text-slate-900 font-semibold">5 Action Levels (A0-A4)</span>
                   </div>
-                  <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                    <span className="text-slate-600">Training Data Source</span>
-                    <span className="text-slate-900 font-semibold">NDRRMC Historical</span>
+                  <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                    <span className="text-sm text-slate-700">Training Data Source</span>
+                    <span className="text-sm text-slate-900 font-semibold">NDRRMC Historical</span>
                   </div>
                   <div className="flex justify-between items-center py-2.5">
-                    <span className="text-slate-600">Training Iterations</span>
-                    <span className="text-slate-900 font-semibold">100,000 Scenarios</span>
+                    <span className="text-sm text-slate-700">Training Iterations</span>
+                    <span className="text-sm text-slate-900 font-semibold">100,000 Scenarios</span>
                   </div>
                 </div>
 
                 <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
-                  <p className="text-xs text-slate-600 leading-relaxed" style={SANS}>
-                    <span className="font-semibold text-slate-800">Technical Note:</span> The AI uses a 32×32 spatial tensor (weather radar grid) combined with PAGASA warnings to predict optimal suspension timing. The model was trained on 100,000 simulated disaster scenarios derived from real NDRRMC incident patterns.
+                  <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
+                    <span className="font-semibold text-slate-900">Technical Note:</span> The AI uses a 32×32 spatial tensor (weather radar grid) combined with PAGASA warnings to predict optimal suspension timing. The model was trained on 100,000 simulated disaster scenarios derived from real NDRRMC incident patterns.
                   </p>
                 </div>
               </div>
@@ -114,24 +114,24 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
 
   // Original banner display (kept for backward compatibility if needed)
   return (
-    <div className="border-b border-stone-200/50 bg-white/40">
+    <div className="border-b border-slate-200 bg-white/40">
       <div className="max-w-7xl mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           
           {/* Left Column: The What */}
           <div className="space-y-4">
             <div className="flex items-center gap-3 mb-6">
-              <div className="w-1 h-12 bg-slate-800 rounded-full" />
-              <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-800" style={SANS}>
+              <div className="w-1 h-12 bg-slate-900 rounded-full" />
+              <h2 className="text-lg font-bold text-slate-900" style={SANS}>
                 The AI Decision System
               </h2>
             </div>
             
-            <p className="text-base text-slate-700 leading-relaxed" style={SANS}>
+            <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
               YORME-TRICS uses an AI trained on historical disaster response data from NDRRMC to recommend class suspension policies for Manila. The system balances two critical objectives: <span className="font-semibold text-emerald-800">protecting commuter safety</span> through early warnings, and <span className="font-semibold text-amber-800">minimizing false alarms</span> to preserve instructional days.
             </p>
             
-            <p className="text-sm text-slate-600 leading-relaxed" style={SANS}>
+            <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
               All incident dates, PAGASA warnings, and official LGU decisions shown in the dashboard are <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
             </p>
           </div>
@@ -140,31 +140,31 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
           <div className="space-y-3">
             <div className="flex items-center gap-2 mb-4">
               <Activity className="w-4 h-4 text-slate-600" />
-              <h3 className="text-sm font-semibold text-slate-700 uppercase tracking-wide" style={SANS}>
+              <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider" style={SANS}>
                 System Configuration
               </h3>
             </div>
             
-            <div className="space-y-2 text-sm" style={SANS}>
-              <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                <span className="text-slate-600">AI Model Type</span>
-                <span className="text-slate-900 font-semibold">PPO Neural Network</span>
+            <div className="space-y-2" style={SANS}>
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                <span className="text-sm text-slate-700">AI Model Type</span>
+                <span className="text-sm text-slate-900 font-semibold">PPO Neural Network</span>
               </div>
-              <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                <span className="text-slate-600">Data Input</span>
-                <span className="text-slate-900 font-semibold">Radar + Weather Grid</span>
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                <span className="text-sm text-slate-700">Data Input</span>
+                <span className="text-sm text-slate-900 font-semibold">Radar + Weather Grid</span>
               </div>
-              <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                <span className="text-slate-600">Decision Options</span>
-                <span className="text-slate-900 font-semibold">5 Action Levels (A0-A4)</span>
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                <span className="text-sm text-slate-700">Decision Options</span>
+                <span className="text-sm text-slate-900 font-semibold">5 Action Levels (A0-A4)</span>
               </div>
-              <div className="flex justify-between items-center py-2.5 border-b border-stone-200/50">
-                <span className="text-slate-600">Training Data Source</span>
-                <span className="text-slate-900 font-semibold">NDRRMC Historical</span>
+              <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
+                <span className="text-sm text-slate-700">Training Data Source</span>
+                <span className="text-sm text-slate-900 font-semibold">NDRRMC Historical</span>
               </div>
               <div className="flex justify-between items-center py-2.5">
-                <span className="text-slate-600">Training Iterations</span>
-                <span className="text-slate-900 font-semibold">100,000 Scenarios</span>
+                <span className="text-sm text-slate-700">Training Iterations</span>
+                <span className="text-sm text-slate-900 font-semibold">100,000 Scenarios</span>
               </div>
             </div>
           </div>

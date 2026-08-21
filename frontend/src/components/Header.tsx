@@ -80,13 +80,13 @@ export default function Header({
       <div className="sticky top-0 z-50 bg-slate-900 shadow-lg">
         
         {/* Row 1: Wordmark (Left) + Controls (Right: Incident Dropdown + Mode Toggle) */}
-        <header className="w-full bg-stone-950 px-8 py-4 flex justify-between items-center border-b border-stone-800">
+        <header className="w-full bg-slate-900 px-8 py-4 flex justify-between items-center border-b border-slate-800">
           {/* LEFT SIDE: Logo & Subtitle */}
           <div className="flex flex-col text-left">
             <h1 className="text-white text-3xl font-bold font-sans tracking-tight" style={SANS}>
               Yormetrics
             </h1>
-            <p className="text-stone-400 text-sm" style={SANS}>
+            <p className="text-slate-400 text-sm" style={SANS}>
               Predictive Early Suspension Advisor — City of Manila LGU
             </p>
           </div>
@@ -98,7 +98,7 @@ export default function Header({
               <select
                 value={incidentIdx}
                 onChange={(e) => setIncidentIdx(Number(e.target.value))}
-                className="min-w-[280px] px-4 py-2 bg-stone-800 border border-stone-700 text-stone-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-stone-600 focus:border-stone-500 focus:ring-2 focus:ring-stone-600"
+                className="min-w-[280px] px-4 py-2 bg-slate-800 border border-slate-700 text-slate-200 rounded-xl text-sm transition-all duration-300 ease-in-out hover:border-slate-600 focus:border-slate-500 focus:ring-2 focus:ring-slate-600"
                 style={SANS}
               >
                 {incidents
@@ -115,13 +115,13 @@ export default function Header({
             )}
 
             {/* Segmented Control */}
-            <div className="inline-flex bg-stone-800 rounded-full p-1 shadow-inner">
+            <div className="inline-flex bg-slate-800 rounded-full p-1 shadow-inner">
               <button
                 onClick={() => setMode("historical")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out ${
                   mode === "historical" 
-                    ? 'bg-stone-200 text-stone-900 shadow-md' 
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-slate-200 text-slate-900 shadow-md' 
+                    : 'text-slate-400 hover:text-slate-200'
                 }`}
                 style={SANS}
               >
@@ -131,8 +131,8 @@ export default function Header({
                 onClick={() => setMode("live")}
                 className={`px-6 py-2.5 rounded-full text-sm font-semibold transition-all duration-300 ease-in-out flex items-center gap-2 ${
                   mode === "live" 
-                    ? 'bg-stone-200 text-stone-900 shadow-md' 
-                    : 'text-stone-400 hover:text-stone-200'
+                    ? 'bg-slate-200 text-slate-900 shadow-md' 
+                    : 'text-slate-400 hover:text-slate-200'
                 }`}
                 style={SANS}
               >
@@ -146,7 +146,7 @@ export default function Header({
         </header>
 
         {/* Row 2: PAGASA Status + Clock + Timeline Scrubber */}
-        <div className="w-full bg-stone-900 px-8 py-3 flex items-center border-b border-stone-800">
+        <div className="w-full bg-slate-900 px-8 py-3 flex items-center border-b border-slate-800">
           {/* PAGASA Status Badge */}
           <div 
             className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white whitespace-nowrap"
@@ -156,7 +156,7 @@ export default function Header({
           </div>
 
           {/* Clock Display */}
-          <div className="px-3 py-1.5 bg-stone-800 rounded-lg text-sm text-stone-200 whitespace-nowrap ml-4" style={MONO}>
+          <div className="px-3 py-1.5 bg-slate-800 rounded-lg text-sm text-slate-200 whitespace-nowrap ml-4" style={MONO}>
             {mode === "live" ? (
               <>
                 {currentTime.toLocaleTimeString('en-US', { 
@@ -183,10 +183,10 @@ export default function Header({
                 max={HOUR_STEPS.length - 1}
                 value={step}
                 onChange={(e) => setStep(Number(e.target.value))}
-                className="w-full h-2 bg-stone-800 rounded-full appearance-none cursor-pointer slider-gradient-thumb"
+                className="w-full h-2 bg-slate-800 rounded-full appearance-none cursor-pointer slider-gradient-thumb"
                 data-knob-color={knobColor}
                 style={{
-                  background: "#57534e"
+                  background: "#475569"
                 }}
               />
             </div>
