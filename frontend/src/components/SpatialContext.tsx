@@ -37,10 +37,12 @@ export default function SpatialContext({
           </h3>
           <IconHint
             icon={MapPin}
-            label="AI Observation Input"
-            detail="Metro Manila Region"
-            className="text-slate-400 hover:text-slate-600"
-            iconClassName="w-4 h-4"
+            label="Metro Manila"
+            detail="AI Observation Input"
+            showLabel
+            className="text-slate-500"
+            iconClassName="w-3.5 h-3.5"
+            labelClassName="text-xs text-slate-500"
           />
         </div>
 

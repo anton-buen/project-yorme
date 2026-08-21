@@ -55,7 +55,9 @@ function KpiTile({
           icon={icon}
           label={label}
           detail={detail}
-          iconClassName="w-4 h-4 text-slate-500"
+          showLabel
+          iconClassName="w-3.5 h-3.5 text-slate-500 shrink-0"
+          labelClassName="text-xs font-semibold uppercase tracking-wider text-slate-500"
         />
       </div>
       {footer ?? (
@@ -171,8 +173,10 @@ export default function HeroCards({
                     icon={Scale}
                     label="Baseline"
                     detail="Official LGU decision for comparison"
-                    className="p-1 rounded-sm bg-slate-100 border border-slate-300 text-slate-500"
+                    showLabel
+                    className="px-2 py-0.5 rounded-sm bg-slate-100 border border-slate-300 text-slate-500"
                     iconClassName="w-3.5 h-3.5"
+                    labelClassName="text-xs font-mono"
                   />
                   <a
                     href={SOURCES.manilaPio.href}
@@ -321,18 +325,22 @@ export default function HeroCards({
                     </h2>
                     <IconHint
                       icon={Cpu}
-                      label="PyTorch PPO Agent"
-                      detail="Policy v2.1"
-                      className="p-1 rounded-sm text-slate-400 hover:text-slate-600"
+                      label="PPO Agent"
+                      detail="PyTorch Policy v2.1"
+                      showLabel
+                      className="px-2 py-0.5 rounded-sm text-slate-500"
                       iconClassName="w-3.5 h-3.5"
+                      labelClassName="text-xs text-slate-500"
                     />
                     {mode === 'live' && (
                       <IconHint
                         icon={Activity}
-                        label="Live Feed"
+                        label="Live"
                         detail="Real-time inference"
-                        className="p-1 rounded-sm bg-blue-100 border border-blue-200 text-blue-700"
+                        showLabel
+                        className="px-2 py-0.5 rounded-sm bg-blue-100 border border-blue-200 text-blue-700"
                         iconClassName="w-3.5 h-3.5"
+                        labelClassName="text-xs font-mono"
                       >
                         <span className="relative inline-flex">
                           <Activity className="w-3.5 h-3.5" aria-hidden={true} />
@@ -343,20 +351,31 @@ export default function HeroCards({
                   </div>
                 </div>
                 <div 
-                  className="shrink-0 px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
-                  style={{ 
-                    backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg,
-                    color: ACTION_COLORS[prediction.ai_action_code as ActionCode].textOnBg,
-                    borderColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].border,
-                    ...MONO 
-                  }}
-                  aria-label={`AI Recommendation: Action ${prediction.ai_action_code} - ${ACTION_NAMES[prediction.ai_action_code as ActionCode]}`}
+                  className="shrink-0 flex flex-col items-end gap-1.5 max-w-[12rem]"
                 >
-                  {(() => {
-                    const Icon = ACTION_ICONS[prediction.ai_action_code as ActionCode];
-                    return <Icon className="w-5 h-5" aria-hidden="true" />;
-                  })()}
-                  {ACTION_SHORT[prediction.ai_action_code as ActionCode]}
+                  <div 
+                    className="px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
+                    style={{ 
+                      backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg,
+                      color: ACTION_COLORS[prediction.ai_action_code as ActionCode].textOnBg,
+                      borderColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].border,
+                      ...MONO 
+                    }}
+                    aria-label={`AI Recommendation: Action ${prediction.ai_action_code} - ${ACTION_NAMES[prediction.ai_action_code as ActionCode]}`}
+                  >
+                    {(() => {
+                      const Icon = ACTION_ICONS[prediction.ai_action_code as ActionCode];
+                      return <Icon className="w-5 h-5" aria-hidden="true" />;
+                    })()}
+                    {ACTION_SHORT[prediction.ai_action_code as ActionCode]}
+                  </div>
+                  <p className="text-[10px] text-slate-400 text-right leading-snug" style={SANS}>
+                    Decision-support projection only. Refer to{' '}
+                    <SourceLink source="manilaPio" className="text-slate-500">
+                      Manila PIO
+                    </SourceLink>{' '}
+                    for official orders.
+                  </p>
                 </div>
               </div>
 
@@ -370,32 +389,18 @@ export default function HeroCards({
                 {ACTION_NAMES[prediction.ai_action_code as ActionCode]}
               </h3>
 
-              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mb-6" style={SANS}>
-                <IconHint
-                  icon={Gauge}
-                  label="Predictive Confidence"
-                  detail={isLowConfidence ? `High uncertainty — ${confidence}%` : `${confidence}%`}
-                  className="gap-1.5"
-                  iconClassName={`w-4 h-4 ${isLowConfidence ? 'text-amber-600' : 'text-slate-500'}`}
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <Gauge className={`w-4 h-4 ${isLowConfidence ? 'text-amber-600' : 'text-slate-500'}`} aria-hidden={true} />
-                    <span className={`font-bold ${isLowConfidence ? 'text-amber-600' : 'text-slate-900'}`}>
-                      {confidence}%
-                    </span>
+              <div className="flex flex-wrap items-center gap-4 text-sm text-slate-600 mb-6" style={SANS}>
+                <span className="inline-flex items-center gap-1.5">
+                  <Gauge className={`w-4 h-4 ${isLowConfidence ? 'text-amber-600' : 'text-slate-500'}`} aria-hidden={true} />
+                  <span className="text-xs font-semibold text-slate-500">Confidence</span>
+                  <span className={`font-bold ${isLowConfidence ? 'text-amber-600' : 'text-slate-900'}`}>
+                    {confidence}%
                   </span>
-                </IconHint>
-                <IconHint
-                  icon={Activity}
-                  label="Model Active"
-                  detail="Policy v2.1"
-                  className="gap-1.5"
-                  iconClassName="w-4 h-4 text-slate-400"
-                >
-                  <span className="inline-flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                  </span>
-                </IconHint>
+                </span>
+                <span className="inline-flex items-center gap-1.5" title="Model Active — Policy v2.1">
+                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  <span className="text-xs font-medium text-slate-500">Active</span>
+                </span>
               </div>
 
               {/* Legal Override Banner - DepEd Order 37 */}

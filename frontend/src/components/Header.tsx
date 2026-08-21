@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import type { IncidentData } from '../types/dashboard';
 import SourceLink from './SourceLink';
+import YormeMark from './YormeMark';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
-const SAGE = { line: "#6B9E7A" };
 
 interface HourStep { label: string; hour: number; minute: number }
 
@@ -102,10 +102,10 @@ export default function Header({
           {/* LEFT SIDE: Logo & Subtitle */}
           <div className="flex flex-col text-left">
             <h1 className="text-white text-3xl font-bold font-sans tracking-tight" style={SANS}>
-              Yormetrics
+              <YormeMark />
             </h1>
             <p className="text-slate-400 text-sm" style={SANS}>
-              Predictive Early Suspension Advisor — City of Manila LGU
+              Predictive Class Suspension Advisor — City of Manila
             </p>
           </div>
           

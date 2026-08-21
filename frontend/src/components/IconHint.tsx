@@ -4,20 +4,23 @@ type IconComponent = ComponentType<{ className?: string; 'aria-hidden'?: boolean
 
 interface IconHintProps {
   icon: IconComponent;
-  /** Primary label shown in the hover tooltip */
+  /** Primary label — shown inline when showLabel, otherwise in tooltip */
   label: string;
-  /** Optional secondary line in the tooltip */
+  /** Optional secondary line (tooltip only, or aria when showLabel) */
   detail?: string;
   className?: string;
   iconClassName?: string;
+  labelClassName?: string;
   children?: ReactNode;
   /** Tooltip opens above (default) or below the icon */
   side?: 'top' | 'bottom';
+  /** When true, render icon + visible label (no hover tooltip) */
+  showLabel?: boolean;
 }
 
 /**
- * Compact symbol with a hover/focus tooltip for the full label.
- * Keeps the UI scannable while preserving discoverability and a11y.
+ * Compact symbol. Use showLabel for icon+text rows; omit it for icon-only
+ * with a hover/focus tooltip.
  */
 export default function IconHint({
   icon: Icon,
@@ -25,14 +28,29 @@ export default function IconHint({
   detail,
   className = '',
   iconClassName = 'w-4 h-4',
+  labelClassName = 'text-xs font-medium',
   children,
   side = 'top',
+  showLabel = false,
 }: IconHintProps) {
   const tip = detail ? `${label} — ${detail}` : label;
   const tipPosition =
     side === 'bottom'
       ? 'left-1/2 top-full mt-2 -translate-x-1/2'
       : 'left-1/2 bottom-full mb-2 -translate-x-1/2';
+
+  if (showLabel) {
+    return (
+      <span
+        className={`inline-flex items-center gap-1.5 ${className}`}
+        aria-label={tip}
+        title={detail || undefined}
+      >
+        {children ?? <Icon className={iconClassName} aria-hidden={true} />}
+        <span className={labelClassName}>{label}</span>
+      </span>
+    );
+  }
 
   return (
     <span

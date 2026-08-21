@@ -1,5 +1,6 @@
 import { Activity, X } from 'lucide-react';
 import SourceLink from './SourceLink';
+import { EthicalGuardrailsCallout } from './LegalDisclaimerModal';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
@@ -116,6 +117,10 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
                     incident patterns.
                   </p>
                 </div>
+
+                <div className="mt-4">
+                  <EthicalGuardrailsCallout />
+                </div>
               </div>
               
             </div>
@@ -154,6 +159,10 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
               warnings, and official LGU decisions shown in the dashboard are{' '}
               <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
             </p>
+
+            <div className="mt-4">
+              <EthicalGuardrailsCallout />
+            </div>
           </div>
 
           {/* Right Column: The How */}

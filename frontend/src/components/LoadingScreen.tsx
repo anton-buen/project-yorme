@@ -1,4 +1,5 @@
 import { AlertCircle, Loader2 } from 'lucide-react';
+import YormeMark from './YormeMark';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -18,7 +19,7 @@ export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
             Backend Unreachable
           </h2>
           <p className="text-stone-600 mb-6" style={SANS}>
-            The Yormetrics AI engine is currently unavailable. This may be due to:
+            The <YormeMark /> AI engine is currently unavailable. This may be due to:
           </p>
           <ul className="text-left text-stone-600 mb-6 space-y-2" style={SANS}>
             <li>• Server cold start (up to 50 seconds on free tier)</li>
@@ -53,7 +54,7 @@ export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
       <div className="text-center p-8">
         <Loader2 className="mx-auto mb-6 w-16 h-16 animate-spin" style={{ color: '#3A7050' }} />
         <h2 className="text-3xl font-bold font-sans tracking-tight text-stone-900 mb-4" style={SANS}>
-          Yormetrics
+          <YormeMark />
         </h2>
         <p className="text-xl text-stone-600 mb-8" style={SANS}>
           {stageMessages[stage] || "Initializing..."}

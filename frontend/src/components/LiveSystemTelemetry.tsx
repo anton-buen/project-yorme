@@ -34,8 +34,10 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
             icon={Activity}
             label="Live"
             detail="Metro Manila Disaster Risk Reduction"
-            className="p-1 rounded-sm bg-rose-900/30 border border-rose-800 text-rose-400"
+            showLabel
+            className="px-2 py-0.5 rounded-sm bg-rose-900/30 border border-rose-800 text-rose-400"
             iconClassName="w-3.5 h-3.5"
+            labelClassName="text-xs font-mono"
           >
             <span className="relative inline-flex">
               <Activity className="w-3.5 h-3.5" aria-hidden={true} />
@@ -49,8 +51,10 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
             <IconHint
               icon={Activity}
               label="Inference Status"
+              showLabel
               className="text-stone-400"
-              iconClassName="w-4 h-4"
+              iconClassName="w-4 h-4 shrink-0"
+              labelClassName="text-sm"
             />
             <span className="flex items-center gap-2 text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
@@ -63,8 +67,10 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
               icon={Clock}
               label="System Time"
               detail="Asia/Manila"
+              showLabel
               className="text-stone-400"
-              iconClassName="w-4 h-4"
+              iconClassName="w-4 h-4 shrink-0"
+              labelClassName="text-sm"
             />
             <span className="text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               {currentTime.toLocaleTimeString('en-US', { 
@@ -80,10 +86,12 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
             <IconHint
               icon={Droplets}
-              label="Pumping Station Saturation"
+              label="Pump Saturation"
               detail={`${activePumps}/16 pumps active`}
+              showLabel
               className="text-stone-400"
-              iconClassName="w-4 h-4"
+              iconClassName="w-4 h-4 shrink-0"
+              labelClassName="text-sm"
             />
             <span className="text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               {pumpingSaturation}% ({activePumps}/16)
@@ -93,10 +101,12 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
           <div className="flex justify-between items-center py-3">
             <IconHint
               icon={Waves}
-              label="Manila Bay Tide Sync"
+              label="Manila Bay Tide"
               detail={`${tideStatus} tide`}
+              showLabel
               className="text-stone-400"
-              iconClassName="w-4 h-4"
+              iconClassName="w-4 h-4 shrink-0"
+              labelClassName="text-sm"
             />
             <span className="text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               {tideStatus} ({tideHeight > 0 ? '+' : ''}{tideHeight}m)

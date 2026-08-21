@@ -1,4 +1,4 @@
-import { Gavel, Megaphone, Play, Clock } from 'lucide-react';
+import { Gavel, Megaphone, Play } from 'lucide-react';
 import IconHint from './IconHint';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
@@ -56,17 +56,13 @@ export default function TimelineScrubber({
       aria-label="Master Timeline Control"
     >
       <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex items-baseline gap-3">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider" style={SANS}>
             Simulation Timeline
           </h3>
-          <IconHint
-            icon={Clock}
-            label="Simulation Window"
-            detail="03:00 AM → 12:00 PM (9 hours)"
-            className="text-slate-400 hover:text-slate-200"
-            iconClassName="w-3.5 h-3.5"
-          />
+          <span className="text-xs text-slate-400 font-medium" style={SANS}>
+            03:00 AM → 12:00 PM (9 hours)
+          </span>
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-slate-700 text-white rounded-sm">
           <div className="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse" />
@@ -101,11 +97,13 @@ export default function TimelineScrubber({
               <div className="absolute -top-9 left-0 -translate-x-1/2 pointer-events-auto">
                 <IconHint
                   icon={Gavel}
-                  label="Decision Window"
+                  label="Decision"
                   detail="06:00 AM cutoff"
+                  showLabel
                   side="bottom"
-                  className="p-1 rounded-sm bg-emerald-50 border border-emerald-200 text-emerald-700"
+                  className="px-1.5 py-0.5 rounded-sm bg-emerald-50 border border-emerald-200 text-emerald-700"
                   iconClassName="w-3.5 h-3.5"
+                  labelClassName="text-[10px] font-bold uppercase tracking-wide"
                 />
               </div>
             </div>
@@ -118,11 +116,13 @@ export default function TimelineScrubber({
                 <div className="absolute -top-9 left-0 -translate-x-1/2 pointer-events-auto">
                   <IconHint
                     icon={Megaphone}
-                    label="Official Announcement"
-                    detail="LGU action time"
+                    label="LGU Action"
+                    detail="Official announcement time"
+                    showLabel
                     side="bottom"
-                    className="p-1 rounded-sm bg-rose-50 border border-rose-200 text-rose-700"
+                    className="px-1.5 py-0.5 rounded-sm bg-rose-50 border border-rose-200 text-rose-700"
                     iconClassName="w-3.5 h-3.5"
+                    labelClassName="text-[10px] font-bold uppercase tracking-wide"
                   />
                 </div>
               </div>
@@ -186,33 +186,34 @@ export default function TimelineScrubber({
           </div>
         </div>
 
-        {/* Compact icon legend */}
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-5 pt-5 border-t border-slate-200">
+        {/* Legend — icon + label */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 pt-5 border-t border-slate-200 text-slate-600">
           <IconHint
             icon={Play}
             label="Current Time"
-            detail="Playhead position"
-            className="p-1.5 rounded-sm text-slate-700 hover:bg-slate-100"
+            showLabel
+            className="text-slate-700"
             iconClassName="w-3.5 h-3.5"
+            labelClassName="text-[11px]"
           >
-            <span className="inline-flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-sm bg-slate-900" />
-            </span>
+            <span className="w-2.5 h-2.5 rounded-sm bg-slate-900 shrink-0" />
           </IconHint>
           <IconHint
             icon={Gavel}
-            label="Decision Window"
-            detail="06:00 AM"
-            className="p-1.5 rounded-sm text-emerald-700 hover:bg-emerald-50"
+            label="Decision Window (06:00)"
+            showLabel
+            className="text-emerald-700"
             iconClassName="w-3.5 h-3.5"
+            labelClassName="text-[11px]"
           />
           {announcementStep >= 0 && (
             <IconHint
               icon={Megaphone}
               label="Official Announcement"
-              detail="LGU action"
-              className="p-1.5 rounded-sm text-rose-700 hover:bg-rose-50"
+              showLabel
+              className="text-rose-700"
               iconClassName="w-3.5 h-3.5"
+              labelClassName="text-[11px]"
             />
           )}
         </div>

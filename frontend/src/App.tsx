@@ -21,6 +21,8 @@ import SpatialContext from './components/SpatialContext';
 import TimelineScrubber from './components/TimelineScrubber';
 import TechnicalAppendix from './components/TechnicalAppendix';
 import SourceLink from './components/SourceLink';
+import YormeMark from './components/YormeMark';
+import LegalDisclaimerModal from './components/LegalDisclaimerModal';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
@@ -71,6 +73,7 @@ export default function App() {
   const [bias, setBias] = useState<BiasMode>("balanced");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [techVaultOpen, setTechVaultOpen] = useState(false);
+  const [legalDisclaimerOpen, setLegalDisclaimerOpen] = useState(false);
 
   const [currentPrediction, setCurrentPrediction] = useState<PredictionResponse | null>(null);
   const [predictionError, setPredictionError] = useState<string | null>(null);
@@ -360,12 +363,21 @@ export default function App() {
         )}
 
         {/* Footer */}
-        <div className="text-center text-slate-500 text-sm pt-4" style={SANS}>
-          Yormetrics v2.1 • Powered by PyTorch PPO • Live{' '}
-          <SourceLink source="pagasa" className="text-slate-500">
-            PAGASA
-          </SourceLink>{' '}
-          Integration • 100% Factual Compliance
+        <div className="text-center text-slate-500 text-sm pt-4 pb-2 space-y-2" style={SANS}>
+          <div>
+            <YormeMark /> v2.1 • Powered by PyTorch PPO • Live{' '}
+            <SourceLink source="pagasa" className="text-slate-500">
+              PAGASA
+            </SourceLink>{' '}
+            Integration • 100% Factual Compliance
+          </div>
+          <button
+            type="button"
+            onClick={() => setLegalDisclaimerOpen(true)}
+            className="text-slate-400 hover:text-slate-200 text-xs underline underline-offset-2 decoration-slate-600/50 hover:decoration-slate-400 transition-colors"
+          >
+            Legal &amp; AI Disclaimer
+          </button>
         </div>
       </main>
 
@@ -384,8 +396,13 @@ export default function App() {
         onClose={() => setTechVaultOpen(false)} 
       />
 
+      <LegalDisclaimerModal
+        isOpen={legalDisclaimerOpen}
+        onClose={() => setLegalDisclaimerOpen(false)}
+      />
+
       {/* Floating Action Buttons - Labeled Pills */}
-      {!drawerOpen && !techVaultOpen && (
+      {!drawerOpen && !techVaultOpen && !legalDisclaimerOpen && (
         <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3">
           {/* How it Works FAB */}
           <button
