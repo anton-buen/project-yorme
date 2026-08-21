@@ -17,9 +17,9 @@ export interface HourlyTimelineState {
 export interface IncidentData {
   id: string;
   name: string;
-  description: string;
-  actual_announcement_time: number;
-  actual_action_code: ActionCode;
+  description?: string;
+  actual_announcement_time: number | null;
+  actual_action_code: ActionCode | null;
   hourly_timeline: Record<string, HourlyTimelineState>;
 }
 

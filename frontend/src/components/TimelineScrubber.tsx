@@ -70,8 +70,8 @@ export default function TimelineScrubber({
         </div>
       </div>
 
-      {/* Interactive Scrub Graph */}
-      <div className="px-6 py-6">
+      {/* Interactive Scrub Graph - Increased Vertical Breathing Room */}
+      <div className="px-6 py-10">
         <div className="relative">
           
           {/* Clickable Track Background - Sharp Corners */}
@@ -96,7 +96,7 @@ export default function TimelineScrubber({
               className="absolute inset-y-0 w-0.5 bg-emerald-600 pointer-events-none"
               style={{ left: `${(decisionWindowStep / TOTAL_STEPS) * 100}%` }}
             >
-              <div className="absolute -top-6 left-0 -translate-x-1/2">
+              <div className="absolute -top-8 left-0 -translate-x-1/2">
                 <div className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide whitespace-nowrap" style={SANS}>
                   Decision
                 </div>
@@ -108,7 +108,7 @@ export default function TimelineScrubber({
                 className="absolute inset-y-0 w-0.5 bg-rose-600 pointer-events-none animate-pulse"
                 style={{ left: `${(announcementStep / TOTAL_STEPS) * 100}%` }}
               >
-                <div className="absolute -top-6 left-0 -translate-x-1/2">
+                <div className="absolute -top-8 left-0 -translate-x-1/2">
                   <div className="text-[10px] font-bold text-rose-700 uppercase tracking-wide whitespace-nowrap" style={SANS}>
                     LGU Action
                   </div>
@@ -151,12 +151,12 @@ export default function TimelineScrubber({
                 document.addEventListener('mouseup', handleMouseUp);
               }}
             >
-              <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-3 bg-slate-900" />
+              <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-4 bg-slate-900" />
             </div>
           </div>
 
-          {/* Time Labels Below Track */}
-          <div className="relative mt-6 flex justify-between">
+          {/* Time Labels Below Track - Increased Spacing */}
+          <div className="relative mt-8 flex justify-between">
             {TICK_MARKS.filter(t => t.isHourMark).map((tick) => (
               <div 
                 key={tick.step}
@@ -178,18 +178,18 @@ export default function TimelineScrubber({
           </div>
         </div>
 
-        {/* Legend */}
-        <div className="mt-6 flex items-center justify-center gap-6 text-[11px] text-slate-600 pt-4 border-t border-slate-200" style={SANS}>
-          <div className="flex items-center gap-1.5">
+        {/* Legend - Increased Spacing and Gaps */}
+        <div className="mt-8 flex items-center justify-center gap-8 text-[11px] text-slate-600 pt-6 border-t border-slate-200" style={SANS}>
+          <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-sm bg-slate-900" />
             <span>Current Time</span>
           </div>
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-sm bg-emerald-600" />
             <span>Decision Window (06:00)</span>
           </div>
           {announcementStep >= 0 && (
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-sm bg-rose-600 animate-pulse" />
               <span>Official Announcement</span>
             </div>

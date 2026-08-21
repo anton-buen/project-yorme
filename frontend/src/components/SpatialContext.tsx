@@ -10,6 +10,7 @@ interface SpatialContextProps {
   pagasaWarning: PagasaLevel;
   mode: 'historical' | 'live';
   isLoading?: boolean;
+  setStep?: (step: number) => void; // For interactive time navigation
 }
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
@@ -20,6 +21,7 @@ export default function SpatialContext({
   pagasaWarning,
   mode,
   isLoading = false,
+  setStep,
 }: SpatialContextProps) {
   const [activeView, setActiveView] = useState<'tensor' | 'radar'>('tensor');
 
@@ -77,6 +79,7 @@ export default function SpatialContext({
             mode={mode}
             isLoading={isLoading}
             bare={true}
+            setStep={setStep}
           />
         ) : (
           <LiveMap bare={true} />

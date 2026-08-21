@@ -68,6 +68,23 @@ export default function Header({
   const [currentTime, setCurrentTime] = useState(new Date());
   const knobColor = getKnobGradient(step, HOUR_STEPS.length);
 
+  // DIAGNOSTIC: Log raw incidents data
+  useEffect(() => {
+    console.log('[Header] 🔍 DIAGNOSTIC: Raw incidents array:', {
+      totalCount: incidents.length,
+      incidents: incidents.map((inc, i) => ({
+        index: i,
+        id: inc?.id || 'MISSING_ID',
+        name: inc?.name || 'MISSING_NAME',
+        hasTimeline: !!inc?.hourly_timeline,
+        announcementTime: inc?.actual_announcement_time,
+        announcementTimeType: typeof inc?.actual_announcement_time,
+        actionCode: inc?.actual_action_code,
+        actionCodeType: typeof inc?.actual_action_code,
+      }))
+    });
+  }, [incidents]);
+
   useEffect(() => {
     if (mode === "live") {
       const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -145,34 +162,41 @@ export default function Header({
           </div>
         </header>
 
-        {/* Row 2: PAGASA Status + Clock */}
+        {/* Row 2: PAGASA Status + Clock (Interactive Dropdown in Historical Mode) */}
         <div className="w-full bg-slate-900 px-8 py-3 flex items-center border-b border-slate-800">
           {/* PAGASA Status Badge */}
           <div 
-            className="px-3 py-1.5 rounded-lg text-sm font-semibold text-white whitespace-nowrap"
+            className="px-3 py-1.5 rounded-sm text-sm font-semibold text-white whitespace-nowrap"
             style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
           >
             PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
           </div>
 
-          {/* Clock Display */}
-          <div className="px-3 py-1.5 bg-slate-800 rounded-lg text-sm text-slate-200 whitespace-nowrap ml-4" style={MONO}>
-            {mode === "live" ? (
-              <>
-                {currentTime.toLocaleTimeString('en-US', { 
-                  timeZone: 'Asia/Manila',
-                  hour12: true,
-                  hour: '2-digit',
-                  minute: '2-digit',
-                  second: '2-digit'
-                })} MNL (Live)
-              </>
-            ) : (
-              <>
-                {HOUR_STEPS[step]?.label} (Sim)
-              </>
-            )}
-          </div>
+          {/* Time Display - Interactive Dropdown in Historical Mode */}
+          {mode === "live" ? (
+            <div className="px-3 py-1.5 bg-slate-800 rounded-sm text-sm text-slate-200 whitespace-nowrap ml-4" style={MONO}>
+              {currentTime.toLocaleTimeString('en-US', { 
+                timeZone: 'Asia/Manila',
+                hour12: true,
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+              })} MNL (Live)
+            </div>
+          ) : (
+            <select
+              value={step}
+              onChange={(e) => setStep(Number(e.target.value))}
+              className="ml-4 px-3 py-1.5 bg-slate-800 border border-slate-700 text-slate-200 rounded-sm text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-slate-700 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-600"
+              style={MONO}
+            >
+              {HOUR_STEPS.map((hourStep, idx) => (
+                <option key={idx} value={idx}>
+                  {hourStep.label} (Sim)
+                </option>
+              ))}
+            </select>
+          )}
         </div>
       </div>
     </>

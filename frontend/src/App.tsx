@@ -317,6 +317,7 @@ export default function App() {
                 pagasaWarning={pagasaWarning}
                 mode="historical"
                 isLoading={predictionLoading}
+                setStep={setStep}
               />
             </div>
           </div>
@@ -351,6 +352,7 @@ export default function App() {
                 pagasaWarning={pagasaWarning}
                 mode="live"
                 isLoading={predictionLoading}
+                setStep={setStep}
               />
             </div>
           </div>

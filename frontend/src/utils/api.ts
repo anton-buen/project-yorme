@@ -100,22 +100,38 @@ export async function checkApiHealth(): Promise<{ status: string; message: strin
 export async function fetchIncidents(): Promise<IncidentData[]> {
   const timestamp = new Date().getTime();
   const response = await fetchApi<{ incidents: IncidentData[] }>(`/api/incidents?t=${timestamp}`);
-  const validIncidents = (response.incidents || []).filter((inc) => 
+  
+  // Relaxed filter: Only check for essential fields, not strict types
+  const rawIncidents = (response.incidents || []).filter((inc) => 
     inc && 
     inc.id && 
-    inc.name && 
-    inc.hourly_timeline &&
-    typeof inc.actual_announcement_time === 'number' &&
-    typeof inc.actual_action_code === 'number'
+    inc.name
   );
   
-  if (validIncidents.length === 0) {
-    console.error('[API] No valid incidents found after filtering');
-  } else {
-    console.log(`[API] Filtered ${response.incidents?.length || 0} incidents to ${validIncidents.length} valid incidents`);
+  console.log(`[API] Received ${response.incidents?.length || 0} incidents from backend`);
+  console.log(`[API] After basic validation: ${rawIncidents.length} incidents`);
+  
+  // Sanitize and coerce data (hydration phase)
+  const sanitizedIncidents = rawIncidents.map((inc) => ({
+    ...inc,
+    // Coerce string-numbers to actual numbers, fallback to null
+    actual_announcement_time: inc.actual_announcement_time != null 
+      ? Number(inc.actual_announcement_time) 
+      : null,
+    actual_action_code: inc.actual_action_code != null 
+      ? Number(inc.actual_action_code) 
+      : null,
+    // Ensure hourly_timeline exists (empty object if missing)
+    hourly_timeline: inc.hourly_timeline || {},
+  }));
+  
+  console.log(`[API] Sanitized ${sanitizedIncidents.length} incidents with data coercion`);
+  
+  if (sanitizedIncidents.length === 0) {
+    console.error('[API] No valid incidents found after filtering and sanitization');
   }
   
-  return validIncidents;
+  return sanitizedIncidents as IncidentData[];
 }
 
 // Get AI prediction

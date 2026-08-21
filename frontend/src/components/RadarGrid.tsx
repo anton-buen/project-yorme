@@ -29,6 +29,7 @@ interface RadarGridProps {
   mode?: 'historical' | 'live';
   isLoading?: boolean;
   bare?: boolean; // When true, renders without outer card wrapper
+  setStep?: (step: number) => void; // For interactive time navigation
 }
 
 function getPagasaColor(level: PagasaLevel): string {
@@ -180,7 +181,7 @@ function ManilaMarker() {
   return null;
 }
 
-export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical', isLoading = false, bare = false }: RadarGridProps) {
+export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical', isLoading = false, bare = false, setStep }: RadarGridProps) {
   if (isLoading) {
     return bare ? <MapSkeleton /> : (
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 h-full flex flex-col ring-1 ring-slate-900/5">
@@ -222,10 +223,29 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
         </div>
 
         <div 
-          className="absolute top-3 right-3 px-2 py-1 rounded text-xs font-medium text-white z-[1000]"
-          style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
+          className="absolute top-3 right-3 z-[1000]"
         >
-          {currentTime}
+          {mode === 'live' ? (
+            <div 
+              className="px-2 py-1 rounded-sm text-xs font-medium text-white"
+              style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
+            >
+              {currentTime}
+            </div>
+          ) : (
+            <select
+              value={step}
+              onChange={(e) => setStep && setStep(Number(e.target.value))}
+              className="px-2 py-1 bg-slate-800 border border-slate-700 text-slate-200 rounded-sm text-xs font-medium cursor-pointer transition-all duration-200 hover:bg-slate-700 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-600"
+              style={MONO}
+            >
+              {HOUR_STEPS.map((hourStep, idx) => (
+                <option key={idx} value={idx}>
+                  {hourStep.label}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
 
         <div 
