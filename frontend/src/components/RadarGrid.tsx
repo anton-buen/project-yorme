@@ -2,6 +2,7 @@ import { useRef, useEffect, useMemo } from 'react';
 import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
+import { MapSkeleton } from './Skeletons';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -26,6 +27,7 @@ interface RadarGridProps {
   incidentIdx: number;
   pagasaWarning: PagasaLevel;
   mode?: 'historical' | 'live';
+  isLoading?: boolean;
 }
 
 function getPagasaColor(level: PagasaLevel): string {
@@ -177,7 +179,11 @@ function ManilaMarker() {
   return null;
 }
 
-export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical' }: RadarGridProps) {
+export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical', isLoading = false }: RadarGridProps) {
+  if (isLoading) {
+    return <MapSkeleton />;
+  }
+  
   const currentTime = mode === 'live' 
     ? new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: true })
     : HOUR_STEPS[step]?.label || "12:00 PM";

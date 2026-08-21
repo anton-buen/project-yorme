@@ -307,6 +307,7 @@ export default function App() {
                 step={step}
                 incidentIdx={incidentIdx}
                 pagasaWarning={pagasaWarning}
+                isLoading={predictionLoading}
               />
             </div>
           </div>
@@ -340,6 +341,7 @@ export default function App() {
                 incidentIdx={incidentIdx}
                 pagasaWarning={pagasaWarning}
                 mode={mode}
+                isLoading={predictionLoading}
               />
               <LiveMap />
             </div>

@@ -1,6 +1,7 @@
 import type { ActionCode, PredictionResponse, IncidentData } from '../types/dashboard';
 import { ACTION_NAMES } from '../types/dashboard';
 import LiveSystemTelemetry from './LiveSystemTelemetry';
+import { DecisionCardSkeleton } from './Skeletons';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -212,21 +213,24 @@ export default function HeroCards({
         <LiveSystemTelemetry currentTime={currentTime} commuteDensity={commuteDensity} />
       )}
 
-      <div 
-        className={`bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 h-full ${
-          prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4)
-            ? 'animate-pulse'
-            : ''
-        }`}
-        style={{ 
-          borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
-          borderColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
-          '--tw-ring-color': prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
-        } as React.CSSProperties}
-      >
-        
-        <div className="p-8">
-          {prediction ? (
+      {predictionLoading ? (
+        <DecisionCardSkeleton type="ai" />
+      ) : (
+        <div 
+          className={`bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 h-full ${
+            prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4)
+              ? 'animate-pulse'
+              : ''
+          }`}
+          style={{ 
+            borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
+            borderColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
+            '--tw-ring-color': prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
+          } as React.CSSProperties}
+        >
+          
+          <div className="p-8">
+            {prediction ? (
             <>
               <div className="flex items-start justify-between mb-6">
                 <div>
@@ -427,6 +431,7 @@ export default function HeroCards({
           )}
         </div>
       </div>
+      )}
     </div>
   );
 }
