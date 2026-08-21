@@ -1,4 +1,22 @@
-"""Inject deterministic 32x32 dBZ tensors into incidents.json hourly_data."""
+"""
+Radar Tensor Data Injection Script.
+
+Generates deterministic 32x32 dBZ (decibel relative to Z) radar reflectivity tensors
+for each incident's hourly timeline. Injects realistic synthetic radar data based on
+PAGASA warning levels and incident severity.
+
+The script creates calibrated tensors that match the expected radar signatures for:
+- Control incidents (clear weather): max 12 dBZ
+- Yellow warnings: 20-35 dBZ with localized patterns
+- Orange warnings: 35-50 dBZ with multiple rain cells
+- Red warnings: 50-70 dBZ with intense precipitation cores
+
+Usage:
+    python scripts/inject_hourly_tensors.py
+    
+Output:
+    Updates incidents.json with hourly_data.tensor fields for each time point.
+"""
 from __future__ import annotations
 
 import hashlib
@@ -26,6 +44,15 @@ WARNING_BASE = {
 
 
 def is_control(inc: dict) -> bool:
+    """
+    Determine if an incident is a control scenario (clear weather).
+    
+    Args:
+        inc: Incident dictionary.
+        
+    Returns:
+        bool: True if incident represents clear/control weather.
+    """
     if inc["id"] in CONTROL_IDS:
         return True
     if inc.get("actual_action_code") == 0:
@@ -35,11 +62,39 @@ def is_control(inc: dict) -> bool:
 
 
 def seed_for(inc_id: str, hour_key: str) -> int:
+    """
+    Generate deterministic random seed for reproducible tensor generation.
+    
+    Args:
+        inc_id: Incident identifier.
+        hour_key: Hour key (e.g., "5.0", "5.5").
+        
+    Returns:
+        int: Deterministic seed value.
+    """
     digest = hashlib.md5(f"{inc_id}:{hour_key}".encode()).hexdigest()
     return int(digest[:8], 16)
 
 
 def make_tensor(inc: dict, hour_key: str, hour_state: dict, rng: np.random.Generator) -> list:
+    """
+    Generate a 32x32 radar reflectivity tensor for a specific hour.
+    
+    Creates realistic synthetic radar data based on:
+    - PAGASA warning level (NONE, YELLOW, ORANGE, RED)
+    - LGU action code (0-4)
+    - Time of day (temporal escalation)
+    - Incident type (control vs. storm)
+    
+    Args:
+        inc: Incident dictionary.
+        hour_key: Hour key string (e.g., "5.0").
+        hour_state: Timeline state for this hour.
+        rng: NumPy random generator with deterministic seed.
+        
+    Returns:
+        list: 32x32 nested list of dBZ values (0.0-70.0).
+    """
     warning = hour_state.get("pagasa_warning", "NONE")
     action = inc.get("actual_action_code") or 0
     control = is_control(inc) and warning == "NONE"
@@ -109,6 +164,12 @@ def make_tensor(inc: dict, hour_key: str, hour_state: dict, rng: np.random.Gener
 
 
 def main() -> None:
+    """
+    Main execution function.
+    
+    Loads incidents.json, generates radar tensors for all hourly timeline points,
+    validates control scenarios, and saves the enhanced dataset.
+    """
     data = json.loads(PATH.read_text(encoding="utf-8"))
     for inc in data["incidents"]:
         timeline = inc.get("hourly_timeline") or {}

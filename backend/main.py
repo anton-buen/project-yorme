@@ -1,13 +1,8 @@
 """
-YORME-TRICS Backend API
+YORME-TRICS Backend API.
 
 FastAPI server providing AI-powered class suspension predictions for Manila LGU.
 Uses a PPO-trained reinforcement learning model with real-time PAGASA radar integration.
-
-Main Dependencies:
-    - FastAPI: REST API framework
-    - PyTorch & Stable-Baselines3: RL model inference
-    - Custom LguSuspensionEnv: Gymnasium environment for suspension decisions
 """
 
 import os
@@ -32,6 +27,7 @@ INCIDENTS_PATH = BASE_DIR / "data" / "incidents.json"
 model = None
 data_pipeline = ManilaDataPipeline()
 
+
 async def refresh_radar_cache_loop():
     """
     Background task that refreshes PAGASA radar data every 5 minutes.
@@ -49,6 +45,7 @@ async def refresh_radar_cache_loop():
         
         await asyncio.sleep(300)
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
@@ -60,6 +57,12 @@ async def lifespan(app: FastAPI):
     
     Shutdown:
         - Cancels background tasks cleanly
+        
+    Args:
+        app: FastAPI application instance.
+        
+    Yields:
+        Control back to FastAPI for request handling.
     """
     global model
     
@@ -83,6 +86,7 @@ async def lifespan(app: FastAPI):
     yield
     
     fetch_task.cancel()
+
 
 app = FastAPI(title="WALANG PASOK AI - Backend API", lifespan=lifespan)
 
@@ -109,13 +113,14 @@ class PredictResponse(BaseModel):
     loaded_model_path: str
     obs_tensor_shapes: dict
 
+
 @app.get("/api/health")
 def health_check():
     """
     Health check endpoint.
     
     Returns:
-        dict: Server status, model load state, and radar cache status
+        dict: Server status, model load state, and radar cache status.
     """
     return {
         "status": "online",
@@ -130,10 +135,10 @@ def get_incidents():
     Fetch historical incident data.
     
     Returns:
-        list: Array of incident objects from incidents.json
+        dict: Incidents data from incidents.json.
         
     Raises:
-        HTTPException: 404 if incidents.json not found
+        HTTPException: 404 if incidents.json not found, 500 for other errors.
     """
     try:
         if not INCIDENTS_PATH.exists():
@@ -161,11 +166,15 @@ def get_prediction(req: PredictRequest):
     """
     AI prediction endpoint for class suspension decisions.
     
+    Generates suspension recommendations based on current weather conditions
+    using the trained PPO model. Falls back to conservative predictions if
+    model is unavailable.
+    
     Args:
-        req: PredictRequest containing current_hour, flood_active, pagasa_warning_red
+        req: PredictRequest containing current_hour, flood_active, pagasa_warning_red.
         
     Returns:
-        PredictResponse: AI action code (0-4), probability distribution, and tensor metadata
+        PredictResponse: AI action code, probability distribution, and metadata.
         
     Action Codes:
         0: Status Quo (Normal operations)
@@ -173,6 +182,9 @@ def get_prediction(req: PredictRequest):
         2: Suspend Basic Education
         3: Suspend All Levels
         4: Full LGU Lockdown
+        
+    Raises:
+        HTTPException: 500 if prediction fails.
     """
     try:
         env = LguSuspensionEnv()

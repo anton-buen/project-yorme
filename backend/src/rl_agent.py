@@ -1,3 +1,5 @@
+"""PPO Agent Training and Inference Module."""
+
 import os
 from stable_baselines3 import PPO
 from stable_baselines3.common.env_checker import check_env
@@ -6,8 +8,24 @@ from stable_baselines3.common.callbacks import EvalCallback
 from src.env import LguSuspensionEnv
 from src.cnn_encoder import LguFeaturesExtractor
 
-def train_agent(total_timesteps: int = 100_000, model_save_path: str = "models/ppo_yorme_agent"):
 
+def train_agent(total_timesteps: int = 100_000, model_save_path: str = "models/ppo_yorme_agent"):
+    """
+    Train a PPO agent for LGU class suspension decisions.
+    
+    Configures and trains a PPO agent with custom CNN feature extractor on the
+    LguSuspensionEnv environment. Includes evaluation callbacks and tensorboard logging.
+    
+    Args:
+        total_timesteps: Total training timesteps (default: 100,000).
+        model_save_path: Path to save trained model weights (without .zip extension).
+        
+    Side Effects:
+        - Creates 'models/' directory if it doesn't exist
+        - Saves model checkpoints to 'models/best_model/'
+        - Writes tensorboard logs to 'logs/ppo_yorme_tensorboard/'
+        - Writes evaluation results to 'logs/results/'
+    """
     os.makedirs("models", exist_ok=True)
     
     env = LguSuspensionEnv()
@@ -31,7 +49,7 @@ def train_agent(total_timesteps: int = 100_000, model_save_path: str = "models/p
         learning_rate=0.0003,
         n_steps=2048,
         batch_size=64,
-        gamma=0.99,          # High discount factor to penalize future stranded students
+        gamma=0.99,
         verbose=1,
         tensorboard_log="./logs/ppo_yorme_tensorboard/"
     )
@@ -46,17 +64,25 @@ def train_agent(total_timesteps: int = 100_000, model_save_path: str = "models/p
         render=False
     )
 
-    # Training Loop
     print(f"Beginning training for {total_timesteps} timesteps...")
     model.learn(total_timesteps=total_timesteps, callback=eval_callback)
 
-    # Final Weights
     model.save(model_save_path)
     print(f"Training complete. Weights saved to {model_save_path}.zip")
 
+
 def run_inference(model_path: str):
     """
-    Demonstrates how Streamlit will load the model and predict actions in app.py
+    Run inference demonstration with a trained PPO model.
+    
+    Loads a trained model and runs a single episode, printing decisions
+    at each timestep. Useful for testing and debugging model behavior.
+    
+    Args:
+        model_path: Path to trained model file (without .zip extension).
+        
+    Prints:
+        Timestep-by-timestep decisions with time, flood state, action, and reward.
     """
     model = PPO.load(model_path)
     env = LguSuspensionEnv()
@@ -65,13 +91,13 @@ def run_inference(model_path: str):
     print("\n--- INFERENCE TEST ---")
     done = False
     while not done:
-        # AI picks the best evaluated action
         action, _states = model.predict(obs, deterministic=True)
         obs, reward, terminated, truncated, info = env.step(action)
         
         print(f"Time: {info['time']} | Ground Truth Flood: {info['ground_truth_flood']} | AI Action: Level {action} | Reward: {reward}")
         
         done = terminated or truncated
+
 
 if __name__ == "__main__":
     train_agent(total_timesteps=50_000)

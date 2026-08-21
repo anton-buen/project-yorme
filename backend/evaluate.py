@@ -1,8 +1,28 @@
+"""Model Evaluation Module."""
+
 import numpy as np
 from stable_baselines3 import PPO
 from src.env import LguSuspensionEnv
 
+
 def evaluate_model(episodes=100):
+    """
+    Evaluate trained PPO model performance across multiple episodes.
+    
+    Runs the trained model through multiple storm scenarios and computes
+    aggregate statistics including reward, false alarm rate, lead time,
+    and protected student count.
+    
+    Args:
+        episodes: Number of evaluation episodes to run (default: 100).
+        
+    Prints:
+        Report card with:
+            - Average reward per episode
+            - False alarm rate (unnecessary suspensions)
+            - Average early warning lead time
+            - Total protected students
+    """
     print("Loading WALANG PASOK AI for Evaluation...")
     model = PPO.load("models/ppo_yorme_agent.zip")
     env = LguSuspensionEnv()
@@ -22,8 +42,10 @@ def evaluate_model(episodes=100):
             
             if done:
                 total_rewards.append(ep_reward)
-                if info.get("false_alarm"): false_alarms += 1
-                if info.get("early_call"): lead_times.append(11.5 - env.current_hour)
+                if info.get("false_alarm"):
+                    false_alarms += 1
+                if info.get("early_call"):
+                    lead_times.append(11.5 - env.current_hour)
                 protected_students += max(0, 5000 - info.get("simulated_stranded_projection", 0))
 
     print(f"\n--- AI POLICY REPORT CARD ({episodes} Storms) ---")
@@ -31,6 +53,7 @@ def evaluate_model(episodes=100):
     print(f"False Alarm Rate:     {(false_alarms/episodes)*100:.1f}%")
     print(f"Avg Early Lead Time:  {np.mean(lead_times) if lead_times else 0:.1f} Hours")
     print(f"Total Protected:      {protected_students:,} Students")
+
 
 if __name__ == "__main__":
     evaluate_model()

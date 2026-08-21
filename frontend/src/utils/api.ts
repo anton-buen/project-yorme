@@ -1,20 +1,49 @@
+/**
+ * API Client Module.
+ * 
+ * Provides type-safe HTTP client functions for communicating with the YORME-TRICS backend API.
+ * Includes timeout handling, error recovery, and CORS troubleshooting.
+ * 
+ * @module utils/api
+ */
+
 import type { IncidentData, PredictionResponse, ActionCode } from '../types/dashboard';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://walang-pasok-api.onrender.com';
 
+/**
+ * Custom error class for API-related failures.
+ * 
+ * @extends Error
+ */
 export class ApiError extends Error {
+  /**
+   * Create an API error.
+   * 
+   * @param message - Human-readable error description
+   * @param status - HTTP status code (optional)
+   */
   constructor(message: string, public status?: number) {
     super(message);
     this.name = 'ApiError';
   }
 }
 
+/**
+ * Generic fetch wrapper with timeout, error handling, and logging.
+ * 
+ * @template T - Expected response type
+ * @param endpoint - API endpoint path (e.g., '/api/incidents')
+ * @param options - Fetch options (method, headers, body, etc.)
+ * @param timeoutMs - Request timeout in milliseconds (default: 60000)
+ * @returns Promise resolving to typed response data
+ * @throws {ApiError} On network failure, timeout, or non-2xx response
+ */
 async function fetchApi<T>(endpoint: string, options?: RequestInit, timeoutMs: number = 60000): Promise<T> {
   const url = `${API_BASE_URL}${endpoint}`;
   
   console.log(`[API] ⚡ Fetching: ${endpoint}`, { url, method: options?.method || 'GET', timeout: `${timeoutMs}ms` });
   
-  // Create AbortController for timeout handling
   const controller = new AbortController();
   const timeoutId = setTimeout(() => {
     console.error(`[API] ⏱️ TIMEOUT after ${timeoutMs}ms for ${endpoint}`);
@@ -63,7 +92,6 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit, timeoutMs: n
     clearTimeout(timeoutId);
     console.error(`[API] ❌ FETCH FAILED for ${endpoint}:`, error);
     
-    // Handle timeout specifically
     if (error instanceof Error && error.name === 'AbortError') {
       console.error(`[API] ⏱️ Request aborted due to ${timeoutMs}ms timeout`);
       throw new ApiError(
@@ -76,7 +104,6 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit, timeoutMs: n
       throw error;
     }
     
-    // Check for CORS errors
     if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
       console.error('[API] ❌ Possible CORS error or network failure');
       throw new ApiError(
@@ -91,17 +118,29 @@ async function fetchApi<T>(endpoint: string, options?: RequestInit, timeoutMs: n
   }
 }
 
-// Health check endpoint
+/**
+ * Check API server health status.
+ * 
+ * @returns Promise resolving to health check response
+ * @throws {ApiError} If health check fails
+ */
 export async function checkApiHealth(): Promise<{ status: string; message: string }> {
   return fetchApi('/api/health');
 }
 
-// Fetch all incidents
+/**
+ * Fetch all historical incident data from the backend.
+ * 
+ * Performs data validation and sanitization to ensure type safety.
+ * Adds cache-busting timestamp to prevent stale data.
+ * 
+ * @returns Promise resolving to array of incident data objects
+ * @throws {ApiError} If request fails or no valid incidents found
+ */
 export async function fetchIncidents(): Promise<IncidentData[]> {
   const timestamp = new Date().getTime();
   const response = await fetchApi<{ incidents: IncidentData[] }>(`/api/incidents?t=${timestamp}`);
   
-  // Relaxed filter: Only check for essential fields, not strict types
   const rawIncidents = (response.incidents || []).filter((inc) => 
     inc && 
     inc.id && 
@@ -111,19 +150,15 @@ export async function fetchIncidents(): Promise<IncidentData[]> {
   console.log(`[API] Received ${response.incidents?.length || 0} incidents from backend`);
   console.log(`[API] After basic validation: ${rawIncidents.length} incidents`);
   
-  // Sanitize and coerce data (hydration phase)
   const sanitizedIncidents = rawIncidents.map((inc) => ({
     ...inc,
-    // Coerce string-numbers to actual numbers, fallback to null
     actual_announcement_time: inc.actual_announcement_time != null 
       ? Number(inc.actual_announcement_time) 
       : null,
     actual_action_code: inc.actual_action_code != null 
       ? Number(inc.actual_action_code) 
       : null,
-    // Ensure hourly_timeline exists (empty object if missing)
     hourly_timeline: inc.hourly_timeline || {},
-    // Preserve calibrated 32×32 dBZ tensors when present
     hourly_data: inc.hourly_data || undefined,
   }));
   
@@ -136,13 +171,28 @@ export async function fetchIncidents(): Promise<IncidentData[]> {
   return sanitizedIncidents as IncidentData[];
 }
 
-// Get AI prediction
+/**
+ * Request payload for AI prediction endpoint.
+ */
 export interface PredictRequest {
+  /** Current hour in 24-hour format (0-24, fractional for minutes) */
   current_hour: number;
+  /** Whether flooding is currently active */
   flood_active: boolean;
+  /** Whether PAGASA has issued a Red rainfall warning */
   pagasa_warning_red: boolean;
 }
 
+/**
+ * Get AI-powered class suspension prediction.
+ * 
+ * Sends current weather conditions to the PPO model and receives
+ * a suspension recommendation with probability distribution.
+ * 
+ * @param request - Current weather and time conditions
+ * @returns Promise resolving to AI prediction response
+ * @throws {ApiError} If prediction request fails
+ */
 export async function getPrediction(request: PredictRequest): Promise<PredictionResponse> {
   return fetchApi('/api/predict', {
     method: 'POST',

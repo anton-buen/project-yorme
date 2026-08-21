@@ -1,5 +1,5 @@
 """
-LGU Suspension Environment
+LGU Suspension Environment.
 
 Custom Gymnasium environment for training RL agents to make class suspension decisions.
 Implements a realistic multi-action space with legal constraints and temporal dynamics.
@@ -103,7 +103,12 @@ class LguSuspensionEnv(gym.Env):
         }
 
     def _get_info(self):
-        """Get episode metadata for debugging."""
+        """
+        Get episode metadata for debugging.
+        
+        Returns:
+            dict: Contains time, active_level, pagasa_red_warning, and ground_truth_flood.
+        """
         return {
             "time": f"{int(self.current_hour):02d}:00",
             "active_level": self.current_escalation,
