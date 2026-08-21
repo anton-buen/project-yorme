@@ -207,13 +207,14 @@ export default function TechnicalAppendix({
                     </span>
                   </div>
                   {isRedWarning && (
-                    <div className="mt-4 flex items-center justify-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-2" style={SANS}>
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div className="mt-4 flex items-center justify-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-2" style={SANS} role="alert" aria-live="polite">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                       </svg>
                       <span className="font-semibold">A0 & A1 Locked</span>
-                      <span className="text-red-600">—</span>
+                      <span className="text-red-600" aria-hidden="true">—</span>
                       <span>DepEd Order 37 enforces minimum A2</span>
+                      <span className="sr-only">Actions 0 and 1 are locked and grayed out in the chart above due to PAGASA Red Warning legal requirements.</span>
                     </div>
                   )}
                 </>

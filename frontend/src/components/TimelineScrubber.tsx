@@ -41,7 +41,7 @@ export default function TimelineScrubber({
   const knobColor = getKnobGradient(step, HOUR_STEPS.length);
   
   return (
-    <div className="py-8 bg-gradient-to-b from-stone-50 to-white rounded-2xl border border-stone-200 shadow-sm">
+    <div className="py-8 bg-gradient-to-b from-stone-50 to-white rounded-2xl border border-stone-200 shadow-sm" role="region" aria-label="Timeline Control - Incident Simulation Scrubber">
       <div className="mb-8 text-center px-6">
         <h3 className="text-xl font-bold font-sans tracking-tight text-slate-800 mb-2" style={SANS}>
           Timeline Control
@@ -112,7 +112,8 @@ export default function TimelineScrubber({
                   boxShadow: isActive ? `0 0 16px ${knobColor}, 0 4px 8px rgba(0,0,0,0.15)` : undefined,
                   opacity: isFuture ? futureOpacity : 1,
                 }}
-                aria-label={s.label}
+                aria-label={`${s.label}${isActive ? ' - Current time' : ''}${isAnnouncement ? ' - LGU announcement time' : ''}${isFuture ? ' - Future prediction (high uncertainty)' : isPast ? ' - Past' : ''}`}
+                aria-current={isActive ? 'time' : undefined}
               >
                 {isAnnouncement && (
                   <span className="absolute inset-0 rounded-full bg-rose-500 animate-ping opacity-75" />
