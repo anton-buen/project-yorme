@@ -219,6 +219,53 @@ export default function LegalDisclaimerModal({ isOpen, onClose }: LegalDisclaime
                 </li>
               </ul>
             </section>
+
+            <section>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
+                9. Personal &amp; Institutional Non-Affiliation Disclaimer
+              </h3>
+              <ul className="space-y-2 list-disc pl-5">
+                <li>
+                  <span className="font-semibold text-slate-900">Notice of Independent Endeavor:</span>{' '}
+                  <YormeMark className="font-semibold text-slate-800" /> is an independent,
+                  non-commercial side project created solely for personal learning, educational
+                  exploration, and experimental technology demonstration.
+                </li>
+                <li>
+                  <span className="font-semibold text-slate-900">No Government Affiliation:</span> The
+                  developer is not affiliated, associated, authorized, endorsed by, or in any way
+                  officially connected with the City Government of Manila, the Manila Disaster Risk
+                  Reduction and Management Office (
+                  <SourceLink source="mdrrmo" className="font-semibold text-slate-800" />
+                  ),{' '}
+                  <SourceLink source="pagasa" className="font-semibold text-slate-800" />, the
+                  Department of Education (
+                  <SourceLink source="depedOrder37" className="font-semibold text-slate-800">
+                    DepEd
+                  </SourceLink>
+                  ), or any other government agency, Local Government Unit (LGU), or public
+                  authority in the Philippines. All official announcements, class suspensions, and
+                  emergency advisories belong strictly to their respective official state channels.
+                </li>
+                <li>
+                  <span className="font-semibold text-slate-900">No Institutional Endorsement:</span>{' '}
+                  The views, research, data visualizations, and predictive models presented in this
+                  project are strictly those of the individual creator. They do not represent,
+                  state, or reflect the official views, positions, policies, or opinions of any
+                  university, academic institution, employer, or organization with which the
+                  developer is currently or previously affiliated.
+                </li>
+                <li>
+                  <span className="font-semibold text-slate-900">
+                    Educational &ldquo;As-Is&rdquo; Status:
+                  </span>{' '}
+                  This site is a non-binding research sandbox. All code, predictions, and spatial
+                  visualizations are provided on an &ldquo;as-is&rdquo; basis for experimental
+                  purposes without warranties of accuracy, timeliness, or fitness for public safety
+                  decision-making.
+                </li>
+              </ul>
+            </section>
           </div>
         </div>
       </div>

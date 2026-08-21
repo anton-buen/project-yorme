@@ -306,13 +306,12 @@ export default function HeroCards({
             borderColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
           } as React.CSSProperties}
         >
-          {/* Anxiety Pulse - Border Ring Only (High Severity Actions) */}
-          {prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4) && (
-            <div 
-              className="absolute inset-0 rounded-2xl border-2 animate-pulse pointer-events-none z-10"
-              style={{ 
+          {/* Subtle outline pulse — opacity only, slow ease, no scale */}
+          {prediction && (
+            <div
+              className="absolute inset-0 rounded-2xl border pointer-events-none z-10 ai-card-outline-pulse"
+              style={{
                 borderColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].text,
-                opacity: 0.5
               }}
               aria-hidden="true"
             />

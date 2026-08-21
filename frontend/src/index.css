@@ -171,3 +171,20 @@ input[type='range'] {
 .map-tiles-brightened {
   filter: saturate(0.5) brightness(1.25) contrast(1.25);
 }
+
+/* ── AI Policy card — slow, low-amplitude outline pulse ───────────────────── */
+@keyframes ai-outline-pulse {
+  0%, 100% { opacity: 0.28; }
+  50% { opacity: 0.55; }
+}
+
+.ai-card-outline-pulse {
+  animation: ai-outline-pulse 5.5s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai-card-outline-pulse {
+    animation: none;
+    opacity: 0.4;
+  }
+}

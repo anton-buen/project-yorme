@@ -369,7 +369,7 @@ export default function App() {
         {/* Footer */}
         <div
           id="step-legal-footer"
-          className="text-center text-slate-500 text-sm pt-4 pb-2 space-y-2"
+          className="text-center text-slate-500 text-sm pt-4 pb-2 space-y-2 max-w-3xl mx-auto"
           style={SANS}
         >
           <div>
@@ -379,13 +379,23 @@ export default function App() {
             </SourceLink>{' '}
             Integration • 100% Factual Compliance
           </div>
-          <button
-            type="button"
-            onClick={() => setLegalDisclaimerOpen(true)}
-            className="text-slate-400 hover:text-slate-200 text-xs underline underline-offset-2 decoration-slate-600/50 hover:decoration-slate-400 transition-colors"
-          >
-            Legal &amp; AI Disclaimer
-          </button>
+          <p className="text-xs text-slate-400 leading-relaxed px-2">
+            <YormeMark className="text-slate-400" /> is an independent, non-commercial educational
+            project by a sole developer and is not affiliated with the City of Manila,{' '}
+            <SourceLink source="pagasa" className="text-slate-400">
+              PAGASA
+            </SourceLink>
+            , or any government agency. The contents do not reflect the views of any university or
+            organization associated with the developer. Please see the{' '}
+            <button
+              type="button"
+              onClick={() => setLegalDisclaimerOpen(true)}
+              className="text-slate-400 hover:text-slate-200 underline underline-offset-2 decoration-slate-600/50 hover:decoration-slate-400 transition-colors"
+            >
+              full disclaimer
+            </button>
+            .
+          </p>
         </div>
       </main>
 
