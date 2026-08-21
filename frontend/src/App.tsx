@@ -8,7 +8,7 @@
  */
 
 import { useState, useEffect } from "react";
-import { BarChart2 } from "lucide-react";
+import { BarChart2, BookOpen } from "lucide-react";
 
 import { fetchIncidents, getPrediction, checkApiHealth, ApiError } from './utils/api';
 import type { IncidentData, PredictionResponse } from './types/dashboard';
@@ -70,6 +70,7 @@ export default function App() {
   const [mode, setMode] = useState<DashboardMode>("historical");
   const [bias, setBias] = useState<BiasMode>("balanced");
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [techVaultOpen, setTechVaultOpen] = useState(false);
 
   const [currentPrediction, setCurrentPrediction] = useState<PredictionResponse | null>(null);
   const [predictionError, setPredictionError] = useState<string | null>(null);
@@ -263,7 +264,7 @@ export default function App() {
 
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
         
-        <SystemContextBanner />
+        {/* SystemContextBanner removed from main flow - now in Technical Vault modal */}
 
         {mode === "historical" && (
           <TimelineScrubber
@@ -349,18 +350,35 @@ export default function App() {
         pagasaWarning={pagasaWarning}
       />
 
-      {!drawerOpen && (
-        <button
-          onClick={() => setDrawerOpen(true)}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-40 bg-white border border-stone-200/80 rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 ease-in-out hover:px-6 hover:scale-105 active:scale-95 px-4 py-3 gap-2 group"
-          aria-label="Open RL metrics"
-          style={SANS}
-        >
-          <BarChart2 className="w-5 h-5 text-slate-700" />
-          <span className="text-sm font-medium text-slate-700 w-0 overflow-hidden group-hover:w-auto transition-all duration-300 whitespace-nowrap">
-            View RL Metrics
-          </span>
-        </button>
+      {/* Technical Vault Modal */}
+      <SystemContextBanner 
+        isOpen={techVaultOpen} 
+        onClose={() => setTechVaultOpen(false)} 
+      />
+
+      {/* Floating Action Buttons */}
+      {!drawerOpen && !techVaultOpen && (
+        <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3">
+          {/* Technical Vault FAB */}
+          <button
+            onClick={() => setTechVaultOpen(true)}
+            className="p-4 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-100 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
+            aria-label="Open Technical Vault"
+            title="Technical Vault"
+          >
+            <BookOpen className="w-6 h-6" />
+          </button>
+
+          {/* RL Metrics FAB */}
+          <button
+            onClick={() => setDrawerOpen(true)}
+            className="p-4 rounded-full shadow-lg hover:shadow-xl bg-slate-800 text-slate-100 hover:bg-slate-700 transition-all duration-300 ease-in-out hover:scale-110 active:scale-95"
+            aria-label="Open RL metrics"
+            title="RL Metrics"
+          >
+            <BarChart2 className="w-6 h-6" />
+          </button>
+        </div>
       )}
     </div>
   );
