@@ -1,6 +1,8 @@
 import { useState } from 'react';
+import { MapPin, Grid3x3, Radio } from 'lucide-react';
 import RadarGrid from './RadarGrid';
 import LiveMap from './LiveMap';
+import IconHint from './IconHint';
 
 type PagasaLevel = "NONE" | "YELLOW" | "ORANGE" | "RED";
 
@@ -29,13 +31,17 @@ export default function SpatialContext({
     <div className="bg-white rounded-2xl border border-slate-200 shadow-sm ring-1 ring-slate-900/5 h-full flex flex-col">
       {/* Header with Segmented Control */}
       <div className="p-6 pb-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
+        <div className="flex items-center gap-2">
           <h3 className="text-xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
             Spatial Context
           </h3>
-          <p className="text-xs text-slate-500 mt-1" style={SANS}>
-            AI Observation Input • Metro Manila Region
-          </p>
+          <IconHint
+            icon={MapPin}
+            label="AI Observation Input"
+            detail="Metro Manila Region"
+            className="text-slate-400 hover:text-slate-600"
+            iconClassName="w-4 h-4"
+          />
         </div>
 
         {/* Segmented Control */}
@@ -44,26 +50,32 @@ export default function SpatialContext({
             <button
               onClick={() => setActiveView('tensor')}
               className={`
-                px-4 py-2 text-sm font-medium rounded-md transition-all duration-200
+                px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 inline-flex items-center gap-1.5
                 ${activeView === 'tensor'
                   ? 'bg-white shadow-sm text-slate-900'
                   : 'text-slate-600 hover:text-slate-900'
                 }
               `}
+              title="AI Tensor"
+              aria-label="AI Tensor view"
             >
-              AI Tensor
+              <Grid3x3 className="w-4 h-4" aria-hidden={true} />
+              <span className="hidden sm:inline">Tensor</span>
             </button>
             <button
               onClick={() => setActiveView('radar')}
               className={`
-                px-4 py-2 text-sm font-medium rounded-md transition-all duration-200
+                px-3 py-2 text-sm font-medium rounded-md transition-all duration-200 inline-flex items-center gap-1.5
                 ${activeView === 'radar'
                   ? 'bg-white shadow-sm text-slate-900'
                   : 'text-slate-600 hover:text-slate-900'
                 }
               `}
+              title="Live Radar"
+              aria-label="Live Radar view"
             >
-              Live Radar
+              <Radio className="w-4 h-4" aria-hidden={true} />
+              <span className="hidden sm:inline">Radar</span>
             </button>
           </div>
         )}

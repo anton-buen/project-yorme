@@ -10,6 +10,7 @@ import {
   Tooltip as ReTooltip,
 } from 'recharts';
 import type { ActionCode, PredictionResponse } from '../types/dashboard';
+import SourceLink from './SourceLink';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -52,9 +53,10 @@ const REWARD_PRESETS: Record<BiasMode, RewardWeights> = {
   },
 };
 
-const CHART_WINNER = '#3b82f6';   // blue-500 — primary tech accent
+const CHART_WINNER = '#e2e8f0';   // slate-200 — muted white
 const CHART_MUTED = '#475569';    // slate-600
 const CHART_LOCKED = '#64748b';   // slate-500
+const CHART_TICK = '#94a3b8';     // slate-400 — readable on navy
 
 interface TechnicalAppendixProps {
   isOpen: boolean;
@@ -162,7 +164,7 @@ export default function TechnicalAppendix({
                       onClick={() => handleBiasChange(mode)}
                       className={`w-full p-4 rounded-sm text-left transition-all duration-200 border ${
                         isActive
-                          ? 'bg-slate-800 text-white border-slate-600 border-l-[3px] border-l-blue-500 shadow-[inset_0_0_0_1px_rgba(59,130,246,0.15)]'
+                          ? 'bg-slate-800 text-white border-slate-600 border-l-[3px] border-l-slate-200 shadow-[inset_0_0_0_1px_rgba(226,232,240,0.08)]'
                           : 'bg-slate-900/40 text-slate-400 border-slate-800 hover:bg-slate-800/60 hover:text-slate-200 hover:border-slate-700'
                       }`}
                       style={SANS}
@@ -195,7 +197,7 @@ export default function TechnicalAppendix({
                           type="number" 
                           domain={[0, 100]} 
                           tickFormatter={(value) => `${value}%`}
-                          tick={{ fontSize: 11, fill: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}
+                          tick={{ fontSize: 11, fill: CHART_TICK, fontFamily: "'JetBrains Mono', monospace" }}
                           axisLine={{ stroke: '#334155' }}
                           tickLine={{ stroke: '#334155' }}
                         />
@@ -203,7 +205,7 @@ export default function TechnicalAppendix({
                           type="category" 
                           dataKey="name" 
                           width={140}
-                          tick={{ fontSize: 11, fill: '#64748b', fontFamily: "'JetBrains Mono', monospace" }}
+                          tick={{ fontSize: 11, fill: CHART_TICK, fontFamily: "'JetBrains Mono', monospace" }}
                           axisLine={{ stroke: '#334155' }}
                           tickLine={{ stroke: '#334155' }}
                         />
@@ -217,6 +219,8 @@ export default function TechnicalAppendix({
                             borderRadius: '2px',
                             color: '#e2e8f0',
                           }}
+                          itemStyle={{ color: '#e2e8f0' }}
+                          labelStyle={{ color: '#94a3b8' }}
                           cursor={{ fill: 'rgba(51, 65, 85, 0.35)' }}
                         />
                         <Bar dataKey="value" radius={[0, 0, 0, 0]}>
@@ -239,7 +243,7 @@ export default function TechnicalAppendix({
                   </div>
                   <div className="mt-3 text-xs text-slate-500 text-center font-mono" style={MONO}>
                     Winner:{' '}
-                    <span className="font-bold text-blue-400">
+                    <span className="font-bold text-slate-200">
                       {ACTION_SHORT[prediction.ai_action_code as ActionCode]} ({Math.round(maxProb * 100)}%)
                     </span>
                   </div>
@@ -255,7 +259,12 @@ export default function TechnicalAppendix({
                       </svg>
                       <span className="font-semibold text-rose-400">A0 & A1 Locked</span>
                       <span className="text-rose-700" aria-hidden="true">—</span>
-                      <span className="text-rose-300/80">DepEd Order 37 enforces minimum A2</span>
+                      <span className="text-rose-300/80">
+                        <SourceLink source="depedOrder37" className="text-rose-300/90">
+                          DepEd Order 37
+                        </SourceLink>{' '}
+                        enforces minimum A2
+                      </span>
                       <span className="sr-only">Actions 0 and 1 are locked and grayed out in the chart above due to PAGASA Red Warning legal requirements.</span>
                     </div>
                   )}

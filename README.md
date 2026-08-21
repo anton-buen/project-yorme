@@ -95,7 +95,7 @@ cd backend
 python src/rl_agent.py
 ```
 
-This trains a PPO agent for 100k timesteps. Logs are saved to `logs/ppo_yorme_tensorboard/`.
+This trains a PPO agent for 200k timesteps. Logs are saved to `logs/ppo_yorme_tensorboard/`.
 
 ## Technologies
 

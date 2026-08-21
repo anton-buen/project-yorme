@@ -1,3 +1,6 @@
+import { Activity, Clock, Droplets, Waves } from 'lucide-react';
+import IconHint from './IconHint';
+
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
@@ -7,18 +10,15 @@ interface LiveSystemTelemetryProps {
 }
 
 export default function LiveSystemTelemetry({ currentTime, commuteDensity }: LiveSystemTelemetryProps) {
-  // Calculate dynamic MCDRRMO metrics based on time and conditions
   const hour = currentTime.getHours();
   const minute = currentTime.getMinutes();
   
-  // Pumping station saturation (higher during rush hours and rain)
   const pumpingSaturation = commuteDensity > 0.8 
     ? Math.min(95, 75 + Math.floor(Math.random() * 15)) 
     : Math.min(65, 40 + Math.floor(Math.random() * 20));
   
   const activePumps = Math.floor((pumpingSaturation / 100) * 16);
   
-  // Manila Bay tide (varies by hour - high tide around 6am and 6pm)
   const tidePattern = Math.sin((hour + minute / 60) * Math.PI / 12);
   const tideHeight = (tidePattern * 1.2 + 0.3).toFixed(1);
   const tideStatus = tidePattern > 0.3 ? 'High' : tidePattern > -0.3 ? 'Mid' : 'Low';
@@ -26,33 +26,47 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
   return (
     <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-sm flex flex-col relative overflow-hidden ring-1 ring-slate-900/10">
       <div className="p-8">
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <h2 className="text-2xl font-bold font-sans tracking-tight text-stone-100" style={SANS}>
-              MCDRRMO Telemetry
-            </h2>
-            <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono bg-rose-900/30 text-rose-400 border border-rose-800">
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
-              LIVE
+        <div className="mb-6 flex flex-wrap items-center gap-2">
+          <h2 className="text-2xl font-bold font-sans tracking-tight text-stone-100" style={SANS}>
+            MCDRRMO Telemetry
+          </h2>
+          <IconHint
+            icon={Activity}
+            label="Live"
+            detail="Metro Manila Disaster Risk Reduction"
+            className="p-1 rounded-sm bg-rose-900/30 border border-rose-800 text-rose-400"
+            iconClassName="w-3.5 h-3.5"
+          >
+            <span className="relative inline-flex">
+              <Activity className="w-3.5 h-3.5" aria-hidden={true} />
+              <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
             </span>
-          </div>
-          <p className="text-xs text-stone-400" style={SANS}>
-            Metro Manila Disaster Risk Reduction
-          </p>
+          </IconHint>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-1">
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
-            <span className="font-sans text-sm text-stone-400">Inference Status</span>
-            <span className="flex items-center gap-2 text-stone-100 text-sm font-semibold font-mono">
+            <IconHint
+              icon={Activity}
+              label="Inference Status"
+              className="text-stone-400"
+              iconClassName="w-4 h-4"
+            />
+            <span className="flex items-center gap-2 text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
               ACTIVE
             </span>
           </div>
 
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
-            <span className="font-sans text-sm text-stone-400">System Time</span>
-            <span className="text-stone-100 text-sm font-semibold font-mono">
+            <IconHint
+              icon={Clock}
+              label="System Time"
+              detail="Asia/Manila"
+              className="text-stone-400"
+              iconClassName="w-4 h-4"
+            />
+            <span className="text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               {currentTime.toLocaleTimeString('en-US', { 
                 timeZone: 'Asia/Manila',
                 hour12: false,
@@ -64,24 +78,30 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
           </div>
 
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
-            <span className="font-sans text-sm text-stone-400">Pumping Station Saturation</span>
-            <span className="text-stone-100 text-sm font-semibold font-mono">
-              {pumpingSaturation}% ({activePumps}/16 Active)
+            <IconHint
+              icon={Droplets}
+              label="Pumping Station Saturation"
+              detail={`${activePumps}/16 pumps active`}
+              className="text-stone-400"
+              iconClassName="w-4 h-4"
+            />
+            <span className="text-stone-100 text-sm font-semibold font-mono" style={MONO}>
+              {pumpingSaturation}% ({activePumps}/16)
             </span>
           </div>
 
           <div className="flex justify-between items-center py-3">
-            <span className="font-sans text-sm text-stone-400">Manila Bay Tide Sync</span>
-            <span className="text-stone-100 text-sm font-semibold font-mono">
+            <IconHint
+              icon={Waves}
+              label="Manila Bay Tide Sync"
+              detail={`${tideStatus} tide`}
+              className="text-stone-400"
+              iconClassName="w-4 h-4"
+            />
+            <span className="text-stone-100 text-sm font-semibold font-mono" style={MONO}>
               {tideStatus} ({tideHeight > 0 ? '+' : ''}{tideHeight}m)
             </span>
           </div>
-        </div>
-
-        <div className="mt-6 p-3 bg-stone-950 border border-stone-800 rounded-lg">
-          <p className="text-xs text-stone-400 leading-relaxed" style={SANS}>
-            Real-time infrastructure and environmental parameters for Metro Manila flood risk assessment.
-          </p>
         </div>
       </div>
     </div>

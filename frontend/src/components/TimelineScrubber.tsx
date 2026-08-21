@@ -1,3 +1,6 @@
+import { Gavel, Megaphone, Play, Clock } from 'lucide-react';
+import IconHint from './IconHint';
+
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
 interface TimelineScrubberProps {
@@ -48,19 +51,22 @@ export default function TimelineScrubber({
   
   return (
     <div 
-      className="bg-white border border-slate-200 shadow-sm ring-1 ring-slate-900/5 overflow-hidden" 
+      className="bg-white border border-slate-200 shadow-sm ring-1 ring-slate-900/5 overflow-x-hidden" 
       role="region" 
       aria-label="Master Timeline Control"
     >
-      {/* Compact Header Bar - Navy Anchor */}
       <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between">
-        <div className="flex items-baseline gap-3">
+        <div className="flex items-center gap-3">
           <h3 className="text-sm font-bold text-white uppercase tracking-wider" style={SANS}>
             Simulation Timeline
           </h3>
-          <span className="text-xs text-slate-400 font-medium" style={SANS}>
-            03:00 AM → 12:00 PM (9 hours)
-          </span>
+          <IconHint
+            icon={Clock}
+            label="Simulation Window"
+            detail="03:00 AM → 12:00 PM (9 hours)"
+            className="text-slate-400 hover:text-slate-200"
+            iconClassName="w-3.5 h-3.5"
+          />
         </div>
         <div className="flex items-center gap-2 px-3 py-1 bg-slate-700 text-white rounded-sm">
           <div className="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse" />
@@ -70,11 +76,8 @@ export default function TimelineScrubber({
         </div>
       </div>
 
-      {/* Interactive Scrub Graph - Increased Vertical Breathing Room */}
-      <div className="px-6 py-10">
+      <div className="px-6 pt-14 pb-8">
         <div className="relative">
-          
-          {/* Clickable Track Background - Sharp Corners */}
           <div 
             className="relative h-12 bg-slate-100 rounded-sm cursor-pointer border border-slate-200"
             onClick={(e) => {
@@ -85,21 +88,25 @@ export default function TimelineScrubber({
               setStep(Math.max(0, Math.min(TOTAL_STEPS, newStep)));
             }}
           >
-            {/* Progress Fill - Navy Anchor */}
             <div 
               className="absolute inset-y-0 left-0 bg-slate-900/10 rounded-sm transition-all duration-200"
               style={{ width: `${progressPercent}%` }}
             />
 
-            {/* Vertical Event Markers */}
+            {/* Decision window marker */}
             <div 
               className="absolute inset-y-0 w-0.5 bg-emerald-600 pointer-events-none"
               style={{ left: `${(decisionWindowStep / TOTAL_STEPS) * 100}%` }}
             >
-              <div className="absolute -top-8 left-0 -translate-x-1/2">
-                <div className="text-[10px] font-bold text-emerald-700 uppercase tracking-wide whitespace-nowrap" style={SANS}>
-                  Decision
-                </div>
+              <div className="absolute -top-9 left-0 -translate-x-1/2 pointer-events-auto">
+                <IconHint
+                  icon={Gavel}
+                  label="Decision Window"
+                  detail="06:00 AM cutoff"
+                  side="bottom"
+                  className="p-1 rounded-sm bg-emerald-50 border border-emerald-200 text-emerald-700"
+                  iconClassName="w-3.5 h-3.5"
+                />
               </div>
             </div>
 
@@ -108,15 +115,19 @@ export default function TimelineScrubber({
                 className="absolute inset-y-0 w-0.5 bg-rose-600 pointer-events-none animate-pulse"
                 style={{ left: `${(announcementStep / TOTAL_STEPS) * 100}%` }}
               >
-                <div className="absolute -top-8 left-0 -translate-x-1/2">
-                  <div className="text-[10px] font-bold text-rose-700 uppercase tracking-wide whitespace-nowrap" style={SANS}>
-                    LGU Action
-                  </div>
+                <div className="absolute -top-9 left-0 -translate-x-1/2 pointer-events-auto">
+                  <IconHint
+                    icon={Megaphone}
+                    label="Official Announcement"
+                    detail="LGU action time"
+                    side="bottom"
+                    className="p-1 rounded-sm bg-rose-50 border border-rose-200 text-rose-700"
+                    iconClassName="w-3.5 h-3.5"
+                  />
                 </div>
               </div>
             )}
 
-            {/* Hour Tick Marks */}
             {TICK_MARKS.filter(t => t.isHourMark).map((tick) => (
               <div
                 key={tick.step}
@@ -125,7 +136,6 @@ export default function TimelineScrubber({
               />
             ))}
 
-            {/* Interactive Playhead - Navy Anchor */}
             <div 
               className="absolute inset-y-0 w-1 bg-slate-900 rounded-sm shadow-lg cursor-grab active:cursor-grabbing transition-all duration-200 hover:w-1.5"
               style={{ left: `${progressPercent}%`, transform: 'translateX(-50%)' }}
@@ -151,18 +161,16 @@ export default function TimelineScrubber({
                 document.addEventListener('mouseup', handleMouseUp);
               }}
             >
-              <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-4 bg-slate-900" />
+              <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-5 bg-slate-900" />
             </div>
           </div>
 
-          {/* Time Labels Below Track - Increased Spacing */}
-          <div className="relative mt-8 flex justify-between">
+          <div className="relative mt-7 h-11">
             {TICK_MARKS.filter(t => t.isHourMark).map((tick) => (
               <div 
                 key={tick.step}
-                className="flex flex-col items-center"
+                className="absolute top-0 flex flex-col items-center gap-0.5"
                 style={{ 
-                  position: 'absolute',
                   left: `${(tick.step / TOTAL_STEPS) * 100}%`,
                   transform: 'translateX(-50%)'
                 }}
@@ -178,21 +186,34 @@ export default function TimelineScrubber({
           </div>
         </div>
 
-        {/* Legend - Increased Spacing and Gaps */}
-        <div className="mt-8 flex items-center justify-center gap-8 text-[11px] text-slate-600 pt-6 border-t border-slate-200" style={SANS}>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-sm bg-slate-900" />
-            <span>Current Time</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-2 h-2 rounded-sm bg-emerald-600" />
-            <span>Decision Window (06:00)</span>
-          </div>
+        {/* Compact icon legend */}
+        <div className="mt-8 flex flex-wrap items-center justify-center gap-5 pt-5 border-t border-slate-200">
+          <IconHint
+            icon={Play}
+            label="Current Time"
+            detail="Playhead position"
+            className="p-1.5 rounded-sm text-slate-700 hover:bg-slate-100"
+            iconClassName="w-3.5 h-3.5"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-sm bg-slate-900" />
+            </span>
+          </IconHint>
+          <IconHint
+            icon={Gavel}
+            label="Decision Window"
+            detail="06:00 AM"
+            className="p-1.5 rounded-sm text-emerald-700 hover:bg-emerald-50"
+            iconClassName="w-3.5 h-3.5"
+          />
           {announcementStep >= 0 && (
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-sm bg-rose-600 animate-pulse" />
-              <span>Official Announcement</span>
-            </div>
+            <IconHint
+              icon={Megaphone}
+              label="Official Announcement"
+              detail="LGU action"
+              className="p-1.5 rounded-sm text-rose-700 hover:bg-rose-50"
+              iconClassName="w-3.5 h-3.5"
+            />
           )}
         </div>
       </div>

@@ -20,6 +20,7 @@ import HeroCards from './components/HeroCards';
 import SpatialContext from './components/SpatialContext';
 import TimelineScrubber from './components/TimelineScrubber';
 import TechnicalAppendix from './components/TechnicalAppendix';
+import SourceLink from './components/SourceLink';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
@@ -360,7 +361,11 @@ export default function App() {
 
         {/* Footer */}
         <div className="text-center text-slate-500 text-sm pt-4" style={SANS}>
-          Yormetrics v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
+          Yormetrics v2.1 • Powered by PyTorch PPO • Live{' '}
+          <SourceLink source="pagasa" className="text-slate-500">
+            PAGASA
+          </SourceLink>{' '}
+          Integration • 100% Factual Compliance
         </div>
       </main>
 

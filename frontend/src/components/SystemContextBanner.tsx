@@ -1,7 +1,7 @@
 import { Activity, X } from 'lucide-react';
+import SourceLink from './SourceLink';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
-const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
 interface SystemContextBannerProps {
   isOpen?: boolean;
@@ -52,11 +52,18 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
                 </div>
                 
                 <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
-                  YORME-TRICS uses an AI trained on historical disaster response data from NDRRMC to recommend class suspension policies for Manila. The system balances two critical objectives: <span className="font-semibold text-emerald-800">protecting commuter safety</span> through early warnings, and <span className="font-semibold text-amber-800">minimizing false alarms</span> to preserve instructional days.
+                  YORME-TRICS uses an AI trained on historical disaster response data from{' '}
+                  <SourceLink source="ndrrmc" className="font-semibold text-slate-800" />{' '}
+                  to recommend class suspension policies for Manila. The system balances two critical objectives:{' '}
+                  <span className="font-semibold text-emerald-800">protecting commuter safety</span> through early warnings, and{' '}
+                  <span className="font-semibold text-amber-800">minimizing false alarms</span> to preserve instructional days.
                 </p>
                 
                 <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
-                  All incident dates, PAGASA warnings, and official LGU decisions shown in the dashboard are <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
+                  All incident dates,{' '}
+                  <SourceLink source="pagasa" className="font-semibold text-slate-800" />{' '}
+                  warnings, and official LGU decisions shown in the dashboard are{' '}
+                  <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
                 </p>
 
                 <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -90,17 +97,23 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
                   </div>
                   <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
                     <span className="text-sm text-slate-700">Training Data Source</span>
-                    <span className="text-sm text-slate-900 font-semibold">NDRRMC Historical</span>
+                    <span className="text-sm text-slate-900 font-semibold">
+                      <SourceLink source="ndrrmc">NDRRMC Historical</SourceLink>
+                    </span>
                   </div>
                   <div className="flex justify-between items-center py-2.5">
-                    <span className="text-sm text-slate-700">Training Iterations</span>
-                    <span className="text-sm text-slate-900 font-semibold">100,000 Scenarios</span>
+                    <span className="text-sm text-slate-700">Training Timesteps</span>
+                    <span className="text-sm text-slate-900 font-semibold">200,000</span>
                   </div>
                 </div>
 
                 <div className="mt-6 p-4 bg-slate-50 border border-slate-200 rounded-lg">
                   <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
-                    <span className="font-semibold text-slate-900">Technical Note:</span> The AI uses a 32×32 spatial tensor (weather radar grid) combined with PAGASA warnings to predict optimal suspension timing. The model was trained on 100,000 simulated disaster scenarios derived from real NDRRMC incident patterns.
+                    <span className="font-semibold text-slate-900">Technical Note:</span> The AI uses a 32×32 spatial tensor (weather radar grid) combined with{' '}
+                    <SourceLink source="pagasa" className="font-semibold text-slate-800" />{' '}
+                    warnings to predict optimal suspension timing. The model was trained on 200,000 timesteps derived from real{' '}
+                    <SourceLink source="ndrrmc" className="font-semibold text-slate-800" />{' '}
+                    incident patterns.
                   </p>
                 </div>
               </div>
@@ -128,11 +141,18 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
             </div>
             
             <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
-              YORME-TRICS uses an AI trained on historical disaster response data from NDRRMC to recommend class suspension policies for Manila. The system balances two critical objectives: <span className="font-semibold text-emerald-800">protecting commuter safety</span> through early warnings, and <span className="font-semibold text-amber-800">minimizing false alarms</span> to preserve instructional days.
+              YORME-TRICS uses an AI trained on historical disaster response data from{' '}
+              <SourceLink source="ndrrmc" className="font-semibold text-slate-800" />{' '}
+              to recommend class suspension policies for Manila. The system balances two critical objectives:{' '}
+              <span className="font-semibold text-emerald-800">protecting commuter safety</span> through early warnings, and{' '}
+              <span className="font-semibold text-amber-800">minimizing false alarms</span> to preserve instructional days.
             </p>
             
             <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
-              All incident dates, PAGASA warnings, and official LGU decisions shown in the dashboard are <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
+              All incident dates,{' '}
+              <SourceLink source="pagasa" className="font-semibold text-slate-800" />{' '}
+              warnings, and official LGU decisions shown in the dashboard are{' '}
+              <span className="font-semibold">factual historical records</span>. The AI learned optimal decision patterns by analyzing years of real-world outcomes, measuring success by reduced stranded students and preserved school days.
             </p>
           </div>
 
@@ -160,11 +180,13 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
               </div>
               <div className="flex justify-between items-center py-2.5 border-b border-slate-200">
                 <span className="text-sm text-slate-700">Training Data Source</span>
-                <span className="text-sm text-slate-900 font-semibold">NDRRMC Historical</span>
+                <span className="text-sm text-slate-900 font-semibold">
+                  <SourceLink source="ndrrmc">NDRRMC Historical</SourceLink>
+                </span>
               </div>
               <div className="flex justify-between items-center py-2.5">
-                <span className="text-sm text-slate-700">Training Iterations</span>
-                <span className="text-sm text-slate-900 font-semibold">100,000 Scenarios</span>
+                <span className="text-sm text-slate-700">Training Timesteps</span>
+                <span className="text-sm text-slate-900 font-semibold">200,000</span>
               </div>
             </div>
           </div>

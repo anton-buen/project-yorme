@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapSkeleton } from './Skeletons';
+import SourceLink from './SourceLink';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -204,7 +205,16 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
       {!bare && (
         <div className="mb-6">
           <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-2" style={SANS}>
-            {title}
+            {mode === 'live' ? (
+              title
+            ) : (
+              <>
+                <SourceLink source="pagasa" className="text-stone-900">
+                  PAGASA
+                </SourceLink>{' '}
+                Radar Input Grid
+              </>
+            )}
           </h3>
           <p className="text-sm text-stone-600" style={SANS}>
             {subtitle}
@@ -252,7 +262,10 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
           className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold text-white z-[1000]"
           style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
         >
-          PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
+          <SourceLink source="pagasa" className="text-white">
+            PAGASA
+          </SourceLink>
+          : {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
         </div>
 
         {/* Integrated dBZ Intensity Legend */}

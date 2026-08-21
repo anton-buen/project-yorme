@@ -14,12 +14,12 @@ export function DecisionCardSkeleton({ type = 'ai' }: { type?: 'ai' | 'lgu' }) {
     >
       <div className="p-8">
         {/* Header */}
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
-            <div className="h-8 w-3/5 bg-slate-300 rounded animate-pulse mb-3" />
-            <div className="h-4 w-2/5 bg-slate-200 rounded animate-pulse" />
+        <div className="flex items-start justify-between gap-3 mb-6">
+          <div className="min-w-0 flex-1">
+            <div className="h-8 w-3/5 max-w-full bg-slate-300 rounded animate-pulse mb-3" />
+            <div className="h-4 w-2/5 max-w-full bg-slate-200 rounded animate-pulse" />
           </div>
-          <div className="w-16 h-10 bg-slate-300 rounded-lg animate-pulse" />
+          <div className="shrink-0 w-16 h-10 bg-slate-300 rounded-lg animate-pulse" />
         </div>
 
         {/* Action Title */}

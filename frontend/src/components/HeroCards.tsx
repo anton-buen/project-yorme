@@ -2,10 +2,73 @@ import type { ActionCode, PredictionResponse, IncidentData } from '../types/dash
 import { ACTION_NAMES } from '../types/dashboard';
 import LiveSystemTelemetry from './LiveSystemTelemetry';
 import { DecisionCardSkeleton } from './Skeletons';
-import { CheckCircle, MonitorPlay, AlertTriangle, AlertCircle, ShieldAlert } from 'lucide-react';
+import SourceLink from './SourceLink';
+import IconHint from './IconHint';
+import { SOURCES } from '../utils/sources';
+import {
+  CheckCircle,
+  MonitorPlay,
+  AlertTriangle,
+  AlertCircle,
+  ShieldAlert,
+  Users,
+  BookOpen,
+  UserX,
+  Shield,
+  TrendingDown,
+  Scale,
+  FileText,
+  Cpu,
+  Gauge,
+  Activity,
+} from 'lucide-react';
+import type { ComponentType, ReactNode } from 'react';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
+
+type LucideIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
+
+function KpiTile({
+  icon,
+  label,
+  detail,
+  value,
+  className = '',
+  valueClassName = '',
+  valueStyle,
+  footer,
+}: {
+  icon: LucideIcon;
+  label: string;
+  detail: string;
+  value?: ReactNode;
+  className?: string;
+  valueClassName?: string;
+  valueStyle?: React.CSSProperties;
+  footer?: ReactNode;
+}) {
+  return (
+    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${className}`}>
+      <div className="mb-3 flex items-center">
+        <IconHint
+          icon={icon}
+          label={label}
+          detail={detail}
+          iconClassName="w-4 h-4 text-slate-500"
+        />
+      </div>
+      {footer ?? (
+        <div
+          className={`text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none ${valueClassName}`}
+          style={valueStyle}
+        >
+          {value}
+        </div>
+      )}
+    </div>
+  );
+}
 
 // Semantic Action Icons
 const ACTION_ICONS: Record<ActionCode, React.ComponentType<{ className?: string }>> = {
@@ -98,22 +161,37 @@ export default function HeroCards({
         <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden opacity-80 h-full ring-1 ring-slate-900/5">
           
           <div className="p-8">
-            <div className="flex items-start justify-between mb-6">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
+            <div className="flex items-start justify-between gap-3 mb-6">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
                   <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-700" style={SANS}>
                     Official LGU Decision
                   </h2>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-slate-100 text-slate-500 border border-slate-300">
-                    BASELINE
-                  </span>
+                  <IconHint
+                    icon={Scale}
+                    label="Baseline"
+                    detail="Official LGU decision for comparison"
+                    className="p-1 rounded-sm bg-slate-100 border border-slate-300 text-slate-500"
+                    iconClassName="w-3.5 h-3.5"
+                  />
+                  <a
+                    href={SOURCES.manilaPio.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex"
+                  >
+                    <IconHint
+                      icon={FileText}
+                      label="Source"
+                      detail="Manila PIO Official Log"
+                      className="p-1 rounded-sm text-slate-400 hover:text-slate-600"
+                      iconClassName="w-3.5 h-3.5"
+                    />
+                  </a>
                 </div>
-                <p className="text-xs text-slate-400" style={SANS}>
-                  Source: Manila PIO Official Log
-                </p>
               </div>
               <div 
-                className="px-3 py-1.5 rounded-lg font-semibold text-lg border border-slate-300 flex items-center gap-2 bg-slate-50"
+                className="shrink-0 px-3 py-1.5 rounded-lg font-semibold text-lg border border-slate-300 flex items-center gap-2 bg-slate-50"
                 aria-label={`Action ${actualActionCode}: ${ACTION_NAMES[actualActionCode]}`}
               >
                 {(() => {
@@ -145,72 +223,62 @@ export default function HeroCards({
 
             <div className="grid grid-cols-2 gap-4">
               {actualActionCode === 1 ? (
-                // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
                 <>
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
-                      Commuters Protected
-                    </div>
-                    <div className="text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none text-slate-600" style={SANS}>
-                      {(Math.max(3000, simulatedStranded * 0.4)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                    </div>
-                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
-                      safe arrivals
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
-                      Instructional Hours
-                    </div>
-                    <div className="text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none text-slate-600" style={SANS}>
-                      8 hrs
-                    </div>
-                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
-                      preserved online
-                    </div>
-                  </div>
+                  <KpiTile
+                    icon={Users}
+                    label="Commuters Protected"
+                    detail="Safe arrivals"
+                    value={(Math.max(3000, simulatedStranded * 0.4)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    className="bg-slate-50 border border-slate-200"
+                    valueClassName="text-slate-600"
+                    valueStyle={SANS}
+                  />
+                  <KpiTile
+                    icon={BookOpen}
+                    label="Instructional Hours"
+                    detail="Preserved online"
+                    value="8 hrs"
+                    className="bg-slate-50 border border-slate-200"
+                    valueClassName="text-slate-600"
+                    valueStyle={SANS}
+                  />
                 </>
               ) : (
-                // Other Actions - Show Standard Metrics
                 <>
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
-                      Estimated Stranded
-                    </div>
-                    <div className="text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none text-slate-600" style={SANS}>
-                      {simulatedStranded.toLocaleString()}
-                    </div>
-                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
-                      students at risk
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
-                      Commuter Safety
-                    </div>
-                    <div className="flex flex-col justify-center flex-1">
-                      {wasAnnounced ? (
-                        simulatedStranded < 500 ? (
-                          <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-600">
-                            Protected
-                          </span>
+                  <KpiTile
+                    icon={UserX}
+                    label="Estimated Stranded"
+                    detail="Students at risk"
+                    value={simulatedStranded.toLocaleString()}
+                    className="bg-slate-50 border border-slate-200"
+                    valueClassName="text-slate-600"
+                    valueStyle={SANS}
+                  />
+                  <KpiTile
+                    icon={Shield}
+                    label="Commuter Safety"
+                    detail="Status indicator"
+                    className="bg-slate-50 border border-slate-200"
+                    footer={
+                      <div className="flex flex-col justify-center flex-1">
+                        {wasAnnounced ? (
+                          simulatedStranded < 500 ? (
+                            <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-600">
+                              Protected
+                            </span>
+                          ) : (
+                            <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-700">
+                              Critical
+                            </span>
+                          )
                         ) : (
-                          <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-700">
-                            Critical
+                          <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-500">
+                            Pending
                           </span>
-                        )
-                      ) : (
-                        <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-500">
-                          Pending
-                        </span>
-                      )}
-                    </div>
-                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
-                      status indicator
-                    </div>
-                  </div>
+                        )}
+                      </div>
+                    }
+                  />
                 </>
               )}
             </div>
@@ -245,25 +313,37 @@ export default function HeroCards({
           <div className="p-8">
             {prediction ? (
             <>
-              <div className="flex items-start justify-between mb-6">
-                <div>
-                  <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900 mb-2" style={SANS}>
-                    AI Policy Recommendation
-                  </h2>
-                  <div className="flex items-center gap-2">
-                    <p className="text-xs text-slate-500" style={SANS}>
-                      PyTorch PPO Agent
-                    </p>
+              <div className="flex items-start justify-between gap-3 mb-6">
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2 mb-1">
+                    <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
+                      AI Policy Recommendation
+                    </h2>
+                    <IconHint
+                      icon={Cpu}
+                      label="PyTorch PPO Agent"
+                      detail="Policy v2.1"
+                      className="p-1 rounded-sm text-slate-400 hover:text-slate-600"
+                      iconClassName="w-3.5 h-3.5"
+                    />
                     {mode === 'live' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-blue-100 text-blue-800 border border-blue-200">
-                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
-                        LIVE FEED
-                      </span>
+                      <IconHint
+                        icon={Activity}
+                        label="Live Feed"
+                        detail="Real-time inference"
+                        className="p-1 rounded-sm bg-blue-100 border border-blue-200 text-blue-700"
+                        iconClassName="w-3.5 h-3.5"
+                      >
+                        <span className="relative inline-flex">
+                          <Activity className="w-3.5 h-3.5" aria-hidden={true} />
+                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                        </span>
+                      </IconHint>
                     )}
                   </div>
                 </div>
                 <div 
-                  className="px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
+                  className="shrink-0 px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
                   style={{ 
                     backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg,
                     color: ACTION_COLORS[prediction.ai_action_code as ActionCode].textOnBg,
@@ -283,34 +363,39 @@ export default function HeroCards({
               <h3 className="text-3xl font-extrabold font-sans tracking-tight leading-tight mb-2" 
                   style={{ 
                     color: prediction && (prediction.ai_action_code >= 3) 
-                      ? prediction.ai_action_code === 4 ? '#dc2626' : '#f97316'  // High contrast red/orange
+                      ? prediction.ai_action_code === 4 ? '#dc2626' : '#f97316'
                       : ACTION_COLORS[prediction.ai_action_code as ActionCode].text,
                     ...SANS 
                   }}>
                 {ACTION_NAMES[prediction.ai_action_code as ActionCode]}
               </h3>
 
-              <div className="text-sm text-slate-600 mb-6" style={SANS}>
-                <span className="font-semibold">Predictive Confidence:</span> 
-                <span 
-                  className={`ml-1 font-bold ${
-                    isLowConfidence 
-                      ? 'text-amber-600' 
-                      : 'text-slate-900'
-                  }`}
+              <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600 mb-6" style={SANS}>
+                <IconHint
+                  icon={Gauge}
+                  label="Predictive Confidence"
+                  detail={isLowConfidence ? `High uncertainty — ${confidence}%` : `${confidence}%`}
+                  className="gap-1.5"
+                  iconClassName={`w-4 h-4 ${isLowConfidence ? 'text-amber-600' : 'text-slate-500'}`}
                 >
-                  {confidence}%
-                </span>
-                {isLowConfidence && (
-                  <span className="ml-2 text-xs text-amber-600 font-semibold">
-                    (High Uncertainty)
+                  <span className="inline-flex items-center gap-1.5">
+                    <Gauge className={`w-4 h-4 ${isLowConfidence ? 'text-amber-600' : 'text-slate-500'}`} aria-hidden={true} />
+                    <span className={`font-bold ${isLowConfidence ? 'text-amber-600' : 'text-slate-900'}`}>
+                      {confidence}%
+                    </span>
                   </span>
-                )}
-                <span className="mx-2">•</span>
-                <div className="inline-flex items-center gap-1.5">
-                  <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
-                  <span className="text-xs font-medium text-slate-500">Model: Active (Policy v2.1)</span>
-                </div>
+                </IconHint>
+                <IconHint
+                  icon={Activity}
+                  label="Model Active"
+                  detail="Policy v2.1"
+                  className="gap-1.5"
+                  iconClassName="w-4 h-4 text-slate-400"
+                >
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                  </span>
+                </IconHint>
               </div>
 
               {/* Legal Override Banner - DepEd Order 37 */}
@@ -321,10 +406,16 @@ export default function HeroCards({
                   </svg>
                   <div className="flex-1">
                     <div className="text-sm font-bold text-red-200 mb-1" style={SANS}>
-                      Legal Floor Enforced: DepEd Order 37
+                      Legal Floor Enforced:{' '}
+                      <SourceLink source="depedOrder37" className="text-red-200">
+                        DepEd Order 37
+                      </SourceLink>
                     </div>
                     <div className="text-xs text-red-300 leading-relaxed" style={SANS}>
-                      PAGASA Red Warning automatically triggers minimum Action 2 (Suspend Basic Education). AI decision restricted to A2-A4 range only.
+                      <SourceLink source="pagasa" className="text-red-300">
+                        PAGASA
+                      </SourceLink>{' '}
+                      Red Warning automatically triggers minimum Action 2 (Suspend Basic Education). AI decision restricted to A2-A4 range only.
                       <span className="sr-only">Actions 0 and 1 are legally disabled and cannot be selected during Red Warning conditions.</span>
                     </div>
                   </div>
@@ -350,62 +441,46 @@ export default function HeroCards({
 
               <div className="grid grid-cols-2 gap-4">
                 {prediction.ai_action_code === 1 ? (
-                  // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
                   <>
-                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
-                        Commuters Protected
-                      </div>
-                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
-                        {(Math.max(3500, simulatedStranded * 0.45)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
-                      </div>
-                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                        safe arrivals (AI est.)
-                      </div>
-                    </div>
-
-                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
-                        Instructional Hours
-                      </div>
-                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
-                        8 hrs
-                      </div>
-                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                        preserved online
-                      </div>
-                    </div>
+                    <KpiTile
+                      icon={Users}
+                      label="Commuters Protected"
+                      detail="Safe arrivals (AI est.)"
+                      value={(Math.max(3500, simulatedStranded * 0.45)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                      className={getKpiBackground(prediction.ai_action_code as ActionCode)}
+                      valueClassName="font-bold"
+                      valueStyle={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}
+                    />
+                    <KpiTile
+                      icon={BookOpen}
+                      label="Instructional Hours"
+                      detail="Preserved online"
+                      value="8 hrs"
+                      className={getKpiBackground(prediction.ai_action_code as ActionCode)}
+                      valueClassName="font-bold"
+                      valueStyle={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}
+                    />
                   </>
                 ) : (
-                  // Other Actions - Show Standard Metrics
                   <>
-                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
-                        AI Projected Stranded
-                      </div>
-                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
-                        {Math.round(simulatedStranded * 0.15).toLocaleString()}
-                      </div>
-                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                        with early warning
-                      </div>
-                    </div>
-
-                    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(prediction.ai_action_code as ActionCode)}`}>
-                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
-                        Risk Reduction
-                      </div>
-                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
-                        85%
-                      </div>
-                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                        vs reactive decision
-                      </div>
-                    </div>
+                    <KpiTile
+                      icon={UserX}
+                      label="AI Projected Stranded"
+                      detail="With early warning"
+                      value={Math.round(simulatedStranded * 0.15).toLocaleString()}
+                      className={getKpiBackground(prediction.ai_action_code as ActionCode)}
+                      valueClassName="font-bold"
+                      valueStyle={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}
+                    />
+                    <KpiTile
+                      icon={TrendingDown}
+                      label="Risk Reduction"
+                      detail="Vs reactive decision"
+                      value="85%"
+                      className={getKpiBackground(prediction.ai_action_code as ActionCode)}
+                      valueClassName="font-bold"
+                      valueStyle={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}
+                    />
                   </>
                 )}
               </div>

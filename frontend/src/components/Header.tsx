@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import type { IncidentData } from '../types/dashboard';
+import SourceLink from './SourceLink';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -142,7 +143,7 @@ export default function Header({
                 }`}
                 style={SANS}
               >
-                Historical Replay
+                Replay
               </button>
               <button
                 onClick={() => setMode("live")}
@@ -156,7 +157,7 @@ export default function Header({
                 {mode === "live" && (
                   <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span>
                 )}
-                Live Watch
+                Live
               </button>
             </div>
           </div>
@@ -169,7 +170,10 @@ export default function Header({
             className="px-3 py-1.5 rounded-sm text-sm font-semibold text-white whitespace-nowrap"
             style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
           >
-            PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
+            <SourceLink source="pagasa" className="text-white">
+              PAGASA
+            </SourceLink>
+            : {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
           </div>
 
           {/* Time Display - Interactive Dropdown in Historical Mode */}
