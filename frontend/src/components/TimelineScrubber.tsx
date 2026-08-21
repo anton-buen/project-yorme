@@ -54,31 +54,34 @@ export default function TimelineScrubber({
         </p>
       </div>
 
-      <div className="relative px-8">
-        {/* Graph Grid Background */}
-        <div className="absolute inset-x-8 top-0 bottom-16 pointer-events-none">
-          {[...Array(5)].map((_, i) => (
+      <div className="relative px-4 md:px-8">
+        {/* Mobile: Horizontal scroll wrapper */}
+        <div className="overflow-x-auto overscroll-x-contain pb-4 scrollbar-thin scrollbar-thumb-slate-300 scrollbar-track-transparent">
+          <div className="min-w-[768px]">
+            {/* Graph Grid Background */}
+            <div className="absolute inset-x-8 top-0 bottom-16 pointer-events-none">
+              {[...Array(5)].map((_, i) => (
+                <div 
+                  key={i}
+                  className="absolute w-full border-t border-stone-200"
+                  style={{ top: `${i * 25}%` }}
+                />
+              ))}
+            </div>
+
+            {/* Future Decay Gradient Overlay */}
             <div 
-              key={i}
-              className="absolute w-full border-t border-stone-200"
-              style={{ top: `${i * 25}%` }}
+              className="absolute top-0 bottom-16 pointer-events-none z-10"
+              style={{
+                left: `calc(8% + ${(step / (HOUR_STEPS.length - 1)) * 84}%)`,
+                right: '8%',
+                background: 'linear-gradient(to right, rgba(226, 232, 240, 0) 0%, rgba(226, 232, 240, 0.4) 50%, rgba(226, 232, 240, 0.7) 100%)',
+                backdropFilter: 'blur(1px)',
+              }}
             />
-          ))}
-        </div>
 
-        {/* Future Decay Gradient Overlay */}
-        <div 
-          className="absolute top-0 bottom-16 pointer-events-none z-10"
-          style={{
-            left: `calc(8% + ${(step / (HOUR_STEPS.length - 1)) * 84}%)`,
-            right: '8%',
-            background: 'linear-gradient(to right, rgba(226, 232, 240, 0) 0%, rgba(226, 232, 240, 0.4) 50%, rgba(226, 232, 240, 0.7) 100%)',
-            backdropFilter: 'blur(1px)',
-          }}
-        />
-
-        {/* Timeline Circles */}
-        <div className="relative flex items-center justify-between gap-1 mb-4">
+            {/* Timeline Circles */}
+            <div className="relative flex items-center justify-between gap-1 mb-4 px-8">
           {HOUR_STEPS.map((s, i) => {
             const isActive = i === step;
             const isAnnouncement = i === announcementStep;
@@ -96,7 +99,7 @@ export default function TimelineScrubber({
                 key={i}
                 onClick={() => setStep(i)}
                 className={`
-                  relative shrink-0 w-4 h-4 rounded-full border-2 transition-all duration-200
+                  relative shrink-0 w-8 h-8 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200
                   ${isActive 
                     ? "scale-150 shadow-lg border-white z-20" 
                     : isPast 
@@ -120,27 +123,27 @@ export default function TimelineScrubber({
         </div>
 
         {/* Time Axis Labels */}
-        <div className="flex justify-between text-xs font-semibold text-slate-700 mb-6 px-1" style={MONO}>
+        <div className="flex justify-between text-xs font-semibold text-slate-700 mb-6 px-9" style={MONO}>
           <div className="flex flex-col items-start">
             <span>03:00</span>
-            <span className="text-[9px] text-slate-400 font-normal">Early Morning</span>
+            <span className="text-[9px] text-slate-400 font-normal hidden md:inline">Early Morning</span>
           </div>
           <div className="flex flex-col items-center">
             <span>06:00</span>
-            <span className="text-[9px] text-emerald-600 font-normal">Decision Window</span>
+            <span className="text-[9px] text-emerald-600 font-normal hidden md:inline">Decision Window</span>
           </div>
           <div className="flex flex-col items-center">
             <span>09:00</span>
-            <span className="text-[9px] text-slate-400 font-normal">Mid Morning</span>
+            <span className="text-[9px] text-slate-400 font-normal hidden md:inline">Mid Morning</span>
           </div>
           <div className="flex flex-col items-end">
             <span>12:00</span>
-            <span className="text-[9px] text-slate-400 font-normal">Noon</span>
+            <span className="text-[9px] text-slate-400 font-normal hidden md:inline">Noon</span>
           </div>
         </div>
 
         {/* Legend */}
-        <div className="flex items-center justify-center gap-6 pt-4 border-t border-stone-200">
+        <div className="flex flex-wrap items-center justify-center gap-3 md:gap-6 pt-4 border-t border-stone-200 px-8">
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 rounded-full border-2 border-stone-400 bg-white"></div>
             <span className="text-xs text-slate-600" style={SANS}>Future</span>
@@ -164,6 +167,8 @@ export default function TimelineScrubber({
               <span className="text-xs text-slate-600" style={SANS}>LGU Announcement</span>
             </div>
           )}
+        </div>
+          </div>
         </div>
       </div>
     </div>

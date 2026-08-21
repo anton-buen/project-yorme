@@ -205,7 +205,7 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
       </div>
 
       {/* Map Container with Tensor Overlay */}
-      <div className="flex-1 min-h-[400px] relative rounded-xl overflow-hidden border-2 border-stone-200">
+      <div className="h-64 md:h-80 lg:flex-1 lg:min-h-[400px] relative rounded-xl overflow-hidden border-2 border-stone-200">
         {/* Map metadata overlays */}
         <div 
           className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-[1000]"

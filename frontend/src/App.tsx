@@ -280,7 +280,7 @@ export default function App() {
 
         {/* TIER 2: The Command Deck - 12-column grid */}
         {mode === "historical" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 mb-6">
             {/* Left Column: AI + LGU Decision Cards */}
             <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
               <HeroCards
@@ -302,7 +302,7 @@ export default function App() {
             </div>
 
             {/* Right Column: Telemetry + Spatial Tensor */}
-            <div className="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full">
+            <div className="col-span-12 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-full">
               <RadarGrid
                 step={step}
                 incidentIdx={incidentIdx}
@@ -312,7 +312,7 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 mb-6">
             {/* Left Column: AI + LGU Decision Cards */}
             <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
               <HeroCards
@@ -335,7 +335,7 @@ export default function App() {
             </div>
 
             {/* Right Column: Telemetry + Map */}
-            <div className="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full">
+            <div className="col-span-12 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-full">
               <RadarGrid
                 step={step}
                 incidentIdx={incidentIdx}

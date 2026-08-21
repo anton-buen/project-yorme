@@ -134,7 +134,7 @@ export default function HeroCards({
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Commuters Protected
                     </div>
-                    <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                    <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                          style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
                       {(Math.max(3000, simulatedStranded * 0.4)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </div>
@@ -148,7 +148,7 @@ export default function HeroCards({
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Instructional Hours
                     </div>
-                    <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                    <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                          style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
                       8 hrs
                     </div>
@@ -165,7 +165,7 @@ export default function HeroCards({
                     <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                       Estimated Stranded
                     </div>
-                    <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                    <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                          style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
                       {simulatedStranded.toLocaleString()}
                     </div>
@@ -333,7 +333,7 @@ export default function HeroCards({
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         Commuters Protected
                       </div>
-                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                            style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
                         {(Math.max(3500, simulatedStranded * 0.45)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                       </div>
@@ -347,7 +347,7 @@ export default function HeroCards({
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         Instructional Hours
                       </div>
-                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                            style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
                         8 hrs
                       </div>
@@ -364,7 +364,7 @@ export default function HeroCards({
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         AI Projected Stranded
                       </div>
-                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                            style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
                         {Math.round(simulatedStranded * 0.15).toLocaleString()}
                       </div>
@@ -378,7 +378,7 @@ export default function HeroCards({
                       <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
                         Risk Reduction
                       </div>
-                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                      <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
                            style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
                         85%
                       </div>
