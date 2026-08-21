@@ -101,7 +101,7 @@ export default function TechnicalAppendix({
       />
       
       <div 
-        className={`absolute bottom-0 left-0 right-0 bg-white border-t border-stone-200/80 shadow-2xl transition-transform duration-300 pointer-events-auto ${
+        className={`absolute bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-2xl transition-transform duration-300 pointer-events-auto ring-1 ring-slate-900/5 ${
           isOpen ? 'translate-y-0' : 'translate-y-full'
         }`}
         style={{ maxHeight: '70vh', overflowY: 'auto' }}

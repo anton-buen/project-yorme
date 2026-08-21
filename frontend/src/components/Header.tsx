@@ -77,7 +77,7 @@ export default function Header({
 
   return (
     <>
-      <div className="sticky top-0 z-50 bg-stone-950 shadow-lg">
+      <div className="sticky top-0 z-50 bg-slate-900 shadow-lg">
         
         {/* Row 1: Wordmark (Left) + Controls (Right: Incident Dropdown + Mode Toggle) */}
         <header className="w-full bg-stone-950 px-8 py-4 flex justify-between items-center border-b border-stone-800">

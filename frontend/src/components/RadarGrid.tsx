@@ -194,7 +194,7 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
     : 'Channel 0: dBZ Reflectivity • Local Manila Grid (32×32 Tensor Input)';
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8 h-full flex flex-col">
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 h-full flex flex-col ring-1 ring-slate-900/5">
       <div className="mb-6">
         <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-2" style={SANS}>
           {title}

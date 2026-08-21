@@ -24,7 +24,7 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
   const tideStatus = tidePattern > 0.3 ? 'High' : tidePattern > -0.3 ? 'Mid' : 'Low';
   
   return (
-    <div className="bg-stone-900 border border-stone-800 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
+    <div className="bg-slate-900 border border-slate-800 rounded-2xl shadow-sm flex flex-col relative overflow-hidden ring-1 ring-slate-900/10">
       <div className="p-8">
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">

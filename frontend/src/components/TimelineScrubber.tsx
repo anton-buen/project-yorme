@@ -31,7 +31,7 @@ export default function TimelineScrubber({
   const progressPercent = (step / TOTAL_STEPS) * 100;
   
   return (
-    <div className="py-6 bg-gradient-to-b from-stone-50 to-white rounded-2xl border border-stone-200 shadow-sm" role="region" aria-label="Event Track - Read-only Timeline Status">
+    <div className="py-6 bg-white rounded-2xl border border-slate-200 shadow-sm ring-1 ring-slate-900/5" role="region" aria-label="Event Track - Read-only Timeline Status">
       <div className="mb-6 text-center px-6">
         <h3 className="text-lg font-bold font-sans tracking-tight text-slate-800 mb-1" style={SANS}>
           Event Track

@@ -91,61 +91,48 @@ export default function HeroCards({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
       
       {mode === 'historical' ? (
-        <div className="bg-slate-50 border border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 opacity-90 h-full"
-             style={{ borderTopColor: ACTION_COLORS[currentIncident.actual_action_code].text }}>
+        <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden opacity-80 h-full ring-1 ring-slate-900/5">
           
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
                 <div className="flex items-center gap-2 mb-2">
-                  <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
+                  <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-700" style={SANS}>
                     Official LGU Decision
                   </h2>
-                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-slate-200 text-slate-600 border border-slate-300">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-slate-100 text-slate-500 border border-slate-300">
                     BASELINE
                   </span>
                 </div>
-                <p className="text-xs text-slate-500" style={SANS}>
+                <p className="text-xs text-slate-400" style={SANS}>
                   Source: Manila PIO Official Log
                 </p>
               </div>
               <div 
-                className="px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
-                style={{ 
-                  backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg, 
-                  color: ACTION_COLORS[currentIncident.actual_action_code].textOnBg,
-                  borderColor: ACTION_COLORS[currentIncident.actual_action_code].border,
-                  ...MONO 
-                }}
+                className="px-3 py-1.5 rounded-lg font-semibold text-lg border border-slate-300 flex items-center gap-2 bg-slate-50"
                 aria-label={`Action ${currentIncident.actual_action_code}: ${ACTION_NAMES[currentIncident.actual_action_code]}`}
               >
                 {(() => {
                   const Icon = ACTION_ICONS[currentIncident.actual_action_code];
-                  return <Icon className="w-5 h-5" aria-hidden="true" />;
+                  return <Icon className="w-5 h-5 text-slate-500" aria-hidden="true" />;
                 })()}
                 {ACTION_SHORT[currentIncident.actual_action_code]}
               </div>
             </div>
 
-            <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-4" 
-                style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+            <h3 className="text-2xl font-semibold font-sans tracking-tight leading-tight mb-4 text-slate-600" style={SANS}>
               {ACTION_NAMES[currentIncident.actual_action_code]}
             </h3>
 
             {wasAnnounced ? (
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold mb-6"
-                   style={{ 
-                     backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg, 
-                     color: ACTION_COLORS[currentIncident.actual_action_code].text, 
-                     ...SANS 
-                   }}>
-                <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium mb-6 bg-slate-100 text-slate-600" style={SANS}>
+                <div className="w-2 h-2 rounded-full bg-slate-400 animate-pulse" />
                 Announced at {typeof currentIncident.actual_announcement_time === 'number' 
                   ? currentIncident.actual_announcement_time.toFixed(1) 
                   : (Number(currentIncident.actual_announcement_time) || 0).toFixed(1)}:00
               </div>
             ) : (
-              <div className="text-sm text-slate-500 mb-6" style={SANS}>
+              <div className="text-sm text-slate-400 mb-6" style={SANS}>
                 Pending announcement (scheduled {typeof currentIncident.actual_announcement_time === 'number' 
                   ? currentIncident.actual_announcement_time.toFixed(1) 
                   : (Number(currentIncident.actual_announcement_time) || 0).toFixed(1)}:00)
@@ -156,28 +143,26 @@ export default function HeroCards({
               {currentIncident.actual_action_code === 1 ? (
                 // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
                 <>
-                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
                       Commuters Protected
                     </div>
-                    <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                         style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+                    <div className="text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none text-slate-600" style={SANS}>
                       {(Math.max(3000, simulatedStranded * 0.4)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
                     </div>
-                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
                       safe arrivals
                     </div>
                   </div>
 
-                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
                       Instructional Hours
                     </div>
-                    <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                         style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+                    <div className="text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none text-slate-600" style={SANS}>
                       8 hrs
                     </div>
-                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
                       preserved online
                     </div>
                   </div>
@@ -185,45 +170,40 @@ export default function HeroCards({
               ) : (
                 // Other Actions - Show Standard Metrics
                 <>
-                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
                       Estimated Stranded
                     </div>
-                    <div className="text-3xl md:text-4xl font-bold font-sans tracking-tight leading-none" 
-                         style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+                    <div className="text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none text-slate-600" style={SANS}>
                       {simulatedStranded.toLocaleString()}
                     </div>
-                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
                       students at risk
                     </div>
                   </div>
 
-                  <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${getKpiBackground(currentIncident.actual_action_code)}`}>
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3" style={SANS}>
                       Commuter Safety
                     </div>
                     <div className="flex flex-col justify-center flex-1">
                       {wasAnnounced ? (
                         simulatedStranded < 500 ? (
-                          <span className="inline-flex px-4 py-2 rounded-full text-base font-semibold w-fit bg-slate-700 text-slate-100">
+                          <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-600">
                             Protected
                           </span>
                         ) : (
-                          <span className="inline-flex px-4 py-2 rounded-full text-base font-semibold w-fit" 
-                                style={{ 
-                                  backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].text,
-                                  color: 'white'
-                                }}>
+                          <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-700">
                             Critical
                           </span>
                         )
                       ) : (
-                        <span className="inline-flex px-4 py-2 rounded-full text-base font-semibold w-fit bg-slate-600 text-white">
+                        <span className="inline-flex px-4 py-2 rounded-full text-base font-medium w-fit bg-slate-200 text-slate-500">
                           Pending
                         </span>
                       )}
                     </div>
-                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                    <div className="text-xs text-slate-400 mt-2" style={SANS}>
                       status indicator
                     </div>
                   </div>
@@ -240,11 +220,10 @@ export default function HeroCards({
         <DecisionCardSkeleton type="ai" />
       ) : (
         <div 
-          className="bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 h-full"
+          className="bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-1 ring-slate-900/5 transition-all duration-300 h-full"
           style={{ 
             borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
             borderColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
-            '--tw-ring-color': prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
           } as React.CSSProperties}
         >
           {/* Anxiety Pulse - Border Ring Only (High Severity Actions) */}

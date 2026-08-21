@@ -22,7 +22,7 @@ export default function SystemContextBanner({ isOpen = true, onClose }: SystemCo
         />
         
         <div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-stone-200 rounded-2xl shadow-2xl transition-transform duration-300 pointer-events-auto max-w-5xl w-full mx-4"
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white border border-slate-200 rounded-2xl shadow-2xl transition-transform duration-300 pointer-events-auto max-w-5xl w-full mx-4 ring-1 ring-slate-900/5"
           style={{ maxHeight: '80vh', overflowY: 'auto' }}
         >
           <div className="p-8">

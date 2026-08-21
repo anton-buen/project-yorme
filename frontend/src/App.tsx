@@ -258,7 +258,7 @@ export default function App() {
   const pagasaWarning: PagasaLevel = currentTimeline?.pagasa_warning ?? "NONE";
 
   return (
-    <div className="min-h-screen w-full bg-[#F9F8F6] flex flex-col relative">
+    <div className="min-h-screen w-full bg-slate-50 flex flex-col relative">
       
       {/* TIER 1: Top Navigation */}
       <Header
