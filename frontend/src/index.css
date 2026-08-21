@@ -5,6 +5,13 @@
 @theme {
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', ui-monospace, 'Courier New', monospace;
+  
+  /* Semantic Action Severity Scale */
+  --color-action-0: #64748b;  /* slate-500 - Status Quo (Neutral) */
+  --color-action-1: #3b82f6;  /* blue-500 - ADM/Online (Info) */
+  --color-action-2: #f59e0b;  /* amber-500 - Suspend Basic Ed (Warning) */
+  --color-action-3: #f97316;  /* orange-500 - Suspend All Levels (Danger) */
+  --color-action-4: #dc2626;  /* red-600 - Full Lockdown (Critical) */
 }
 
 /* ── Base ─────────────────────────────────────────────────────────────────── */

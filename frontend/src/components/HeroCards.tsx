@@ -5,19 +5,13 @@ import LiveSystemTelemetry from './LiveSystemTelemetry';
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
-// Muted, sophisticated color palette
-const LGU = { 
-  text: "#881337", 
-  bg: "#fef2f2", 
-  border: "#fecaca",
-  accent: "#9f1239"
-};
-
-const AI = { 
-  text: "#065f46", 
-  bg: "#f0fdf4", 
-  border: "#bbf7d0",
-  accent: "#047857"
+// Semantic Action Severity Colors
+const ACTION_COLORS: Record<ActionCode, { bg: string; text: string; border: string }> = {
+  0: { bg: '#f1f5f9', text: '#64748b', border: '#cbd5e1' },  // slate - Status Quo
+  1: { bg: '#eff6ff', text: '#3b82f6', border: '#bfdbfe' },  // blue - ADM/Online
+  2: { bg: '#fef3c7', text: '#f59e0b', border: '#fde68a' },  // amber - Suspend Basic Ed
+  3: { bg: '#ffedd5', text: '#f97316', border: '#fed7aa' },  // orange - Suspend All
+  4: { bg: '#fee2e2', text: '#dc2626', border: '#fecaca' },  // red - Full Lockdown
 };
 
 const ACTION_SHORT: Record<ActionCode, string> = {
@@ -58,7 +52,8 @@ export default function HeroCards({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
       {mode === 'historical' ? (
-        <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 border-t-rose-900">
+        <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4"
+             style={{ borderTopColor: ACTION_COLORS[currentIncident.actual_action_code].text }}>
           
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
@@ -71,20 +66,30 @@ export default function HeroCards({
                 </p>
               </div>
               <div 
-                className="px-3 py-1.5 rounded-lg font-bold text-lg"
-                style={{ backgroundColor: LGU.bg, color: LGU.text, ...MONO }}
+                className="px-3 py-1.5 rounded-lg font-bold text-lg border-2"
+                style={{ 
+                  backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg, 
+                  color: ACTION_COLORS[currentIncident.actual_action_code].text,
+                  borderColor: ACTION_COLORS[currentIncident.actual_action_code].border,
+                  ...MONO 
+                }}
               >
                 {ACTION_SHORT[currentIncident.actual_action_code]}
               </div>
             </div>
 
-            <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-4" style={{ color: LGU.text, ...SANS }}>
+            <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-4" 
+                style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
               {ACTION_NAMES[currentIncident.actual_action_code]}
             </h3>
 
             {wasAnnounced ? (
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold mb-6"
-                   style={{ backgroundColor: LGU.bg, color: LGU.text, ...SANS }}>
+                   style={{ 
+                     backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg, 
+                     color: ACTION_COLORS[currentIncident.actual_action_code].text, 
+                     ...SANS 
+                   }}>
                 <div className="w-2 h-2 rounded-full bg-current animate-pulse" />
                 Announced at {typeof currentIncident.actual_announcement_time === 'number' 
                   ? currentIncident.actual_announcement_time.toFixed(1) 
@@ -99,11 +104,13 @@ export default function HeroCards({
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-rose-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
+              <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
+                   style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Estimated Stranded
                 </div>
-                <div className="text-3xl font-bold font-sans tracking-tight leading-none" style={{ color: LGU.text, ...SANS }}>
+                <div className="text-3xl font-bold font-sans tracking-tight leading-none" 
+                     style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
                   {simulatedStranded.toLocaleString()}
                 </div>
                 <div className="text-xs text-slate-500 mt-2" style={SANS}>
@@ -111,18 +118,23 @@ export default function HeroCards({
                 </div>
               </div>
 
-              <div className="bg-rose-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
+              <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
+                   style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
                 <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                   Commuter Safety
                 </div>
                 <div className="mt-2">
                   {wasAnnounced ? (
                     simulatedStranded < 500 ? (
-                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-emerald-800 text-white">
+                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-slate-700 text-slate-100">
                         Protected
                       </span>
                     ) : (
-                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-rose-900 text-white">
+                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit" 
+                            style={{ 
+                              backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].text,
+                              color: 'white'
+                            }}>
                         Critical
                       </span>
                     )
@@ -140,7 +152,8 @@ export default function HeroCards({
         <LiveSystemTelemetry currentTime={currentTime} commuteDensity={commuteDensity} />
       )}
 
-      <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 border-t-emerald-800">
+      <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4"
+           style={{ borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b' }}>
         
         <div className="p-8">
           {prediction ? (
@@ -155,22 +168,28 @@ export default function HeroCards({
                       PyTorch PPO Agent
                     </p>
                     {mode === 'live' && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-emerald-100 text-emerald-800 border border-emerald-200">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-mono bg-blue-100 text-blue-800 border border-blue-200">
+                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
                         LIVE FEED
                       </span>
                     )}
                   </div>
                 </div>
                 <div 
-                  className="px-3 py-1.5 rounded-lg font-bold text-lg"
-                  style={{ backgroundColor: AI.bg, color: AI.text, ...MONO }}
+                  className="px-3 py-1.5 rounded-lg font-bold text-lg border-2"
+                  style={{ 
+                    backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg,
+                    color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text,
+                    borderColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].border,
+                    ...MONO 
+                  }}
                 >
                   {ACTION_SHORT[prediction.ai_action_code as ActionCode]}
                 </div>
               </div>
 
-              <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-2" style={{ color: AI.text, ...SANS }}>
+              <h3 className="text-3xl font-bold font-sans tracking-tight leading-tight mb-2" 
+                  style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
                 {ACTION_NAMES[prediction.ai_action_code as ActionCode]}
               </h3>
 
@@ -183,11 +202,13 @@ export default function HeroCards({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-emerald-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
+                <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
+                     style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Simulated Stranded
                   </div>
-                  <div className="text-3xl font-bold font-sans tracking-tight leading-none" style={{ color: AI.text, ...SANS }}>
+                  <div className="text-3xl font-bold font-sans tracking-tight leading-none" 
+                       style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
                     {Math.round(simulatedStranded * 0.15).toLocaleString()}
                   </div>
                   <div className="text-xs text-slate-500 mt-2" style={SANS}>
@@ -195,12 +216,13 @@ export default function HeroCards({
                   </div>
                 </div>
 
-                <div className="bg-emerald-50 rounded-xl p-4 flex flex-col justify-between min-h-[100px]">
+                <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
+                     style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
                     Commuter Safety
                   </div>
                   <div className="mt-2">
-                    <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-emerald-800 text-white">
+                    <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-slate-700 text-slate-100">
                       Protected
                     </span>
                   </div>
@@ -230,8 +252,8 @@ export default function HeroCards({
                 {onRetry && (
                   <button
                     onClick={onRetry}
-                    className="px-6 py-2.5 rounded-xl font-semibold text-white transition-all duration-300 ease-in-out hover:scale-105 hover:opacity-90 active:scale-95"
-                    style={{ backgroundColor: AI.accent, ...SANS }}
+                    className="px-6 py-2.5 rounded-xl font-semibold text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 ease-in-out hover:scale-105 hover:opacity-90 active:scale-95"
+                    style={SANS}
                   >
                     Retry Connection
                   </button>
@@ -242,7 +264,7 @@ export default function HeroCards({
             <div className="flex items-center justify-center h-96">
               <div className="text-center">
                 <div className="w-10 h-10 border-4 border-slate-200 rounded-full animate-spin mx-auto mb-4"
-                     style={{ borderTopColor: AI.accent }} />
+                     style={{ borderTopColor: '#3b82f6' }} />
                 <p className="text-slate-500" style={SANS}>
                   {predictionLoading ? 'Fetching AI prediction...' : 'Loading AI prediction...'}
                 </p>
