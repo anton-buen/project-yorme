@@ -23,6 +23,7 @@ import TechnicalAppendix from './components/TechnicalAppendix';
 import SourceLink from './components/SourceLink';
 import YormeMark from './components/YormeMark';
 import LegalDisclaimerModal from './components/LegalDisclaimerModal';
+import OnboardingTour, { TOUR_STORAGE_KEY } from './components/OnboardingTour';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
@@ -74,6 +75,17 @@ export default function App() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [techVaultOpen, setTechVaultOpen] = useState(false);
   const [legalDisclaimerOpen, setLegalDisclaimerOpen] = useState(false);
+  const [tourOpen, setTourOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(TOUR_STORAGE_KEY) !== 'true') {
+        setTourOpen(true);
+      }
+    } catch {
+      setTourOpen(true);
+    }
+  }, []);
 
   const [currentPrediction, setCurrentPrediction] = useState<PredictionResponse | null>(null);
   const [predictionError, setPredictionError] = useState<string | null>(null);
@@ -273,6 +285,7 @@ export default function App() {
         step={step}
         setStep={setStep}
         pagasaWarning={pagasaWarning}
+        onReplayTour={() => setTourOpen(true)}
       />
 
       <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
@@ -363,7 +376,11 @@ export default function App() {
         )}
 
         {/* Footer */}
-        <div className="text-center text-slate-500 text-sm pt-4 pb-2 space-y-2" style={SANS}>
+        <div
+          id="step-legal-footer"
+          className="text-center text-slate-500 text-sm pt-4 pb-2 space-y-2"
+          style={SANS}
+        >
           <div>
             <YormeMark /> v2.1 • Powered by PyTorch PPO • Live{' '}
             <SourceLink source="pagasa" className="text-slate-500">
@@ -401,8 +418,13 @@ export default function App() {
         onClose={() => setLegalDisclaimerOpen(false)}
       />
 
+      <OnboardingTour
+        isOpen={tourOpen}
+        onClose={() => setTourOpen(false)}
+      />
+
       {/* Floating Action Buttons - Labeled Pills */}
-      {!drawerOpen && !techVaultOpen && !legalDisclaimerOpen && (
+      {!drawerOpen && !techVaultOpen && !legalDisclaimerOpen && !tourOpen && (
         <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3">
           {/* How it Works FAB */}
           <button

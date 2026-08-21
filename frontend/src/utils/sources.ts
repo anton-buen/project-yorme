@@ -20,9 +20,17 @@ export const SOURCES = {
     label: 'RA 10173',
     href: 'https://privacy.gov.ph/data-privacy-act/',
   },
+  ra10121: {
+    label: 'RA 10121',
+    href: 'https://www.officialgazette.gov.ph/2010/05/27/republic-act-no-10121/',
+  },
   rpc154: {
     label: 'RPC Art. 154',
     href: 'https://lawphil.net/statutes/repacts/ra1930/ra_3815_1930.html',
+  },
+  mdrrmo: {
+    label: 'MDRRMO',
+    href: 'https://manila.gov.ph/',
   },
   manilaPio: {
     label: 'Manila PIO',

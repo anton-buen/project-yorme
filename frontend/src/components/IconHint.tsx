@@ -42,12 +42,12 @@ export default function IconHint({
   if (showLabel) {
     return (
       <span
-        className={`inline-flex items-center gap-1.5 ${className}`}
+        className={`inline-flex items-center gap-1.5 min-w-0 ${className}`}
         aria-label={tip}
         title={detail || undefined}
       >
-        {children ?? <Icon className={iconClassName} aria-hidden={true} />}
-        <span className={labelClassName}>{label}</span>
+        {children ?? <Icon className={`${iconClassName} shrink-0`} aria-hidden={true} />}
+        <span className={`min-w-0 ${labelClassName}`}>{label}</span>
       </span>
     );
   }

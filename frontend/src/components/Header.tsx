@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import type { IncidentData } from '../types/dashboard';
 import SourceLink from './SourceLink';
 import YormeMark from './YormeMark';
+import { TourHelpButton } from './OnboardingTour';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -31,6 +32,7 @@ interface HeaderProps {
   step: number;
   setStep: (step: number) => void;
   pagasaWarning: PagasaLevel;
+  onReplayTour?: () => void;
 }
 
 function getPagasaColor(level: PagasaLevel): string {
@@ -65,13 +67,14 @@ export default function Header({
   step,
   setStep,
   pagasaWarning,
+  onReplayTour,
 }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
   const knobColor = getKnobGradient(step, HOUR_STEPS.length);
 
   // DIAGNOSTIC: Log raw incidents data
   useEffect(() => {
-    console.log('[Header] 🔍 DIAGNOSTIC: Raw incidents array:', {
+    console.log('[Header] DIAGNOSTIC: Raw incidents array:', {
       totalCount: incidents.length,
       incidents: incidents.map((inc, i) => ({
         index: i,
@@ -110,7 +113,7 @@ export default function Header({
           </div>
           
           {/* RIGHT SIDE: Controls */}
-          <div className="flex items-center gap-4">
+          <div id="step-scenario-select" className="flex items-center gap-4">
             {/* Incident Selector */}
             {mode === "historical" && (
               <select
@@ -160,6 +163,8 @@ export default function Header({
                 Live
               </button>
             </div>
+
+            {onReplayTour && <TourHelpButton onClick={onReplayTour} />}
           </div>
         </header>
 

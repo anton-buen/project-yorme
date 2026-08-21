@@ -49,20 +49,21 @@ function KpiTile({
   footer?: ReactNode;
 }) {
   return (
-    <div className={`rounded-xl p-5 flex flex-col justify-between min-h-[120px] ${className}`}>
-      <div className="mb-3 flex items-center">
+    <div className={`rounded-xl p-4 sm:p-5 flex flex-col justify-between min-h-[120px] min-w-0 overflow-hidden ${className}`}>
+      <div className="mb-3 flex items-start min-w-0">
         <IconHint
           icon={icon}
           label={label}
           detail={detail}
           showLabel
-          iconClassName="w-3.5 h-3.5 text-slate-500 shrink-0"
-          labelClassName="text-xs font-semibold uppercase tracking-wider text-slate-500"
+          className="min-w-0 items-start"
+          iconClassName="w-3.5 h-3.5 text-slate-500 shrink-0 mt-0.5"
+          labelClassName="text-[10px] sm:text-xs font-semibold uppercase tracking-wider text-slate-500 leading-snug break-words"
         />
       </div>
       {footer ?? (
         <div
-          className={`text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none ${valueClassName}`}
+          className={`text-2xl sm:text-3xl md:text-4xl font-semibold font-sans tracking-tight leading-none break-words ${valueClassName}`}
           style={valueStyle}
         >
           {value}
@@ -162,11 +163,11 @@ export default function HeroCards({
       {mode === 'historical' ? (
         <div className="bg-white border-2 border-dashed border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden opacity-80 h-full ring-1 ring-slate-900/5">
           
-          <div className="p-8">
+          <div className="p-5 sm:p-8">
             <div className="flex items-start justify-between gap-3 mb-6">
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 overflow-hidden">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-700" style={SANS}>
+                  <h2 className="text-xl sm:text-2xl font-bold font-sans tracking-tight text-slate-700 break-words" style={SANS}>
                     Official LGU Decision
                   </h2>
                   <IconHint
@@ -225,7 +226,7 @@ export default function HeroCards({
               </div>
             )}
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
               {actualActionCode === 1 ? (
                 <>
                   <KpiTile
@@ -293,9 +294,12 @@ export default function HeroCards({
       )}
 
       {predictionLoading ? (
-        <DecisionCardSkeleton type="ai" />
+        <div id="step-ai-card" className="h-full">
+          <DecisionCardSkeleton type="ai" />
+        </div>
       ) : (
         <div 
+          id="step-ai-card"
           className="bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-1 ring-slate-900/5 transition-all duration-300 h-full"
           style={{ 
             borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
@@ -314,47 +318,45 @@ export default function HeroCards({
             />
           )}
           
-          <div className="p-8">
+          <div className="p-5 sm:p-8">
             {prediction ? (
             <>
-              <div className="flex items-start justify-between gap-3 mb-6">
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
-                      AI Policy Recommendation
-                    </h2>
-                    <IconHint
-                      icon={Cpu}
-                      label="PPO Agent"
-                      detail="PyTorch Policy v2.1"
-                      showLabel
-                      className="px-2 py-0.5 rounded-sm text-slate-500"
-                      iconClassName="w-3.5 h-3.5"
-                      labelClassName="text-xs text-slate-500"
-                    />
-                    {mode === 'live' && (
+              <div className="flex flex-col gap-3 mb-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0 flex-1 overflow-hidden">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
+                      <h2 className="text-xl sm:text-2xl font-bold font-sans tracking-tight text-slate-900 break-words" style={SANS}>
+                        AI Policy Recommendation
+                      </h2>
                       <IconHint
-                        icon={Activity}
-                        label="Live"
-                        detail="Real-time inference"
+                        icon={Cpu}
+                        label="PPO Agent"
+                        detail="PyTorch Policy v2.1"
                         showLabel
-                        className="px-2 py-0.5 rounded-sm bg-blue-100 border border-blue-200 text-blue-700"
+                        className="px-2 py-0.5 rounded-sm text-slate-500 shrink-0"
                         iconClassName="w-3.5 h-3.5"
-                        labelClassName="text-xs font-mono"
-                      >
-                        <span className="relative inline-flex">
-                          <Activity className="w-3.5 h-3.5" aria-hidden={true} />
-                          <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
-                        </span>
-                      </IconHint>
-                    )}
+                        labelClassName="text-xs text-slate-500"
+                      />
+                      {mode === 'live' && (
+                        <IconHint
+                          icon={Activity}
+                          label="Live"
+                          detail="Real-time inference"
+                          showLabel
+                          className="px-2 py-0.5 rounded-sm bg-blue-100 border border-blue-200 text-blue-700 shrink-0"
+                          iconClassName="w-3.5 h-3.5"
+                          labelClassName="text-xs font-mono"
+                        >
+                          <span className="relative inline-flex">
+                            <Activity className="w-3.5 h-3.5" aria-hidden={true} />
+                            <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                          </span>
+                        </IconHint>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div 
-                  className="shrink-0 flex flex-col items-end gap-1.5 max-w-[12rem]"
-                >
                   <div 
-                    className="px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
+                    className="shrink-0 px-3 py-1.5 rounded-lg font-bold text-lg border-2 flex items-center gap-2"
                     style={{ 
                       backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg,
                       color: ACTION_COLORS[prediction.ai_action_code as ActionCode].textOnBg,
@@ -369,17 +371,17 @@ export default function HeroCards({
                     })()}
                     {ACTION_SHORT[prediction.ai_action_code as ActionCode]}
                   </div>
-                  <p className="text-[10px] text-slate-400 text-right leading-snug" style={SANS}>
-                    Decision-support projection only. Refer to{' '}
-                    <SourceLink source="manilaPio" className="text-slate-500">
-                      Manila PIO
-                    </SourceLink>{' '}
-                    for official orders.
-                  </p>
                 </div>
+                <p className="text-[10px] text-slate-400 leading-snug max-w-prose" style={SANS}>
+                  Decision-support projection only. Refer to{' '}
+                  <SourceLink source="manilaPio" className="text-slate-500">
+                    Manila PIO
+                  </SourceLink>{' '}
+                  for official orders.
+                </p>
               </div>
 
-              <h3 className="text-3xl font-extrabold font-sans tracking-tight leading-tight mb-2" 
+              <h3 className="text-2xl sm:text-3xl font-extrabold font-sans tracking-tight leading-tight mb-2 break-words" 
                   style={{ 
                     color: prediction && (prediction.ai_action_code >= 3) 
                       ? prediction.ai_action_code === 4 ? '#dc2626' : '#f97316'
@@ -444,7 +446,7 @@ export default function HeroCards({
                 </div>
               )}
 
-              <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
                 {prediction.ai_action_code === 1 ? (
                   <>
                     <KpiTile

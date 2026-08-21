@@ -16,7 +16,7 @@ export function EthicalGuardrailsCallout() {
       </div>
       <p className="text-sm text-slate-700 leading-relaxed" style={SANS}>
         <YormeMark className="font-semibold text-slate-800" /> is a non-binding decision-support tool
-        for MCDRRMO personnel—not automated governance. Final suspension authority rests with the
+        for MDRRMO personnel—not automated governance. Final suspension authority rests with the
         Local Chief Executive under{' '}
         <SourceLink source="eo66" className="font-semibold text-slate-800" /> and{' '}
         <SourceLink source="depedOrder37" className="font-semibold text-slate-800" />.
@@ -211,7 +211,8 @@ export default function LegalDisclaimerModal({ isOpen, onClose }: LegalDisclaime
                 <li>
                   <span className="font-semibold text-slate-900">Assist, Do Not Automate:</span> The
                   AI is built to assist Manila Disaster Risk Reduction and Management Office
-                  (MCDRRMO) personnel, not to automate municipal governance or bypass human judgment
+                  (<SourceLink source="mdrrmo" className="font-semibold text-slate-800" />) personnel,
+                  not to automate municipal governance or bypass human judgment
                   for hyper-local, flood-prone barangays (e.g., low-lying areas along the Pasig
                   River). Final operational decisions remain with trained human responders and the
                   Local Chief Executive.

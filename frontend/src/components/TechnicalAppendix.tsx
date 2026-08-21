@@ -297,7 +297,7 @@ export default function TechnicalAppendix({
                       </span>
                     </div>
                     <div className="flex justify-between items-center py-2.5">
-                      <span className="text-slate-500">mcdrrmo_risk</span>
+                      <span className="text-slate-500">mdrrmo_risk</span>
                       <span className="text-slate-300">
                         channel_max
                       </span>

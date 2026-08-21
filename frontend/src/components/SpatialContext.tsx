@@ -28,7 +28,7 @@ export default function SpatialContext({
   const [activeView, setActiveView] = useState<'tensor' | 'radar'>('tensor');
 
   return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm ring-1 ring-slate-900/5 h-full flex flex-col">
+    <div id="step-tensor-grid" className="bg-white rounded-2xl border border-slate-200 shadow-sm ring-1 ring-slate-900/5 h-full flex flex-col">
       {/* Header with Segmented Control */}
       <div className="p-6 pb-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-2">

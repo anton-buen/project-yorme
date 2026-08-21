@@ -51,6 +51,7 @@ export default function TimelineScrubber({
   
   return (
     <div 
+      id="step-timeline-scrubber"
       className="bg-white border border-slate-200 shadow-sm ring-1 ring-slate-900/5 overflow-x-hidden" 
       role="region" 
       aria-label="Master Timeline Control"
@@ -116,7 +117,7 @@ export default function TimelineScrubber({
                 <div className="absolute -top-9 left-0 -translate-x-1/2 pointer-events-auto">
                   <IconHint
                     icon={Megaphone}
-                    label="LGU Action"
+                    label="LGU"
                     detail="Official announcement time"
                     showLabel
                     side="bottom"
