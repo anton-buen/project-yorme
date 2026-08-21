@@ -54,15 +54,20 @@ export default function HeroCards({
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
       
       {mode === 'historical' ? (
-        <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4"
+        <div className="bg-slate-50 border border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 opacity-90"
              style={{ borderTopColor: ACTION_COLORS[currentIncident.actual_action_code].text }}>
           
           <div className="p-8">
             <div className="flex items-start justify-between mb-6">
               <div>
-                <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900 mb-2" style={SANS}>
-                  Official LGU Decision
-                </h2>
+                <div className="flex items-center gap-2 mb-2">
+                  <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-900" style={SANS}>
+                    Official LGU Decision
+                  </h2>
+                  <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-mono bg-slate-200 text-slate-600 border border-slate-300">
+                    BASELINE
+                  </span>
+                </div>
                 <p className="text-xs text-slate-500" style={SANS}>
                   Source: Manila PIO Official Log
                 </p>
@@ -193,8 +198,18 @@ export default function HeroCards({
         <LiveSystemTelemetry currentTime={currentTime} commuteDensity={commuteDensity} />
       )}
 
-      <div className="bg-white border border-stone-200 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4"
-           style={{ borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b' }}>
+      <div 
+        className={`bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 ${
+          prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4)
+            ? 'animate-pulse'
+            : ''
+        }`}
+        style={{ 
+          borderTopColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
+          borderColor: prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
+          '--tw-ring-color': prediction ? ACTION_COLORS[prediction.ai_action_code as ActionCode].text : '#64748b',
+        } as React.CSSProperties}
+      >
         
         <div className="p-8">
           {prediction ? (
