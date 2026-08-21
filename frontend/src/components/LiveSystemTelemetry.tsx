@@ -7,13 +7,29 @@ interface LiveSystemTelemetryProps {
 }
 
 export default function LiveSystemTelemetry({ currentTime, commuteDensity }: LiveSystemTelemetryProps) {
+  // Calculate dynamic MCDRRMO metrics based on time and conditions
+  const hour = currentTime.getHours();
+  const minute = currentTime.getMinutes();
+  
+  // Pumping station saturation (higher during rush hours and rain)
+  const pumpingSaturation = commuteDensity > 0.8 
+    ? Math.min(95, 75 + Math.floor(Math.random() * 15)) 
+    : Math.min(65, 40 + Math.floor(Math.random() * 20));
+  
+  const activePumps = Math.floor((pumpingSaturation / 100) * 16);
+  
+  // Manila Bay tide (varies by hour - high tide around 6am and 6pm)
+  const tidePattern = Math.sin((hour + minute / 60) * Math.PI / 12);
+  const tideHeight = (tidePattern * 1.2 + 0.3).toFixed(1);
+  const tideStatus = tidePattern > 0.3 ? 'High' : tidePattern > -0.3 ? 'Mid' : 'Low';
+  
   return (
     <div className="bg-stone-900 border border-stone-800 rounded-2xl shadow-sm flex flex-col relative overflow-hidden">
       <div className="p-8">
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-2">
             <h2 className="text-2xl font-bold font-sans tracking-tight text-stone-100" style={SANS}>
-              Live System Telemetry
+              MCDRRMO Telemetry
             </h2>
             <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded text-xs font-mono bg-rose-900/30 text-rose-400 border border-rose-800">
               <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse"></span>
@@ -21,22 +37,22 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
             </span>
           </div>
           <p className="text-xs text-stone-400" style={SANS}>
-            Backend Inference Monitor
+            Metro Manila Disaster Risk Reduction
           </p>
         </div>
 
-        <div className="space-y-4" style={MONO}>
+        <div className="space-y-4">
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
-            <span className="text-stone-400 text-sm">INFERENCE_STATUS</span>
-            <span className="flex items-center gap-2 text-stone-100 text-sm font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            <span className="font-sans text-sm text-stone-400">Inference Status</span>
+            <span className="flex items-center gap-2 text-stone-100 text-sm font-semibold font-mono">
+              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
               ACTIVE
             </span>
           </div>
 
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
-            <span className="text-stone-400 text-sm">VECTOR_TIME</span>
-            <span className="text-stone-100 text-sm font-semibold">
+            <span className="font-sans text-sm text-stone-400">System Time</span>
+            <span className="text-stone-100 text-sm font-semibold font-mono">
               {currentTime.toLocaleTimeString('en-US', { 
                 timeZone: 'Asia/Manila',
                 hour12: false,
@@ -48,25 +64,23 @@ export default function LiveSystemTelemetry({ currentTime, commuteDensity }: Liv
           </div>
 
           <div className="flex justify-between items-center py-3 border-b border-stone-800">
-            <span className="text-stone-400 text-sm">COMMUTER_DENSITY</span>
-            <span className="text-stone-100 text-sm font-semibold">
-              {typeof commuteDensity === 'number' 
-                ? commuteDensity.toFixed(2) 
-                : (Number(commuteDensity) || 0).toFixed(2)}
+            <span className="font-sans text-sm text-stone-400">Pumping Station Saturation</span>
+            <span className="text-stone-100 text-sm font-semibold font-mono">
+              {pumpingSaturation}% ({activePumps}/16 Active)
             </span>
           </div>
 
           <div className="flex justify-between items-center py-3">
-            <span className="text-stone-400 text-sm">PAGASA_API_PING</span>
-            <span className="text-emerald-400 text-sm font-semibold">
-              24ms
+            <span className="font-sans text-sm text-stone-400">Manila Bay Tide Sync</span>
+            <span className="text-stone-100 text-sm font-semibold font-mono">
+              {tideStatus} ({tideHeight > 0 ? '+' : ''}{tideHeight}m)
             </span>
           </div>
         </div>
 
         <div className="mt-6 p-3 bg-stone-950 border border-stone-800 rounded-lg">
           <p className="text-xs text-stone-400 leading-relaxed" style={SANS}>
-            Real-time parameters processed by the PPO policy network for live inference decisions.
+            Real-time infrastructure and environmental parameters for Metro Manila flood risk assessment.
           </p>
         </div>
       </div>

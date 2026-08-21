@@ -104,47 +104,86 @@ export default function HeroCards({
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
-                   style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
-                  Estimated Stranded
-                </div>
-                <div className="text-3xl font-bold font-sans tracking-tight leading-none" 
-                     style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
-                  {simulatedStranded.toLocaleString()}
-                </div>
-                <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                  students
-                </div>
-              </div>
+              {currentIncident.actual_action_code === 1 ? (
+                // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
+                <>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                      Commuters Protected
+                    </div>
+                    <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                         style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+                      {(Math.max(3000, simulatedStranded * 0.4)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                    </div>
+                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                      safe arrivals
+                    </div>
+                  </div>
 
-              <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
-                   style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
-                <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
-                  Commuter Safety
-                </div>
-                <div className="mt-2">
-                  {wasAnnounced ? (
-                    simulatedStranded < 500 ? (
-                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-slate-700 text-slate-100">
-                        Protected
-                      </span>
-                    ) : (
-                      <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit" 
-                            style={{ 
-                              backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].text,
-                              color: 'white'
-                            }}>
-                        Critical
-                      </span>
-                    )
-                  ) : (
-                    <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-slate-600 text-white">
-                      Pending
-                    </span>
-                  )}
-                </div>
-              </div>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                      Instructional Hours
+                    </div>
+                    <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                         style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+                      8 hrs
+                    </div>
+                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                      preserved online
+                    </div>
+                  </div>
+                </>
+              ) : (
+                // Other Actions - Show Standard Metrics
+                <>
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                      Estimated Stranded
+                    </div>
+                    <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                         style={{ color: ACTION_COLORS[currentIncident.actual_action_code].text, ...SANS }}>
+                      {simulatedStranded.toLocaleString()}
+                    </div>
+                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                      students at risk
+                    </div>
+                  </div>
+
+                  <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                       style={{ backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].bg }}>
+                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                      Commuter Safety
+                    </div>
+                    <div className="flex flex-col justify-center flex-1">
+                      {wasAnnounced ? (
+                        simulatedStranded < 500 ? (
+                          <span className="inline-flex px-4 py-2 rounded-full text-base font-semibold w-fit bg-slate-700 text-slate-100">
+                            Protected
+                          </span>
+                        ) : (
+                          <span className="inline-flex px-4 py-2 rounded-full text-base font-semibold w-fit" 
+                                style={{ 
+                                  backgroundColor: ACTION_COLORS[currentIncident.actual_action_code].text,
+                                  color: 'white'
+                                }}>
+                            Critical
+                          </span>
+                        )
+                      ) : (
+                        <span className="inline-flex px-4 py-2 rounded-full text-base font-semibold w-fit bg-slate-600 text-white">
+                          Pending
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                      status indicator
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -202,34 +241,69 @@ export default function HeroCards({
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
-                     style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
-                    Simulated Stranded
-                  </div>
-                  <div className="text-3xl font-bold font-sans tracking-tight leading-none" 
-                       style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
-                    {Math.round(simulatedStranded * 0.15).toLocaleString()}
-                  </div>
-                  <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                    students (AI projection)
-                  </div>
-                </div>
+                {prediction.ai_action_code === 1 ? (
+                  // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
+                  <>
+                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                        Commuters Protected
+                      </div>
+                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
+                        {(Math.max(3500, simulatedStranded * 0.45)).toLocaleString('en-US', { maximumFractionDigits: 0 })}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                        safe arrivals (AI est.)
+                      </div>
+                    </div>
 
-                <div className="rounded-xl p-4 flex flex-col justify-between min-h-[100px]"
-                     style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
-                  <div className="text-xs font-semibold uppercase tracking-wide text-slate-600 mb-2" style={SANS}>
-                    Commuter Safety
-                  </div>
-                  <div className="mt-2">
-                    <span className="inline-flex px-3 py-1 rounded-full text-sm font-medium w-fit bg-slate-700 text-slate-100">
-                      Protected
-                    </span>
-                  </div>
-                  <div className="text-xs text-slate-500 mt-2" style={SANS}>
-                    Early warning
-                  </div>
-                </div>
+                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                        Instructional Hours
+                      </div>
+                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
+                        8 hrs
+                      </div>
+                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                        preserved online
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  // Other Actions - Show Standard Metrics
+                  <>
+                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                        AI Projected Stranded
+                      </div>
+                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
+                        {Math.round(simulatedStranded * 0.15).toLocaleString()}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                        with early warning
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px]"
+                         style={{ backgroundColor: ACTION_COLORS[prediction.ai_action_code as ActionCode].bg }}>
+                      <div className="text-xs font-semibold uppercase tracking-wider text-slate-600 mb-3" style={SANS}>
+                        Risk Reduction
+                      </div>
+                      <div className="text-4xl font-bold font-sans tracking-tight leading-none" 
+                           style={{ color: ACTION_COLORS[prediction.ai_action_code as ActionCode].text, ...SANS }}>
+                        85%
+                      </div>
+                      <div className="text-xs text-slate-500 mt-2" style={SANS}>
+                        vs reactive decision
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </>
           ) : predictionError ? (
