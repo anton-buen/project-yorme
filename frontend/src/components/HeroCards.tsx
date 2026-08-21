@@ -51,10 +51,10 @@ export default function HeroCards({
   const commuteDensity = (currentHourOfDay >= 5.0 && currentHourOfDay <= 7.0) ? 1.0 : 0.2;
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-full">
       
       {mode === 'historical' ? (
-        <div className="bg-slate-50 border border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 opacity-90"
+        <div className="bg-slate-50 border border-slate-300 rounded-2xl shadow-sm flex flex-col relative overflow-hidden border-t-4 opacity-90 h-full"
              style={{ borderTopColor: ACTION_COLORS[currentIncident.actual_action_code].text }}>
           
           <div className="p-8">
@@ -199,7 +199,7 @@ export default function HeroCards({
       )}
 
       <div 
-        className={`bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 ${
+        className={`bg-white border-2 rounded-2xl shadow-2xl flex flex-col relative overflow-hidden border-t-4 ring-2 transition-all duration-300 h-full ${
           prediction && (prediction.ai_action_code === 3 || prediction.ai_action_code === 4)
             ? 'animate-pulse'
             : ''

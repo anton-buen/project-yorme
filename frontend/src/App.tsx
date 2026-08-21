@@ -251,6 +251,7 @@ export default function App() {
   return (
     <div className="min-h-screen w-full bg-[#F9F8F6] flex flex-col relative">
       
+      {/* TIER 1: Top Navigation */}
       <Header
         mode={mode}
         setMode={setMode}
@@ -262,68 +263,78 @@ export default function App() {
         pagasaWarning={pagasaWarning}
       />
 
-      <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-1">
+      <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
         
         {/* SystemContextBanner removed from main flow - now in Technical Vault modal */}
 
+        {/* Timeline Control - Positioned at top for historical mode */}
         {mode === "historical" && (
-          <TimelineScrubber
-            step={step}
-            setStep={setStep}
-            announcementStep={announcementStep}
-          />
+          <div className="mb-6">
+            <TimelineScrubber
+              step={step}
+              setStep={setStep}
+              announcementStep={announcementStep}
+            />
+          </div>
         )}
 
-        <div className="space-y-8">
-        
+        {/* TIER 2: The Command Deck - 12-column grid */}
         {mode === "historical" ? (
-          <>
-            <HeroCards
-              currentIncident={currentIncident}
-              prediction={currentPrediction}
-              currentHour={currentHour}
-              simulatedStranded={simulatedStranded}
-              predictionError={predictionError}
-              predictionLoading={predictionLoading}
-              pagasaWarning={pagasaWarning}
-              onRetry={() => {
-                console.log('[App] Retry button clicked - resetting prediction state');
-                setPredictionError(null);
-                setPredictionLoading(false);
-                setCurrentPrediction(null);
-                setPredictionCache({});
-              }}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+            {/* Left Column: AI + LGU Decision Cards */}
+            <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
+              <HeroCards
+                currentIncident={currentIncident}
+                prediction={currentPrediction}
+                currentHour={currentHour}
+                simulatedStranded={simulatedStranded}
+                predictionError={predictionError}
+                predictionLoading={predictionLoading}
+                pagasaWarning={pagasaWarning}
+                onRetry={() => {
+                  console.log('[App] Retry button clicked - resetting prediction state');
+                  setPredictionError(null);
+                  setPredictionLoading(false);
+                  setCurrentPrediction(null);
+                  setPredictionCache({});
+                }}
+              />
+            </div>
 
-            <div className="grid grid-cols-1 gap-6">
+            {/* Right Column: Telemetry + Spatial Tensor */}
+            <div className="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full">
               <RadarGrid
                 step={step}
                 incidentIdx={incidentIdx}
                 pagasaWarning={pagasaWarning}
               />
             </div>
-          </>
+          </div>
         ) : (
-          <>
-            <HeroCards
-              currentIncident={currentIncident}
-              prediction={currentPrediction}
-              currentHour={currentHour}
-              simulatedStranded={simulatedStranded}
-              predictionError={predictionError}
-              predictionLoading={predictionLoading}
-              pagasaWarning={pagasaWarning}
-              onRetry={() => {
-                console.log('[App] Retry button clicked (Live mode) - resetting prediction state');
-                setPredictionError(null);
-                setPredictionLoading(false);
-                setCurrentPrediction(null);
-                setPredictionCache({});
-              }}
-              mode={mode}
-            />
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+            {/* Left Column: AI + LGU Decision Cards */}
+            <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
+              <HeroCards
+                currentIncident={currentIncident}
+                prediction={currentPrediction}
+                currentHour={currentHour}
+                simulatedStranded={simulatedStranded}
+                predictionError={predictionError}
+                predictionLoading={predictionLoading}
+                pagasaWarning={pagasaWarning}
+                onRetry={() => {
+                  console.log('[App] Retry button clicked (Live mode) - resetting prediction state');
+                  setPredictionError(null);
+                  setPredictionLoading(false);
+                  setCurrentPrediction(null);
+                  setPredictionCache({});
+                }}
+                mode={mode}
+              />
+            </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Right Column: Telemetry + Map */}
+            <div className="col-span-12 lg:col-span-5 flex flex-col gap-6 h-full">
               <RadarGrid
                 step={step}
                 incidentIdx={incidentIdx}
@@ -332,13 +343,13 @@ export default function App() {
               />
               <LiveMap />
             </div>
-          </>
+          </div>
         )}
 
+        {/* Footer */}
         <div className="text-center text-slate-500 text-sm pt-4" style={SANS}>
           Yormetrics v2.1 • Powered by PyTorch PPO • Live PAGASA Integration • 100% Factual Compliance
         </div>
-      </div>
       </main>
 
       <TechnicalAppendix
