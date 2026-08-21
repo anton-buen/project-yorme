@@ -145,7 +145,7 @@ export default function Header({
           </div>
         </header>
 
-        {/* Row 2: PAGASA Status + Clock + Timeline Scrubber */}
+        {/* Row 2: PAGASA Status + Clock */}
         <div className="w-full bg-slate-900 px-8 py-3 flex items-center border-b border-slate-800">
           {/* PAGASA Status Badge */}
           <div 
@@ -173,58 +173,8 @@ export default function Header({
               </>
             )}
           </div>
-
-          {/* Timeline Scrubber - Historical Mode Only */}
-          {mode === "historical" && (
-            <div className="flex-1 ml-4">
-              <input
-                type="range"
-                min="0"
-                max={HOUR_STEPS.length - 1}
-                value={step}
-                onChange={(e) => setStep(Number(e.target.value))}
-                className="w-full h-2 bg-slate-800 rounded-full appearance-none cursor-pointer slider-gradient-thumb"
-                data-knob-color={knobColor}
-                style={{
-                  background: "#475569"
-                }}
-              />
-            </div>
-          )}
         </div>
       </div>
-
-      <style>{`
-        .slider-gradient-thumb::-webkit-slider-thumb {
-          appearance: none;
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: ${knobColor};
-          cursor: pointer;
-          border: 2px solid #1c1917;
-          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 2px 6px rgba(0, 0, 0, 0.4);
-          transition: transform 0.2s ease;
-        }
-        .slider-gradient-thumb::-webkit-slider-thumb:hover {
-          transform: scale(1.1);
-          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.5);
-        }
-        .slider-gradient-thumb::-moz-range-thumb {
-          width: 20px;
-          height: 20px;
-          border-radius: 50%;
-          background: ${knobColor};
-          cursor: pointer;
-          border: 2px solid #1c1917;
-          box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.15), 0 2px 6px rgba(0, 0, 0, 0.4);
-          transition: transform 0.2s ease;
-        }
-        .slider-gradient-thumb::-moz-range-thumb:hover {
-          transform: scale(1.1);
-          box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2), 0 3px 8px rgba(0, 0, 0, 0.5);
-        }
-      `}</style>
     </>
   );
 }

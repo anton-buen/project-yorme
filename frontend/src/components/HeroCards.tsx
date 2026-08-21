@@ -64,7 +64,11 @@ export default function HeroCards({
   mode = 'historical',
   pagasaWarning = 'NONE',
 }: HeroCardsProps) {
-  const wasAnnounced = currentHour >= (currentIncident?.actual_announcement_time ?? 0);
+  // Safe fallbacks for incident data
+  const actualActionCode = (currentIncident?.actual_action_code ?? 0) as ActionCode;
+  const actualAnnouncementTime = currentIncident?.actual_announcement_time ?? 0;
+  
+  const wasAnnounced = currentHour >= actualAnnouncementTime;
   
   // Base confidence from action probabilities
   const baseConfidence = prediction 
@@ -73,7 +77,7 @@ export default function HeroCards({
   
   // Calculate time-based confidence decay
   // Assume announcement time is the "present" and any time beyond that is future prediction
-  const announcementTime = currentIncident?.actual_announcement_time ?? 0;
+  const announcementTime = actualAnnouncementTime;
   const hoursIntoFuture = Math.max(0, currentHour - announcementTime);
   
   // Decay: 6% per hour into the future (realistic RL uncertainty growth)
@@ -110,37 +114,37 @@ export default function HeroCards({
               </div>
               <div 
                 className="px-3 py-1.5 rounded-lg font-semibold text-lg border border-slate-300 flex items-center gap-2 bg-slate-50"
-                aria-label={`Action ${currentIncident.actual_action_code}: ${ACTION_NAMES[currentIncident.actual_action_code]}`}
+                aria-label={`Action ${actualActionCode}: ${ACTION_NAMES[actualActionCode]}`}
               >
                 {(() => {
-                  const Icon = ACTION_ICONS[currentIncident.actual_action_code];
+                  const Icon = ACTION_ICONS[actualActionCode];
                   return <Icon className="w-5 h-5 text-slate-500" aria-hidden="true" />;
                 })()}
-                {ACTION_SHORT[currentIncident.actual_action_code]}
+                {ACTION_SHORT[actualActionCode]}
               </div>
             </div>
 
             <h3 className="text-2xl font-semibold font-sans tracking-tight leading-tight mb-4 text-slate-600" style={SANS}>
-              {ACTION_NAMES[currentIncident.actual_action_code]}
+              {ACTION_NAMES[actualActionCode]}
             </h3>
 
             {wasAnnounced ? (
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium mb-6 bg-slate-100 text-slate-600" style={SANS}>
                 <div className="w-2 h-2 rounded-full bg-slate-400 animate-pulse" />
-                Announced at {typeof currentIncident.actual_announcement_time === 'number' 
-                  ? currentIncident.actual_announcement_time.toFixed(1) 
-                  : (Number(currentIncident.actual_announcement_time) || 0).toFixed(1)}:00
+                Announced at {typeof actualAnnouncementTime === 'number' 
+                  ? actualAnnouncementTime.toFixed(1) 
+                  : (Number(actualAnnouncementTime) || 0).toFixed(1)}:00
               </div>
             ) : (
               <div className="text-sm text-slate-400 mb-6" style={SANS}>
-                Pending announcement (scheduled {typeof currentIncident.actual_announcement_time === 'number' 
-                  ? currentIncident.actual_announcement_time.toFixed(1) 
-                  : (Number(currentIncident.actual_announcement_time) || 0).toFixed(1)}:00)
+                Pending announcement (scheduled {typeof actualAnnouncementTime === 'number' 
+                  ? actualAnnouncementTime.toFixed(1) 
+                  : (Number(actualAnnouncementTime) || 0).toFixed(1)}:00)
               </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
-              {currentIncident.actual_action_code === 1 ? (
+              {actualActionCode === 1 ? (
                 // Action 1 (ADM/Online) - Show Executive Trade-off Metrics
                 <>
                   <div className="rounded-xl p-5 flex flex-col justify-between min-h-[120px] bg-slate-50 border border-slate-200">

@@ -247,8 +247,8 @@ export default function App() {
     simulated_stranded_projection: 0
   };
 
-  const announcementStep = currentIncident 
-    ? HOUR_STEPS.findIndex(h => (h.hour + h.minute / 60) === (currentIncident.actual_announcement_time ?? -1))
+  const announcementStep = currentIncident?.actual_announcement_time != null
+    ? HOUR_STEPS.findIndex(h => (h.hour + h.minute / 60) === currentIncident.actual_announcement_time)
     : -1;
 
   const simulatedStranded = typeof currentTimeline?.simulated_stranded_projection === 'number' 
@@ -280,9 +280,9 @@ export default function App() {
           <div className="mb-6">
             <TimelineScrubber
               step={step}
-              announcementStep={announcementStep} setStep={function (step: number): void {
-                throw new Error("Function not implemented.");
-              } }            />
+              setStep={setStep}
+              announcementStep={announcementStep}
+            />
           </div>
         )}
 
