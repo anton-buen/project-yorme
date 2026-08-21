@@ -12,29 +12,29 @@ interface LoadingScreenProps {
 export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1e3a8a' }}>
+      <div className="min-h-screen flex items-center justify-center bg-slate-900">
         <div className="text-center p-8 max-w-md">
-          <AlertCircle className="mx-auto mb-4 w-16 h-16" style={{ color: '#f1f5f9' }} />
-          <h2 className="text-2xl font-bold font-sans tracking-tight mb-4" style={{ color: '#f1f5f9', ...SANS }}>
+          <AlertCircle className="mx-auto mb-4 w-16 h-16 text-slate-200" />
+          <h2 className="text-2xl font-bold font-sans tracking-tight text-slate-100 mb-4" style={SANS}>
             Backend Unreachable
           </h2>
-          <p className="mb-6" style={{ color: '#cbd5e1', ...SANS }}>
-            The <YormeMark className="text-slate-300" /> AI engine is currently unavailable. This may be due to:
+          <p className="text-slate-300 mb-6" style={SANS}>
+            The <YormeMark className="text-slate-200" /> AI engine is currently unavailable. This may be due to:
           </p>
-          <ul className="text-left mb-6 space-y-2" style={{ color: '#cbd5e1', ...SANS }}>
+          <ul className="text-left text-slate-300 mb-6 space-y-2" style={SANS}>
             <li>• Server cold start (up to 50 seconds on free tier)</li>
             <li>• Network connectivity issues</li>
             <li>• Backend maintenance</li>
           </ul>
-          <div className="p-4 rounded-xl" style={{ backgroundColor: '#0f172a', border: '1px solid #334155' }}>
-            <p className="text-sm" style={{ color: '#f1f5f9', ...MONO }}>
+          <div className="p-4 rounded-xl bg-slate-800 border border-slate-700">
+            <p className="text-slate-200 text-sm" style={MONO}>
               {error}
             </p>
           </div>
           <button
             onClick={() => window.location.reload()}
-            className="mt-6 px-6 py-3 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98]"
-            style={{ backgroundColor: '#f1f5f9', color: '#1e3a8a', ...SANS }}
+            className="mt-6 px-6 py-3 bg-slate-200 text-slate-900 rounded-xl transition-all duration-300 ease-in-out hover:scale-[1.02] active:scale-[0.98] hover:bg-slate-100"
+            style={SANS}
           >
             Retry Connection
           </button>
@@ -50,26 +50,25 @@ export default function LoadingScreen({ stage, error }: LoadingScreenProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1e3a8a' }}>
+    <div className="min-h-screen flex items-center justify-center bg-slate-900">
       <div className="text-center p-8">
-        <Loader2 className="mx-auto mb-6 w-16 h-16 animate-spin" style={{ color: '#f1f5f9' }} />
-        <h2 className="text-3xl font-bold font-sans tracking-tight mb-4" style={{ color: '#f1f5f9', ...SANS }}>
+        <Loader2 className="mx-auto mb-6 w-16 h-16 animate-spin text-slate-200" />
+        <h2 className="text-3xl font-bold font-sans tracking-tight text-slate-100 mb-4" style={SANS}>
           <YormeMark className="text-slate-100" />
         </h2>
-        <p className="text-xl mb-8" style={{ color: '#cbd5e1', ...SANS }}>
+        <p className="text-xl text-slate-300 mb-8" style={SANS}>
           {stageMessages[stage] || "Initializing..."}
         </p>
-        <div className="w-64 mx-auto rounded-full h-2" style={{ backgroundColor: '#0f172a' }}>
+        <div className="w-64 mx-auto bg-slate-800 rounded-full h-2">
           <div
-            className="h-2 rounded-full transition-all duration-1000"
+            className="bg-slate-200 h-2 rounded-full transition-all duration-1000"
             style={{
-              backgroundColor: '#f1f5f9',
               width: stage === 'health' ? '33%' : 
                      stage === 'incidents' ? '66%' : '100%'
             }}
           />
         </div>
-        <p className="text-sm mt-4" style={{ color: '#94a3b8', ...SANS }}>
+        <p className="text-sm text-slate-400 mt-4" style={SANS}>
           Initial requests may take up to 50 seconds due to cold start
         </p>
       </div>
