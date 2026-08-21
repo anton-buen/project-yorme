@@ -14,6 +14,13 @@ export interface HourlyTimelineState {
   simulated_stranded_projection: number;
 }
 
+/** 32×32 dBZ reflectivity matrix for a single replay hour */
+export type RadarTensorGrid = number[][];
+
+export interface HourlyTensorData {
+  tensor: RadarTensorGrid;
+}
+
 export interface IncidentData {
   id: string;
   name: string;
@@ -21,6 +28,8 @@ export interface IncidentData {
   actual_announcement_time: number | null;
   actual_action_code: ActionCode | null;
   hourly_timeline: Record<string, HourlyTimelineState>;
+  /** Optional calibrated observation tensors keyed by hour string (e.g. "5.5") */
+  hourly_data?: Record<string, HourlyTensorData>;
 }
 
 export interface PredictionResponse {

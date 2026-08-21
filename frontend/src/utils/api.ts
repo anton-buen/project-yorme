@@ -123,6 +123,8 @@ export async function fetchIncidents(): Promise<IncidentData[]> {
       : null,
     // Ensure hourly_timeline exists (empty object if missing)
     hourly_timeline: inc.hourly_timeline || {},
+    // Preserve calibrated 32×32 dBZ tensors when present
+    hourly_data: inc.hourly_data || undefined,
   }));
   
   console.log(`[API] Sanitized ${sanitizedIncidents.length} incidents with data coercion`);

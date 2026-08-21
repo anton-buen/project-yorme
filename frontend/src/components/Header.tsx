@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import type { IncidentData } from '../types/dashboard';
-import SourceLink from './SourceLink';
 import YormeMark from './YormeMark';
 import { TourHelpButton } from './OnboardingTour';
+import PagasaBadge from './PagasaBadge';
+import type { PagasaLevel } from '../utils/pagasa';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -20,7 +21,6 @@ const HOUR_STEPS: HourStep[] = Array.from({ length: 19 }, (_, i) => {
   };
 });
 
-type PagasaLevel = "NONE" | "YELLOW" | "ORANGE" | "RED";
 type DashboardMode = "historical" | "live";
 
 interface HeaderProps {
@@ -35,29 +35,6 @@ interface HeaderProps {
   onReplayTour?: () => void;
 }
 
-function getPagasaColor(level: PagasaLevel): string {
-  switch (level) {
-    case "NONE": return "#A8A29E";
-    case "YELLOW": return "#F59E0B";
-    case "ORANGE": return "#F97316";
-    case "RED": return "#DC2626";
-    default: return "#A8A29E";
-  }
-}
-
-function getKnobGradient(step: number, totalSteps: number): string {
-  const progress = step / (totalSteps - 1);
-  
-  const nightColor = { r: 30, g: 41, b: 59 };
-  const morningColor = { r: 251, g: 191, b: 36 };
-  
-  const r = Math.round(nightColor.r + (morningColor.r - nightColor.r) * progress);
-  const g = Math.round(nightColor.g + (morningColor.g - nightColor.g) * progress);
-  const b = Math.round(nightColor.b + (morningColor.b - nightColor.b) * progress);
-  
-  return `rgb(${r}, ${g}, ${b})`;
-}
-
 export default function Header({
   mode,
   setMode,
@@ -70,24 +47,6 @@ export default function Header({
   onReplayTour,
 }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const knobColor = getKnobGradient(step, HOUR_STEPS.length);
-
-  // DIAGNOSTIC: Log raw incidents data
-  useEffect(() => {
-    console.log('[Header] DIAGNOSTIC: Raw incidents array:', {
-      totalCount: incidents.length,
-      incidents: incidents.map((inc, i) => ({
-        index: i,
-        id: inc?.id || 'MISSING_ID',
-        name: inc?.name || 'MISSING_NAME',
-        hasTimeline: !!inc?.hourly_timeline,
-        announcementTime: inc?.actual_announcement_time,
-        announcementTimeType: typeof inc?.actual_announcement_time,
-        actionCode: inc?.actual_action_code,
-        actionCodeType: typeof inc?.actual_action_code,
-      }))
-    });
-  }, [incidents]);
 
   useEffect(() => {
     if (mode === "live") {
@@ -102,7 +61,6 @@ export default function Header({
         
         {/* Row 1: Wordmark (Left) + Controls (Right: Incident Dropdown + Mode Toggle) */}
         <header className="w-full bg-slate-900 px-8 py-4 flex justify-between items-center border-b border-slate-800">
-          {/* LEFT SIDE: Logo & Subtitle */}
           <div className="flex flex-col text-left">
             <h1 className="text-white text-3xl font-bold font-sans tracking-tight" style={SANS}>
               <YormeMark />
@@ -112,9 +70,7 @@ export default function Header({
             </p>
           </div>
           
-          {/* RIGHT SIDE: Controls */}
           <div id="step-scenario-select" className="flex items-center gap-4">
-            {/* Incident Selector */}
             {mode === "historical" && (
               <select
                 value={incidentIdx}
@@ -124,7 +80,7 @@ export default function Header({
               >
                 {incidents
                   .filter((inc) => inc && inc.id && inc.name)
-                  .map((incident, filteredIdx) => {
+                  .map((incident) => {
                     const originalIdx = incidents.indexOf(incident);
                     return (
                       <option key={incident.id} value={originalIdx}>
@@ -135,7 +91,6 @@ export default function Header({
               </select>
             )}
 
-            {/* Segmented Control */}
             <div className="inline-flex bg-slate-800 rounded-full p-1 shadow-inner">
               <button
                 onClick={() => setMode("historical")}
@@ -163,24 +118,13 @@ export default function Header({
                 Live
               </button>
             </div>
-
           </div>
         </header>
 
         {/* Row 2: PAGASA Status + Clock + Help */}
         <div className="w-full bg-slate-900 px-8 py-3 flex items-center gap-4 border-b border-slate-800">
-          {/* PAGASA Status Badge */}
-          <div 
-            className="px-3 py-1.5 rounded-sm text-sm font-semibold text-white whitespace-nowrap"
-            style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
-          >
-            <SourceLink source="pagasa" className="text-white">
-              PAGASA
-            </SourceLink>
-            : {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
-          </div>
+          <PagasaBadge level={pagasaWarning} />
 
-          {/* Time Display - Interactive Dropdown in Historical Mode */}
           {mode === "live" ? (
             <div className="px-3 py-1.5 bg-slate-800 rounded-sm text-sm text-slate-200 whitespace-nowrap" style={MONO}>
               {currentTime.toLocaleTimeString('en-US', { 

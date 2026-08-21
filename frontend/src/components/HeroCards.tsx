@@ -29,6 +29,16 @@ const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
 
 type LucideIcon = ComponentType<{ className?: string; 'aria-hidden'?: boolean }>;
 
+/** Convert hour float (e.g. 5.25) to "5:15 AM" for LGU announcement chips. */
+function formatSimClock(hourFloat: number): string {
+  const totalMins = Math.round(hourFloat * 60);
+  const h24 = ((Math.floor(totalMins / 60) % 24) + 24) % 24;
+  const m = ((totalMins % 60) + 60) % 60;
+  const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+  const ampm = h24 < 12 ? 'AM' : 'PM';
+  return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+}
+
 function KpiTile({
   icon,
   label,
@@ -132,9 +142,17 @@ export default function HeroCards({
 }: HeroCardsProps) {
   // Safe fallbacks for incident data
   const actualActionCode = (currentIncident?.actual_action_code ?? 0) as ActionCode;
-  const actualAnnouncementTime = currentIncident?.actual_announcement_time ?? 0;
-  
-  const wasAnnounced = currentHour >= actualAnnouncementTime;
+  const rawAnnouncement = currentIncident?.actual_announcement_time;
+  const actualAnnouncementTime =
+    rawAnnouncement != null && Number.isFinite(Number(rawAnnouncement))
+      ? Number(rawAnnouncement)
+      : null;
+
+  const wasAnnounced =
+    actualAnnouncementTime != null && currentHour >= actualAnnouncementTime;
+
+  const announcementLabel =
+    actualAnnouncementTime != null ? formatSimClock(actualAnnouncementTime) : null;
   
   // Base confidence from action probabilities
   const baseConfidence = prediction 
@@ -143,7 +161,7 @@ export default function HeroCards({
   
   // Calculate time-based confidence decay
   // Assume announcement time is the "present" and any time beyond that is future prediction
-  const announcementTime = actualAnnouncementTime;
+  const announcementTime = actualAnnouncementTime ?? currentHour;
   const hoursIntoFuture = Math.max(0, currentHour - announcementTime);
   
   // Decay: 6% per hour into the future (realistic RL uncertainty growth)
@@ -214,15 +232,13 @@ export default function HeroCards({
             {wasAnnounced ? (
               <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium mb-6 bg-slate-100 text-slate-600" style={SANS}>
                 <div className="w-2 h-2 rounded-full bg-slate-400 animate-pulse" />
-                Announced at {typeof actualAnnouncementTime === 'number' 
-                  ? actualAnnouncementTime.toFixed(1) 
-                  : (Number(actualAnnouncementTime) || 0).toFixed(1)}:00
+                Announced at {announcementLabel}
               </div>
             ) : (
               <div className="text-sm text-slate-400 mb-6" style={SANS}>
-                Pending announcement (scheduled {typeof actualAnnouncementTime === 'number' 
-                  ? actualAnnouncementTime.toFixed(1) 
-                  : (Number(actualAnnouncementTime) || 0).toFixed(1)}:00)
+                {announcementLabel
+                  ? `Pending announcement (scheduled ${announcementLabel})`
+                  : 'Pending announcement'}
               </div>
             )}
 

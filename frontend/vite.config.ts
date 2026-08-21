@@ -131,7 +131,14 @@ function figmaSiteConfiguration(config: FigmaSiteConfiguration): Plugin {
           tags.push({ tag: 'meta', attrs: { name: 'robots', content: 'noindex, nofollow' }, injectTo: 'head' })
         }
         if (favicon) {
-          tags.push({ tag: 'link', attrs: { rel: 'icon', href: favicon }, injectTo: 'head' })
+          const isIco = favicon.endsWith('.ico')
+          tags.push({
+            tag: 'link',
+            attrs: isIco
+              ? { rel: 'icon', href: favicon, sizes: 'any' }
+              : { rel: 'icon', type: 'image/png', href: favicon },
+            injectTo: 'head',
+          })
         }
         if (title) {
           tags.push({ tag: 'meta', attrs: { property: 'og:title', content: title }, injectTo: 'head' })

@@ -4,6 +4,9 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { MapSkeleton } from './Skeletons';
 import SourceLink from './SourceLink';
+import PagasaBadge from './PagasaBadge';
+import type { RadarTensorGrid } from '../types/dashboard';
+import type { PagasaLevel } from '../utils/pagasa';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -21,94 +24,50 @@ const HOUR_STEPS: HourStep[] = Array.from({ length: 19 }, (_, i) => {
   };
 });
 
-type PagasaLevel = "NONE" | "YELLOW" | "ORANGE" | "RED";
+const GRID_SIZE = 32;
+
+/** Clear / muted background for ≤15 dBZ; storm colors above. */
+export function getDbzColor(dbz: number): string {
+  if (dbz <= 15) return '#262626';
+  if (dbz <= 30) return '#f59e0b';
+  if (dbz <= 45) return '#ea580c';
+  return '#dc2626';
+}
+
+/** Empty clear-air grid used when no calibrated tensor is available. */
+export function defaultEmptyGrid(size = GRID_SIZE): RadarTensorGrid {
+  return Array.from({ length: size }, () => Array.from({ length: size }, () => 0));
+}
 
 interface RadarGridProps {
   step: number;
-  incidentIdx: number;
+  incidentIdx?: number;
   pagasaWarning: PagasaLevel;
   mode?: 'historical' | 'live';
   isLoading?: boolean;
-  bare?: boolean; // When true, renders without outer card wrapper
-  setStep?: (step: number) => void; // For interactive time navigation
+  bare?: boolean;
+  setStep?: (step: number) => void;
+  tensorGrid?: RadarTensorGrid | null;
 }
 
-function getPagasaColor(level: PagasaLevel): string {
-  switch (level) {
-    case "NONE": return "#A8A29E";
-    case "YELLOW": return "#F59E0B";
-    case "ORANGE": return "#F97316";
-    case "RED": return "#DC2626";
-    default: return "#A8A29E";
-  }
-}
-
-// Generate tensor heatmap as canvas and return as data URL
-function generateTensorCanvas(step: number, incidentIdx: number): string {
+/** Render a calibrated dBZ matrix to a canvas data URL — no procedural storm noise. */
+function generateTensorCanvas(tensor: RadarTensorGrid): string {
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
   if (!ctx) return '';
 
-  const gridSize = 32;
+  const rows = tensor.length || GRID_SIZE;
+  const cols = tensor[0]?.length || GRID_SIZE;
   const cellSize = 10;
-  const canvasSize = gridSize * cellSize;
-  
-  canvas.width = canvasSize;
-  canvas.height = canvasSize;
 
-  // Generate synthetic dBZ reflectivity data based on step
-  const intensity = Math.min(1, step / 14);
-  
-  // Create hotspot centers
-  const hotspots = [
-    { x: 16, y: 16, strength: intensity },
-    { x: 10, y: 20, strength: intensity * 0.7 },
-    { x: 22, y: 12, strength: intensity * 0.6 },
-  ];
+  canvas.width = cols * cellSize;
+  canvas.height = rows * cellSize;
 
-  // Render 32x32 grid
-  for (let row = 0; row < gridSize; row++) {
-    for (let col = 0; col < gridSize; col++) {
-      // Calculate distance-based intensity from hotspots
-      let maxIntensity = 0;
-      
-      for (const hotspot of hotspots) {
-        const dx = col - hotspot.x;
-        const dy = row - hotspot.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        const falloff = Math.max(0, 1 - distance / 8);
-        const localIntensity = hotspot.strength * falloff;
-        maxIntensity = Math.max(maxIntensity, localIntensity);
-      }
-
-      // Add some noise
-      maxIntensity += (Math.random() - 0.5) * 0.1;
-      maxIntensity = Math.max(0, Math.min(1, maxIntensity));
-
-      // Color gradient: light gray/teal → yellow → orange → dark red
-      let r, g, b;
-      if (maxIntensity < 0.2) {
-        r = 148 + (maxIntensity / 0.2) * 50;
-        g = 163 + (maxIntensity / 0.2) * 30;
-        b = 184;
-      } else if (maxIntensity < 0.4) {
-        const t = (maxIntensity - 0.2) / 0.2;
-        r = 198 + t * 54;
-        g = 193 + t * 27;
-        b = 184 - t * 94;
-      } else if (maxIntensity < 0.7) {
-        const t = (maxIntensity - 0.4) / 0.3;
-        r = 252 - t * 28;
-        g = 220 - t * 96;
-        b = 90 - t * 52;
-      } else {
-        const t = (maxIntensity - 0.7) / 0.3;
-        r = 224 - t * 71;
-        g = 124 - t * 97;
-        b = 38 - t * 11;
-      }
-
-      ctx.fillStyle = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+  for (let row = 0; row < rows; row++) {
+    const line = tensor[row] ?? [];
+    for (let col = 0; col < cols; col++) {
+      const dbz = Number(line[col] ?? 0);
+      ctx.fillStyle = getDbzColor(Number.isFinite(dbz) ? dbz : 0);
       ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
     }
   }
@@ -116,28 +75,24 @@ function generateTensorCanvas(step: number, incidentIdx: number): string {
   return canvas.toDataURL();
 }
 
-// Component to add image overlay to map
-function TensorOverlay({ step, incidentIdx }: { step: number; incidentIdx: number }) {
+function TensorOverlay({ tensorGrid }: { tensorGrid: RadarTensorGrid }) {
   const map = useMap();
   const overlayRef = useRef<L.ImageOverlay | null>(null);
 
   useEffect(() => {
-    // Metro Manila bounding box (approximate)
     const bounds: L.LatLngBoundsExpression = [
-      [14.35, 120.85],  // Southwest corner
-      [14.85, 121.12],  // Northeast corner
+      [14.35, 120.85],
+      [14.85, 121.12],
     ];
 
-    const imageUrl = generateTensorCanvas(step, incidentIdx);
-    
-    // Remove existing overlay
+    const imageUrl = generateTensorCanvas(tensorGrid);
+
     if (overlayRef.current) {
       map.removeLayer(overlayRef.current);
     }
 
-    // Add new overlay
     overlayRef.current = L.imageOverlay(imageUrl, bounds, {
-      opacity: 0.65,
+      opacity: 0.72,
       interactive: false,
     }).addTo(map);
 
@@ -146,12 +101,11 @@ function TensorOverlay({ step, incidentIdx }: { step: number; incidentIdx: numbe
         map.removeLayer(overlayRef.current);
       }
     };
-  }, [step, incidentIdx, map]);
+  }, [tensorGrid, map]);
 
   return null;
 }
 
-// Component to add Manila center marker
 function ManilaMarker() {
   const map = useMap();
 
@@ -182,7 +136,15 @@ function ManilaMarker() {
   return null;
 }
 
-export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical', isLoading = false, bare = false, setStep }: RadarGridProps) {
+export default function RadarGrid({
+  step,
+  pagasaWarning,
+  mode = 'historical',
+  isLoading = false,
+  bare = false,
+  setStep,
+  tensorGrid = null,
+}: RadarGridProps) {
   if (isLoading) {
     return bare ? <MapSkeleton /> : (
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 h-full flex flex-col ring-1 ring-slate-900/5">
@@ -190,13 +152,18 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
       </div>
     );
   }
-  
-  const currentTime = mode === 'live' 
+
+  const activeTensor = useMemo(
+    () => (tensorGrid && tensorGrid.length > 0 ? tensorGrid : defaultEmptyGrid()),
+    [tensorGrid],
+  );
+
+  const currentTime = mode === 'live'
     ? new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Manila', hour: '2-digit', minute: '2-digit', hour12: true })
     : HOUR_STEPS[step]?.label || "12:00 PM";
 
   const title = mode === 'live' ? 'Active Observation Tensor' : 'PAGASA Radar Input Grid';
-  const subtitle = mode === 'live' 
+  const subtitle = mode === 'live'
     ? 'Real-Time Satellite Telemetry • Metro Manila Grid (32×32 Tensor Input)'
     : 'Channel 0: dBZ Reflectivity • Local Manila Grid (32×32 Tensor Input)';
 
@@ -222,21 +189,17 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
         </div>
       )}
 
-      {/* Map Container with Tensor Overlay */}
       <div className="h-64 md:h-80 lg:flex-1 lg:min-h-[400px] relative z-0 rounded-xl overflow-hidden border-2 border-stone-200">
-        {/* Map metadata overlays */}
-        <div 
+        <div
           className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-[1000]"
           style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
         >
           14.5995°N 120.9842°E
         </div>
 
-        <div 
-          className="absolute top-3 right-3 z-[1000]"
-        >
+        <div className="absolute top-3 right-3 z-[1000]">
           {mode === 'live' ? (
-            <div 
+            <div
               className="px-2 py-1 rounded-sm text-xs font-medium text-white"
               style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
             >
@@ -258,31 +221,25 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
           )}
         </div>
 
-        <div 
-          className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold text-white z-[1000]"
-          style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
-        >
-          <SourceLink source="pagasa" className="text-white">
-            PAGASA
-          </SourceLink>
-          : {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
+        <div className="absolute bottom-3 right-3 z-[1000]">
+          <PagasaBadge level={pagasaWarning} compact />
         </div>
 
-        {/* Integrated dBZ Intensity Legend */}
         <div className="absolute bottom-3 left-3 z-[400] bg-slate-900/80 backdrop-blur-sm p-3 rounded-lg border border-slate-700">
           <div className="text-xs font-semibold text-slate-300 mb-2" style={SANS}>
             dBZ Intensity
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-32 h-4 rounded overflow-hidden"
-                 style={{
-                   background: 'linear-gradient(to right, #94A3B8 0%, #FCD34D 25%, #FB923C 50%, #EF4444 75%, #991B1B 100%)'
-                 }}
+            <div
+              className="w-32 h-4 rounded overflow-hidden"
+              style={{
+                background: 'linear-gradient(to right, #262626 0%, #262626 22%, #f59e0b 38%, #ea580c 62%, #dc2626 100%)',
+              }}
             />
             <div className="flex gap-2 text-xs font-mono text-slate-300">
-              <span>Low</span>
-              <span>Med</span>
-              <span>High</span>
+              <span>≤15</span>
+              <span>30</span>
+              <span>45+</span>
             </div>
           </div>
         </div>
@@ -299,14 +256,13 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
           zoomControl={false}
           attributionControl={false}
         >
-          {/* Dark mode tile layer - CartoDB Dark Matter with brightness adjustment */}
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
             className="map-tiles-brightened"
           />
-          
-          <TensorOverlay step={step} incidentIdx={incidentIdx} />
+
+          <TensorOverlay tensorGrid={activeTensor} />
           <ManilaMarker />
         </MapContainer>
       </div>

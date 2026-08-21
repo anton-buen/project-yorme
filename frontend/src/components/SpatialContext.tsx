@@ -3,6 +3,7 @@ import { MapPin, Grid3x3, Radio } from 'lucide-react';
 import RadarGrid from './RadarGrid';
 import LiveMap from './LiveMap';
 import IconHint from './IconHint';
+import type { RadarTensorGrid } from '../types/dashboard';
 
 type PagasaLevel = "NONE" | "YELLOW" | "ORANGE" | "RED";
 
@@ -12,7 +13,9 @@ interface SpatialContextProps {
   pagasaWarning: PagasaLevel;
   mode: 'historical' | 'live';
   isLoading?: boolean;
-  setStep?: (step: number) => void; // For interactive time navigation
+  setStep?: (step: number) => void;
+  /** Active-hour 32×32 dBZ matrix from the selected incident */
+  tensorGrid?: RadarTensorGrid | null;
 }
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
@@ -24,6 +27,7 @@ export default function SpatialContext({
   mode,
   isLoading = false,
   setStep,
+  tensorGrid = null,
 }: SpatialContextProps) {
   const [activeView, setActiveView] = useState<'tensor' | 'radar'>('tensor');
 
@@ -94,6 +98,7 @@ export default function SpatialContext({
             isLoading={isLoading}
             bare={true}
             setStep={setStep}
+            tensorGrid={tensorGrid}
           />
         ) : (
           <LiveMap bare={true} />

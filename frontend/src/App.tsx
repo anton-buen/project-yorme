@@ -12,6 +12,8 @@ import { BarChart2, BookOpen } from "lucide-react";
 
 import { fetchIncidents, getPrediction, checkApiHealth, ApiError } from './utils/api';
 import type { IncidentData, PredictionResponse } from './types/dashboard';
+import { normalizePagasaLevel } from './utils/pagasa';
+import type { PagasaLevel } from './utils/pagasa';
 
 import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
@@ -27,7 +29,6 @@ import OnboardingTour, { TOUR_STORAGE_KEY } from './components/OnboardingTour';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 
-type PagasaLevel = "NONE" | "YELLOW" | "ORANGE" | "RED";
 type BiasMode = "strict" | "balanced" | "protective";
 type DashboardMode = "historical" | "live";
 
@@ -53,6 +54,12 @@ const HOUR_STEPS: HourStep[] = Array.from({ length: 19 }, (_, i) => {
     hour: h, minute: m,
   };
 });
+
+/** Match incidents.json hour keys ("3.0", "3.5", …) without flooring half-hours. */
+function toHourKey(hour: number): string {
+  if (!Number.isFinite(hour)) return "3.0";
+  return (Math.round(hour * 2) / 2).toFixed(1);
+}
 
 /**
  * Main application component managing dashboard state and data fetching.
@@ -158,8 +165,8 @@ export default function App() {
       
       console.log('[App] ⏰ Current hour calculated:', currentHour, 'mode:', mode);
       
-      const timelineKey = Number.isFinite(currentHour) ? Math.floor(currentHour).toFixed(1) : "3.0";
-      console.log('[App] 🔑 Timeline key (floored):', timelineKey, 'from hour:', currentHour);
+      const timelineKey = toHourKey(currentHour);
+      console.log('[App] Timeline key:', timelineKey, 'from hour:', currentHour);
       
       const timeline = currentIncident?.hourly_timeline?.[timelineKey];
 
@@ -247,12 +254,15 @@ export default function App() {
     ? new Date().getHours() + new Date().getMinutes() / 60 
     : HOUR_STEPS[step]?.hour + (HOUR_STEPS[step]?.minute || 0) / 60;
   
-  const timelineKey = Number.isFinite(currentHour) ? Math.floor(currentHour).toFixed(1) : "3.0";
+  const timelineKey = toHourKey(currentHour);
   const currentTimeline = currentIncident?.hourly_timeline?.[timelineKey] ?? {
     pagasa_warning: "NONE" as PagasaLevel,
     flood_active: false,
     simulated_stranded_projection: 0
   };
+
+  const tensorGrid =
+    currentIncident?.hourly_data?.[timelineKey]?.tensor ?? null;
 
   const announcementStep = currentIncident?.actual_announcement_time != null
     ? HOUR_STEPS.findIndex(h => (h.hour + h.minute / 60) === currentIncident.actual_announcement_time)
@@ -261,7 +271,7 @@ export default function App() {
   const simulatedStranded = typeof currentTimeline?.simulated_stranded_projection === 'number' 
     ? currentTimeline.simulated_stranded_projection 
     : 0;
-  const pagasaWarning: PagasaLevel = currentTimeline?.pagasa_warning ?? "NONE";
+  const pagasaWarning = normalizePagasaLevel(currentTimeline?.pagasa_warning);
 
   return (
     <div className="min-h-screen w-full bg-slate-50 flex flex-col relative">
@@ -326,6 +336,7 @@ export default function App() {
                 mode="historical"
                 isLoading={predictionLoading}
                 setStep={setStep}
+                tensorGrid={tensorGrid}
               />
             </div>
           </div>
@@ -361,6 +372,7 @@ export default function App() {
                 mode="live"
                 isLoading={predictionLoading}
                 setStep={setStep}
+                tensorGrid={tensorGrid}
               />
             </div>
           </div>
