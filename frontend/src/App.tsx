@@ -91,15 +91,6 @@ export default function App() {
   const [predictionError, setPredictionError] = useState<string | null>(null);
   const [predictionLoading, setPredictionLoading] = useState(false);
 
-  // Auto-open onboarding for first-time users
-  useEffect(() => {
-    const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
-    if (!hasSeenOnboarding) {
-      setTechVaultOpen(true);
-      localStorage.setItem('hasSeenOnboarding', 'true');
-    }
-  }, []);
-
   useEffect(() => {
     async function initializeApp() {
       try {
@@ -421,11 +412,16 @@ export default function App() {
       <OnboardingTour
         isOpen={tourOpen}
         onClose={() => setTourOpen(false)}
+        mode={mode}
+        setMode={setMode}
       />
 
-      {/* Floating Action Buttons - Labeled Pills */}
-      {!drawerOpen && !techVaultOpen && !legalDisclaimerOpen && !tourOpen && (
-        <div className="fixed bottom-8 right-8 z-40 flex flex-col gap-3">
+      {/* Floating Action Buttons - visible during tour so the final step can spotlight them */}
+      {!drawerOpen && !techVaultOpen && !legalDisclaimerOpen && (
+        <div
+          id="step-fab-dock"
+          className="fixed bottom-8 right-8 z-40 flex flex-col gap-3"
+        >
           {/* How it Works FAB */}
           <button
             onClick={() => setTechVaultOpen(true)}

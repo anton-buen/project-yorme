@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { HelpCircle, X } from 'lucide-react';
 import YormeMark from './YormeMark';
 
@@ -6,12 +6,14 @@ const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-se
 
 export const TOUR_STORAGE_KEY = 'yormetrics_tour_completed';
 
+type DashboardMode = 'historical' | 'live';
+
 interface TourStep {
   id: string;
-  /** Primary DOM id without #; omit for centered welcome */
   targetId?: string;
-  /** Used when primary target is not in the DOM (e.g. live vs replay) */
   fallbackTargetId?: string;
+  /** Switch dashboard mode before measuring this step */
+  requireMode?: DashboardMode;
   headline: string;
   copy: string;
 }
@@ -20,38 +22,64 @@ const TOUR_STEPS: TourStep[] = [
   {
     id: 'welcome',
     headline: 'Welcome to Yormetrics',
-    copy: 'An LGU-grade decision-support instrument for early class suspension modeling in Metro Manila. Let us take a quick 45-second tour of the command center.',
+    copy: 'An LGU-grade decision-support instrument for early class suspension modeling in Metro Manila. Let us take a quick tour of the command center.',
   },
   {
     id: 'scenario',
     targetId: 'step-scenario-select',
+    requireMode: 'historical',
     headline: 'Historical Scenarios & Live Mode',
     copy: 'Switch between real-time weather feeds or replay 13 historical typhoons and normal control days to observe how atmospheric conditions evolve.',
   },
   {
     id: 'timeline',
     targetId: 'step-timeline-scrubber',
+    requireMode: 'historical',
     headline: 'Time Navigation & The 05:30 AM Threshold',
     copy: 'Scrub from 03:00 AM to 12:00 PM. Pay close attention to 05:30 AM—the statutory deadline for LGU suspension announcements before morning commutes begin.',
   },
   {
     id: 'tensor',
     targetId: 'step-tensor-grid',
+    requireMode: 'historical',
     headline: '32×32 Spatial Radar Tensor',
     copy: 'This grid maps PAGASA Doppler reflectivity (dBZ intensity). Dark orange and red clusters indicate severe storm eyewalls and heavy precipitation density over the Manila center dot.',
   },
   {
     id: 'ai',
     targetId: 'step-ai-card',
+    requireMode: 'historical',
     headline: 'Policy Tiers (A0–A4) & Risk Utility',
-    copy: 'The PPO agent predicts actions from A0 (Status Quo) to A4 (Full Lockdown). The agent uses a high-cost safety reward model. Recommending A4 (Full Emergency Lockdown) occurs when high-density storm vectors coincide with the 05:30 AM decision window to minimize commute risk. The reward matrix heavily penalizes false negatives (unannounced flooding during morning commutes).',
+    copy: 'The PPO agent predicts actions from A0 (Status Quo) to A4 (Full Lockdown). The agent uses a high-cost safety reward model. Recommending A4 (Full Emergency Lockdown) occurs when high-density storm vectors coincide with the 05:30 AM decision window to minimize commute risk.',
+  },
+  {
+    id: 'disclaimer',
+    targetId: 'step-legal-footer',
+    requireMode: 'historical',
+    headline: 'Legal & AI Disclaimer',
+    copy: 'Official suspension orders rest solely with the Manila Local Chief Executive. Open Legal & AI Disclaimer anytime for statutory authority, privacy, and redistribution guardrails.',
   },
   {
     id: 'telemetry',
     targetId: 'step-telemetry',
-    fallbackTargetId: 'step-legal-footer',
-    headline: 'Live System Telemetry & Disclaimers',
-    copy: 'Yormetrics is a probabilistic simulation tool designed to assist MDRRMO personnel. Official suspension orders rest solely with the Manila Local Chief Executive.',
+    requireMode: 'live',
+    headline: 'Live MDRRMO Telemetry',
+    copy: 'In Live mode, this panel shows command-center telemetry for MDRRMO operators—inference status, infrastructure signals, and data provenance used as explainable context alongside the AI recommendation.',
+  },
+  {
+    id: 'radar-toggle',
+    targetId: 'step-radar-toggle',
+    fallbackTargetId: 'step-tensor-grid',
+    requireMode: 'live',
+    headline: 'Tensor & Live Radar Views',
+    copy: 'Toggle between the AI observation tensor and live radar imagery. Use both views to cross-check spatial storm structure against the policy recommendation.',
+  },
+  {
+    id: 'fabs',
+    targetId: 'step-fab-dock',
+    requireMode: 'live',
+    headline: 'How it Works & RL Metrics',
+    copy: 'Open How it Works for system documentation and Ethical & Safety Guardrails. Open RL Metrics for PPO action probabilities, bias tuning, and the reward matrix under the hood.',
   },
 ];
 
@@ -65,22 +93,23 @@ interface SpotlightRect {
 interface OnboardingTourProps {
   isOpen: boolean;
   onClose: () => void;
+  mode?: DashboardMode;
+  setMode?: (mode: DashboardMode) => void;
 }
 
 function resolveTarget(step: TourStep): HTMLElement | null {
   if (!step.targetId) return null;
-  const primary = document.getElementById(step.targetId);
-  if (primary) return primary;
-  if (step.fallbackTargetId) {
-    return document.getElementById(step.fallbackTargetId);
-  }
-  return null;
+  return (
+    document.getElementById(step.targetId) ??
+    (step.fallbackTargetId ? document.getElementById(step.fallbackTargetId) : null)
+  );
 }
 
-export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps) {
+export default function OnboardingTour({ isOpen, onClose, mode, setMode }: OnboardingTourProps) {
   const [stepIndex, setStepIndex] = useState(0);
   const [rect, setRect] = useState<SpotlightRect | null>(null);
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
+  const modeBeforeTour = useRef<DashboardMode | null>(null);
 
   const step = TOUR_STEPS[stepIndex];
   const total = TOUR_STEPS.length;
@@ -91,20 +120,33 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
     try {
       localStorage.setItem(TOUR_STORAGE_KEY, 'true');
     } catch {
-      /* ignore quota / private mode */
+      /* ignore */
     }
+    if (setMode && modeBeforeTour.current) {
+      setMode(modeBeforeTour.current);
+    }
+    modeBeforeTour.current = null;
     setStepIndex(0);
     setRect(null);
     onClose();
-  }, [onClose]);
+  }, [onClose, setMode]);
 
   useEffect(() => {
-    if (isOpen) {
-      setStepIndex(0);
-      setRect(null);
-      setTooltipPos(null);
-    }
+    if (!isOpen) return;
+    modeBeforeTour.current = mode ?? 'historical';
+    setStepIndex(0);
+    setRect(null);
+    setTooltipPos(null);
+    // Intentionally only re-run when the tour opens — not on every mode change mid-tour.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
+
+  // Switch Replay / Live as required by the active step
+  useEffect(() => {
+    if (!isOpen || !setMode) return;
+    const required = TOUR_STEPS[stepIndex].requireMode;
+    if (required) setMode(required);
+  }, [isOpen, stepIndex, setMode]);
 
   const measure = useCallback(() => {
     if (!isOpen) return;
@@ -119,7 +161,6 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center', inline: 'nearest' });
 
-    // Allow layout to settle after scroll
     requestAnimationFrame(() => {
       const r = el.getBoundingClientRect();
       const pad = 8;
@@ -132,7 +173,7 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
       setRect(spotlight);
 
       const cardW = Math.min(448, window.innerWidth - 32);
-      const cardH = 220;
+      const cardH = 240;
       const gap = 16;
       let top = spotlight.top + spotlight.height + gap;
       let left = spotlight.left + spotlight.width / 2 - cardW / 2;
@@ -149,8 +190,14 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
 
   useLayoutEffect(() => {
     if (!isOpen) return;
-    const t = window.setTimeout(measure, 80);
-    return () => window.clearTimeout(t);
+    // Allow Live/Replay layout to mount after mode switches
+    const delay = TOUR_STEPS[stepIndex].requireMode === 'live' ? 220 : 100;
+    const t = window.setTimeout(measure, delay);
+    const t2 = window.setTimeout(measure, delay + 280);
+    return () => {
+      window.clearTimeout(t);
+      window.clearTimeout(t2);
+    };
   }, [isOpen, stepIndex, measure]);
 
   useEffect(() => {
@@ -191,25 +238,23 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
       aria-modal="true"
       aria-labelledby="onboarding-tour-title"
     >
-      {/* Dim backdrop (full when centered; cutout uses box-shadow when spotlighting) */}
       {centered ? (
-        <div className="absolute inset-0 bg-black/75 transition-all duration-300" />
+        <div className="absolute inset-0 bg-slate-950/80 transition-all duration-300" />
       ) : (
         <div
-          className="absolute rounded-xl ring-2 ring-emerald-500 transition-all duration-300 pointer-events-none"
+          className="absolute rounded-sm ring-2 ring-slate-200 transition-all duration-300 pointer-events-none"
           style={{
             top: rect.top,
             left: rect.left,
             width: rect.width,
             height: rect.height,
-            boxShadow: '0 0 0 9999px rgba(0,0,0,0.75)',
+            boxShadow: '0 0 0 9999px rgba(2, 6, 23, 0.80)',
           }}
         />
       )}
 
-      {/* Tour card */}
       <div
-        className="absolute bg-stone-900 border border-stone-700 text-stone-100 rounded-xl p-6 max-w-md shadow-2xl z-[101] transition-all duration-300"
+        className="absolute bg-slate-900 border border-slate-700 text-slate-100 rounded-sm p-6 max-w-md shadow-2xl z-[101] transition-all duration-300"
         style={
           centered
             ? {
@@ -233,13 +278,13 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
         }
       >
         <div className="flex items-start justify-between gap-3 mb-3">
-          <p className="text-[11px] font-medium uppercase tracking-wider text-stone-500" style={SANS}>
+          <p className="text-[11px] font-medium uppercase tracking-wider text-slate-500" style={SANS}>
             Step {stepIndex + 1} of {total}
           </p>
           <button
             type="button"
             onClick={finish}
-            className="text-xs text-stone-400 hover:text-stone-200 transition-colors inline-flex items-center gap-1"
+            className="text-xs text-slate-400 hover:text-slate-200 transition-colors inline-flex items-center gap-1"
             style={SANS}
           >
             Skip Tour
@@ -249,7 +294,7 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
 
         <h2
           id="onboarding-tour-title"
-          className="text-lg font-bold tracking-tight text-stone-50 mb-2"
+          className="text-lg font-bold tracking-tight text-white mb-2"
           style={SANS}
         >
           {step.id === 'welcome' ? (
@@ -260,16 +305,23 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
             step.headline
           )}
         </h2>
-        <p className="text-sm text-stone-300 leading-relaxed mb-6" style={SANS}>
+        <p className="text-sm text-slate-300 leading-relaxed mb-6" style={SANS}>
           {step.id === 'welcome' ? (
             <>
               An LGU-grade decision-support instrument for early class suspension modeling in Metro
-              Manila. Let us take a quick 45-second tour of the command center.
+              Manila. Let us take a quick tour of the command center.
+            </>
+          ) : step.id === 'disclaimer' ? (
+            <>
+              Official suspension orders rest solely with the Manila Local Chief Executive. Open{' '}
+              <span className="text-slate-200 font-medium">Legal &amp; AI Disclaimer</span> anytime
+              for statutory authority, privacy, and redistribution guardrails.
             </>
           ) : step.id === 'telemetry' ? (
             <>
-              <YormeMark /> is a probabilistic simulation tool designed to assist MDRRMO personnel.
-              Official suspension orders rest solely with the Manila Local Chief Executive.
+              In Live mode, this panel shows command-center telemetry for MDRRMO operators—inference
+              status, infrastructure signals, and data provenance used as explainable context
+              alongside the AI recommendation.
             </>
           ) : (
             step.copy
@@ -281,7 +333,7 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
             <button
               type="button"
               onClick={() => setStepIndex((i) => Math.max(0, i - 1))}
-              className="px-4 py-2 rounded-sm text-sm font-medium text-stone-300 hover:text-stone-100 hover:bg-stone-800 transition-colors"
+              className="px-4 py-2 rounded-sm text-sm font-medium text-slate-300 hover:text-white hover:bg-slate-800 transition-colors"
               style={SANS}
             >
               Back
@@ -293,7 +345,7 @@ export default function OnboardingTour({ isOpen, onClose }: OnboardingTourProps)
               if (isLast) finish();
               else setStepIndex((i) => i + 1);
             }}
-            className="px-4 py-2 rounded-sm text-sm font-semibold bg-emerald-600 hover:bg-emerald-500 text-white transition-colors"
+            className="px-4 py-2 rounded-sm text-sm font-semibold bg-slate-200 hover:bg-white text-slate-900 transition-colors"
             style={SANS}
           >
             {isLast ? 'Got it' : 'Next'}

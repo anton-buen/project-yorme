@@ -48,7 +48,7 @@ export default function SpatialContext({
 
         {/* Segmented Control */}
         {mode === 'live' && (
-          <div className="flex bg-slate-100 p-1 rounded-lg w-fit">
+          <div id="step-radar-toggle" className="flex bg-slate-100 p-1 rounded-lg w-fit">
             <button
               onClick={() => setActiveView('tensor')}
               className={`

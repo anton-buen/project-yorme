@@ -164,12 +164,11 @@ export default function Header({
               </button>
             </div>
 
-            {onReplayTour && <TourHelpButton onClick={onReplayTour} />}
           </div>
         </header>
 
-        {/* Row 2: PAGASA Status + Clock (Interactive Dropdown in Historical Mode) */}
-        <div className="w-full bg-slate-900 px-8 py-3 flex items-center border-b border-slate-800">
+        {/* Row 2: PAGASA Status + Clock + Help */}
+        <div className="w-full bg-slate-900 px-8 py-3 flex items-center gap-4 border-b border-slate-800">
           {/* PAGASA Status Badge */}
           <div 
             className="px-3 py-1.5 rounded-sm text-sm font-semibold text-white whitespace-nowrap"
@@ -183,7 +182,7 @@ export default function Header({
 
           {/* Time Display - Interactive Dropdown in Historical Mode */}
           {mode === "live" ? (
-            <div className="px-3 py-1.5 bg-slate-800 rounded-sm text-sm text-slate-200 whitespace-nowrap ml-4" style={MONO}>
+            <div className="px-3 py-1.5 bg-slate-800 rounded-sm text-sm text-slate-200 whitespace-nowrap" style={MONO}>
               {currentTime.toLocaleTimeString('en-US', { 
                 timeZone: 'Asia/Manila',
                 hour12: true,
@@ -196,7 +195,7 @@ export default function Header({
             <select
               value={step}
               onChange={(e) => setStep(Number(e.target.value))}
-              className="ml-4 px-3 py-1.5 bg-slate-800 border border-slate-700 text-slate-200 rounded-sm text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-slate-700 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-600"
+              className="px-3 py-1.5 bg-slate-800 border border-slate-700 text-slate-200 rounded-sm text-sm font-medium cursor-pointer transition-all duration-200 hover:bg-slate-700 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-slate-600"
               style={MONO}
             >
               {HOUR_STEPS.map((hourStep, idx) => (
@@ -205,6 +204,12 @@ export default function Header({
                 </option>
               ))}
             </select>
+          )}
+
+          {onReplayTour && (
+            <div className="ml-auto">
+              <TourHelpButton onClick={onReplayTour} />
+            </div>
           )}
         </div>
       </div>
