@@ -6,11 +6,9 @@ interface TimelineScrubberProps {
   announcementStep: number;
 }
 
-// Total steps: 0-18 (19 intervals from 03:00 AM to 12:00 PM = 540 minutes)
 const TOTAL_STEPS = 18;
-const START_HOUR = 3; // 3:00 AM
+const START_HOUR = 3;
 
-// Generate all tick marks (19 total: 0, 1, 2, ... 18)
 const TICK_MARKS = Array.from({ length: 19 }, (_, i) => {
   const totalMinutes = START_HOUR * 60 + i * 30;
   const h = Math.floor(totalMinutes / 60);
@@ -46,7 +44,7 @@ export default function TimelineScrubber({
 }: TimelineScrubberProps) {
   const progressPercent = (step / TOTAL_STEPS) * 100;
   const currentTimeLabel = getTimeLabel(step);
-  const decisionWindowStep = 6; // 06:00 AM
+  const decisionWindowStep = 6;
   
   return (
     <div 
@@ -54,18 +52,18 @@ export default function TimelineScrubber({
       role="region" 
       aria-label="Master Timeline Control"
     >
-      {/* Compact Header Bar */}
-      <div className="bg-slate-50 border-b border-slate-200 px-6 py-3 flex items-center justify-between">
+      {/* Compact Header Bar - Navy Anchor */}
+      <div className="bg-slate-900 border-b border-slate-800 px-6 py-3 flex items-center justify-between">
         <div className="flex items-baseline gap-3">
-          <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider" style={SANS}>
+          <h3 className="text-sm font-bold text-white uppercase tracking-wider" style={SANS}>
             Simulation Timeline
           </h3>
-          <span className="text-xs text-slate-500 font-medium" style={SANS}>
+          <span className="text-xs text-slate-400 font-medium" style={SANS}>
             03:00 AM → 12:00 PM (9 hours)
           </span>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white rounded-md">
-          <div className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />
+        <div className="flex items-center gap-2 px-3 py-1 bg-slate-700 text-white rounded-sm">
+          <div className="w-1.5 h-1.5 rounded-full bg-slate-300 animate-pulse" />
           <span className="text-xs font-bold" style={SANS}>
             {currentTimeLabel}
           </span>
@@ -76,9 +74,9 @@ export default function TimelineScrubber({
       <div className="px-6 py-6">
         <div className="relative">
           
-          {/* Clickable Track Background */}
+          {/* Clickable Track Background - Sharp Corners */}
           <div 
-            className="relative h-12 bg-slate-100 rounded cursor-pointer"
+            className="relative h-12 bg-slate-100 rounded-sm cursor-pointer border border-slate-200"
             onClick={(e) => {
               const rect = e.currentTarget.getBoundingClientRect();
               const clickX = e.clientX - rect.left;
@@ -87,16 +85,15 @@ export default function TimelineScrubber({
               setStep(Math.max(0, Math.min(TOTAL_STEPS, newStep)));
             }}
           >
-            {/* Progress Fill */}
+            {/* Progress Fill - Navy Anchor */}
             <div 
-              className="absolute inset-y-0 left-0 bg-blue-600/20 rounded-l transition-all duration-200"
+              className="absolute inset-y-0 left-0 bg-slate-900/10 rounded-sm transition-all duration-200"
               style={{ width: `${progressPercent}%` }}
             />
 
-            {/* Vertical Event Markers (Embedded) */}
-            {/* Decision Window Marker */}
+            {/* Vertical Event Markers */}
             <div 
-              className="absolute inset-y-0 w-0.5 bg-emerald-500 pointer-events-none"
+              className="absolute inset-y-0 w-0.5 bg-emerald-600 pointer-events-none"
               style={{ left: `${(decisionWindowStep / TOTAL_STEPS) * 100}%` }}
             >
               <div className="absolute -top-6 left-0 -translate-x-1/2">
@@ -106,10 +103,9 @@ export default function TimelineScrubber({
               </div>
             </div>
 
-            {/* LGU Announcement Marker */}
             {announcementStep >= 0 && (
               <div 
-                className="absolute inset-y-0 w-0.5 bg-rose-500 pointer-events-none animate-pulse"
+                className="absolute inset-y-0 w-0.5 bg-rose-600 pointer-events-none animate-pulse"
                 style={{ left: `${(announcementStep / TOTAL_STEPS) * 100}%` }}
               >
                 <div className="absolute -top-6 left-0 -translate-x-1/2">
@@ -120,7 +116,7 @@ export default function TimelineScrubber({
               </div>
             )}
 
-            {/* Hour Tick Marks (Subtle) */}
+            {/* Hour Tick Marks */}
             {TICK_MARKS.filter(t => t.isHourMark).map((tick) => (
               <div
                 key={tick.step}
@@ -129,9 +125,9 @@ export default function TimelineScrubber({
               />
             ))}
 
-            {/* Interactive Playhead (Draggable Knob) */}
+            {/* Interactive Playhead - Navy Anchor */}
             <div 
-              className="absolute inset-y-0 w-1 bg-blue-600 rounded-full shadow-lg cursor-grab active:cursor-grabbing transition-all duration-200 hover:w-1.5"
+              className="absolute inset-y-0 w-1 bg-slate-900 rounded-sm shadow-lg cursor-grab active:cursor-grabbing transition-all duration-200 hover:w-1.5"
               style={{ left: `${progressPercent}%`, transform: 'translateX(-50%)' }}
               onMouseDown={(e) => {
                 e.preventDefault();
@@ -155,13 +151,12 @@ export default function TimelineScrubber({
                 document.addEventListener('mouseup', handleMouseUp);
               }}
             >
-              {/* Playhead Indicator Line */}
-              <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-3 bg-blue-600" />
+              <div className="absolute top-full left-1/2 -translate-x-1/2 w-px h-3 bg-slate-900" />
             </div>
           </div>
 
           {/* Time Labels Below Track */}
-          <div className="relative mt-5 flex justify-between">
+          <div className="relative mt-6 flex justify-between">
             {TICK_MARKS.filter(t => t.isHourMark).map((tick) => (
               <div 
                 key={tick.step}
@@ -183,19 +178,19 @@ export default function TimelineScrubber({
           </div>
         </div>
 
-        {/* Legend (Compact Inline) */}
-        <div className="mt-6 flex items-center justify-center gap-6 text-[11px] text-slate-600" style={SANS}>
+        {/* Legend */}
+        <div className="mt-6 flex items-center justify-center gap-6 text-[11px] text-slate-600 pt-4 border-t border-slate-200" style={SANS}>
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-blue-600" />
+            <div className="w-2 h-2 rounded-sm bg-slate-900" />
             <span>Current Time</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-emerald-500" />
+            <div className="w-2 h-2 rounded-sm bg-emerald-600" />
             <span>Decision Window (06:00)</span>
           </div>
           {announcementStep >= 0 && (
             <div className="flex items-center gap-1.5">
-              <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+              <div className="w-2 h-2 rounded-sm bg-rose-600 animate-pulse" />
               <span>Official Announcement</span>
             </div>
           )}
