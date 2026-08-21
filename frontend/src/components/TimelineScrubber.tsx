@@ -66,12 +66,30 @@ export default function TimelineScrubber({
           ))}
         </div>
 
+        {/* Future Decay Gradient Overlay */}
+        <div 
+          className="absolute top-0 bottom-16 pointer-events-none z-10"
+          style={{
+            left: `calc(8% + ${(step / (HOUR_STEPS.length - 1)) * 84}%)`,
+            right: '8%',
+            background: 'linear-gradient(to right, rgba(226, 232, 240, 0) 0%, rgba(226, 232, 240, 0.4) 50%, rgba(226, 232, 240, 0.7) 100%)',
+            backdropFilter: 'blur(1px)',
+          }}
+        />
+
         {/* Timeline Circles */}
         <div className="relative flex items-center justify-between gap-1 mb-4">
           {HOUR_STEPS.map((s, i) => {
             const isActive = i === step;
             const isAnnouncement = i === announcementStep;
             const isPast = i < step;
+            const isFuture = i > step;
+            
+            // Calculate opacity decay for future intervals (further = more transparent)
+            const distanceFromCurrent = i - step;
+            const futureOpacity = isFuture 
+              ? Math.max(0.15, 1 - (distanceFromCurrent / HOUR_STEPS.length) * 0.85)
+              : 1;
 
             return (
               <button
@@ -88,7 +106,8 @@ export default function TimelineScrubber({
                 `}
                 style={{
                   backgroundColor: isActive ? knobColor : undefined,
-                  boxShadow: isActive ? `0 0 16px ${knobColor}, 0 4px 8px rgba(0,0,0,0.15)` : undefined
+                  boxShadow: isActive ? `0 0 16px ${knobColor}, 0 4px 8px rgba(0,0,0,0.15)` : undefined,
+                  opacity: isFuture ? futureOpacity : 1,
                 }}
                 aria-label={s.label}
               >

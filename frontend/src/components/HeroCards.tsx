@@ -42,9 +42,23 @@ export default function HeroCards({
   pagasaWarning = 'NONE',
 }: HeroCardsProps) {
   const wasAnnounced = currentHour >= (currentIncident?.actual_announcement_time ?? 0);
-  const confidence = prediction 
+  
+  // Base confidence from action probabilities
+  const baseConfidence = prediction 
     ? Math.round(Math.max(...prediction.action_probabilities) * 100)
     : null;
+  
+  // Calculate time-based confidence decay
+  // Assume announcement time is the "present" and any time beyond that is future prediction
+  const announcementTime = currentIncident?.actual_announcement_time ?? 0;
+  const hoursIntoFuture = Math.max(0, currentHour - announcementTime);
+  
+  // Decay: 6% per hour into the future (realistic RL uncertainty growth)
+  const confidenceDecay = Math.floor(hoursIntoFuture * 6);
+  const confidence = baseConfidence ? Math.max(30, baseConfidence - confidenceDecay) : null;
+  
+  // Determine confidence warning state
+  const isLowConfidence = confidence !== null && confidence < 75;
 
   const currentTime = new Date();
   const currentHourOfDay = currentTime.getHours() + currentTime.getMinutes() / 60;
@@ -250,8 +264,23 @@ export default function HeroCards({
               </h3>
 
               <div className="text-sm text-slate-600 mb-6" style={SANS}>
-                <span className="font-semibold">Confidence:</span> {confidence}% • 
-                <span className="font-semibold ml-2">Weights:</span>
+                <span className="font-semibold">Predictive Confidence:</span> 
+                <span 
+                  className={`ml-1 font-bold ${
+                    isLowConfidence 
+                      ? 'text-amber-600' 
+                      : 'text-slate-900'
+                  }`}
+                >
+                  {confidence}%
+                </span>
+                {isLowConfidence && (
+                  <span className="ml-2 text-xs text-amber-600 font-semibold">
+                    (High Uncertainty)
+                  </span>
+                )}
+                <span className="mx-2">•</span>
+                <span className="font-semibold">Weights:</span>
                 <span className="text-xs font-mono ml-1 text-slate-500">
                   {prediction.loaded_model_path.split('/').pop()}
                 </span>
@@ -269,6 +298,23 @@ export default function HeroCards({
                     </div>
                     <div className="text-xs text-red-300 leading-relaxed" style={SANS}>
                       PAGASA Red Warning automatically triggers minimum Action 2 (Suspend Basic Education). AI decision restricted to A2-A4 range only.
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* High Uncertainty Warning Banner */}
+              {isLowConfidence && hoursIntoFuture > 2 && (
+                <div className="mb-6 bg-amber-50 border-2 border-amber-400 rounded-lg p-4 flex items-start gap-3">
+                  <svg className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <div className="flex-1">
+                    <div className="text-sm font-bold text-amber-900 mb-1" style={SANS}>
+                      Extended Forecast: High Uncertainty
+                    </div>
+                    <div className="text-xs text-amber-800 leading-relaxed" style={SANS}>
+                      This prediction is <span className="font-semibold">{hoursIntoFuture.toFixed(1)} hours</span> into the future. Model confidence has decayed to <span className="font-semibold">{confidence}%</span>. Storm trajectory and intensity may shift significantly.
                     </div>
                   </div>
                 </div>
