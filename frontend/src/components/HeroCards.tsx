@@ -27,6 +27,7 @@ interface HeroCardsProps {
   predictionLoading?: boolean;
   onRetry?: () => void;
   mode?: 'historical' | 'live';
+  pagasaWarning?: "NONE" | "YELLOW" | "ORANGE" | "RED";
 }
 
 export default function HeroCards({
@@ -38,6 +39,7 @@ export default function HeroCards({
   predictionLoading = false,
   onRetry,
   mode = 'historical',
+  pagasaWarning = 'NONE',
 }: HeroCardsProps) {
   const wasAnnounced = currentHour >= (currentIncident?.actual_announcement_time ?? 0);
   const confidence = prediction 
@@ -239,6 +241,23 @@ export default function HeroCards({
                   {prediction.loaded_model_path.split('/').pop()}
                 </span>
               </div>
+
+              {/* Legal Override Banner - DepEd Order 37 */}
+              {pagasaWarning === 'RED' && (
+                <div className="mb-6 bg-red-950 border-2 border-red-800 rounded-lg p-4 flex items-start gap-3">
+                  <svg className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div className="flex-1">
+                    <div className="text-sm font-bold text-red-200 mb-1" style={SANS}>
+                      Legal Floor Enforced: DepEd Order 37
+                    </div>
+                    <div className="text-xs text-red-300 leading-relaxed" style={SANS}>
+                      PAGASA Red Warning automatically triggers minimum Action 2 (Suspend Basic Education). AI decision restricted to A2-A4 range only.
+                    </div>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-2 gap-4">
                 {prediction.ai_action_code === 1 ? (

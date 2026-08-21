@@ -284,6 +284,7 @@ export default function App() {
               simulatedStranded={simulatedStranded}
               predictionError={predictionError}
               predictionLoading={predictionLoading}
+              pagasaWarning={pagasaWarning}
               onRetry={() => {
                 console.log('[App] Retry button clicked - resetting prediction state');
                 setPredictionError(null);
@@ -310,6 +311,7 @@ export default function App() {
               simulatedStranded={simulatedStranded}
               predictionError={predictionError}
               predictionLoading={predictionLoading}
+              pagasaWarning={pagasaWarning}
               onRetry={() => {
                 console.log('[App] Retry button clicked (Live mode) - resetting prediction state');
                 setPredictionError(null);
@@ -344,6 +346,7 @@ export default function App() {
         bias={bias}
         setBias={setBias}
         prediction={currentPrediction}
+        pagasaWarning={pagasaWarning}
       />
 
       {!drawerOpen && (

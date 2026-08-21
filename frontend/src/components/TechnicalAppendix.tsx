@@ -57,6 +57,7 @@ interface TechnicalAppendixProps {
   bias: BiasMode;
   setBias: (b: BiasMode) => void;
   prediction: PredictionResponse | null;
+  pagasaWarning?: "NONE" | "YELLOW" | "ORANGE" | "RED";
 }
 
 export default function TechnicalAppendix({ 
@@ -64,7 +65,8 @@ export default function TechnicalAppendix({
   onClose, 
   bias, 
   setBias, 
-  prediction 
+  prediction,
+  pagasaWarning = 'NONE',
 }: TechnicalAppendixProps) {
   const [activeBias, setActiveBias] = useState<BiasMode>('balanced');
   
@@ -77,10 +79,14 @@ export default function TechnicalAppendix({
 
   if (!isOpen) return null;
 
+  // Determine which actions are locked by DepEd Order 37
+  const isRedWarning = pagasaWarning === 'RED';
+  
   const chartData = prediction ? prediction.action_probabilities.map((prob, idx) => ({
     name: ACTION_SHORT[idx as ActionCode] || `A${idx}`,
     value: Math.round(prob * 100),
     isWinner: idx === prediction.ai_action_code,
+    isLocked: isRedWarning && (idx === 0 || idx === 1), // Lock A0 and A1 during Red Warning
   })) : [];
 
   const maxProb = prediction ? Math.max(...prediction.action_probabilities) : 0;
@@ -181,7 +187,14 @@ export default function TechnicalAppendix({
                           {chartData.map((entry, index) => (
                             <Cell 
                               key={`cell-${index}`} 
-                              fill={entry.isWinner ? '#4d7c5f' : '#d6d3d1'} 
+                              fill={
+                                entry.isLocked 
+                                  ? '#9ca3af'  // gray-400 for locked actions
+                                  : entry.isWinner 
+                                    ? '#4d7c5f' 
+                                    : '#d6d3d1'
+                              }
+                              opacity={entry.isLocked ? 0.4 : 1}
                             />
                           ))}
                         </Bar>
@@ -193,6 +206,16 @@ export default function TechnicalAppendix({
                       {ACTION_SHORT[prediction.ai_action_code as ActionCode]} ({Math.round(maxProb * 100)}%)
                     </span>
                   </div>
+                  {isRedWarning && (
+                    <div className="mt-4 flex items-center justify-center gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-lg p-2" style={SANS}>
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                      <span className="font-semibold">A0 & A1 Locked</span>
+                      <span className="text-red-600">—</span>
+                      <span>DepEd Order 37 enforces minimum A2</span>
+                    </div>
+                  )}
                 </>
               ) : (
                 <div className="h-64 flex items-center justify-center text-stone-400">
