@@ -1,4 +1,7 @@
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useMemo } from 'react';
+import { MapContainer, TileLayer, useMap } from 'react-leaflet';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 
 const SANS: React.CSSProperties = { fontFamily: "'Inter', -apple-system, sans-serif" };
 const MONO: React.CSSProperties = { fontFamily: "'JetBrains Mono', monospace" };
@@ -35,112 +38,143 @@ function getPagasaColor(level: PagasaLevel): string {
   }
 }
 
-function TensorHeatmapCanvas({ step, incidentIdx }: { step: number; incidentIdx: number }) {
-  const ref = useRef<HTMLCanvasElement>(null);
+// Generate tensor heatmap as canvas and return as data URL
+function generateTensorCanvas(step: number, incidentIdx: number): string {
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return '';
+
+  const gridSize = 32;
+  const cellSize = 10;
+  const canvasSize = gridSize * cellSize;
+  
+  canvas.width = canvasSize;
+  canvas.height = canvasSize;
+
+  // Generate synthetic dBZ reflectivity data based on step
+  const intensity = Math.min(1, step / 14);
+  
+  // Create hotspot centers
+  const hotspots = [
+    { x: 16, y: 16, strength: intensity },
+    { x: 10, y: 20, strength: intensity * 0.7 },
+    { x: 22, y: 12, strength: intensity * 0.6 },
+  ];
+
+  // Render 32x32 grid
+  for (let row = 0; row < gridSize; row++) {
+    for (let col = 0; col < gridSize; col++) {
+      // Calculate distance-based intensity from hotspots
+      let maxIntensity = 0;
+      
+      for (const hotspot of hotspots) {
+        const dx = col - hotspot.x;
+        const dy = row - hotspot.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        const falloff = Math.max(0, 1 - distance / 8);
+        const localIntensity = hotspot.strength * falloff;
+        maxIntensity = Math.max(maxIntensity, localIntensity);
+      }
+
+      // Add some noise
+      maxIntensity += (Math.random() - 0.5) * 0.1;
+      maxIntensity = Math.max(0, Math.min(1, maxIntensity));
+
+      // Color gradient: light gray/teal → yellow → orange → dark red
+      let r, g, b;
+      if (maxIntensity < 0.2) {
+        r = 148 + (maxIntensity / 0.2) * 50;
+        g = 163 + (maxIntensity / 0.2) * 30;
+        b = 184;
+      } else if (maxIntensity < 0.4) {
+        const t = (maxIntensity - 0.2) / 0.2;
+        r = 198 + t * 54;
+        g = 193 + t * 27;
+        b = 184 - t * 94;
+      } else if (maxIntensity < 0.7) {
+        const t = (maxIntensity - 0.4) / 0.3;
+        r = 252 - t * 28;
+        g = 220 - t * 96;
+        b = 90 - t * 52;
+      } else {
+        const t = (maxIntensity - 0.7) / 0.3;
+        r = 224 - t * 71;
+        g = 124 - t * 97;
+        b = 38 - t * 11;
+      }
+
+      ctx.fillStyle = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
+      ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+    }
+  }
+
+  return canvas.toDataURL();
+}
+
+// Component to add image overlay to map
+function TensorOverlay({ step, incidentIdx }: { step: number; incidentIdx: number }) {
+  const map = useMap();
+  const overlayRef = useRef<L.ImageOverlay | null>(null);
 
   useEffect(() => {
-    const canvas = ref.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-
-    const gridSize = 32;
-    const cellSize = 10; // 10px per cell = 320px total
-    const canvasSize = gridSize * cellSize;
-
-    ctx.clearRect(0, 0, canvasSize, canvasSize);
-
-    // Generate synthetic dBZ reflectivity data based on step
-    const intensity = Math.min(1, step / 14);
-    
-    // Create hotspot centers
-    const hotspots = [
-      { x: 16, y: 16, strength: intensity },
-      { x: 10, y: 20, strength: intensity * 0.7 },
-      { x: 22, y: 12, strength: intensity * 0.6 },
+    // Metro Manila bounding box (approximate)
+    const bounds: L.LatLngBoundsExpression = [
+      [14.35, 120.85],  // Southwest corner
+      [14.85, 121.12],  // Northeast corner
     ];
 
-    // Render 32x32 grid
-    for (let row = 0; row < gridSize; row++) {
-      for (let col = 0; col < gridSize; col++) {
-        // Calculate distance-based intensity from hotspots
-        let maxIntensity = 0;
-        
-        for (const hotspot of hotspots) {
-          const dx = col - hotspot.x;
-          const dy = row - hotspot.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          const falloff = Math.max(0, 1 - distance / 8);
-          const localIntensity = hotspot.strength * falloff;
-          maxIntensity = Math.max(maxIntensity, localIntensity);
-        }
-
-        // Add some noise
-        maxIntensity += (Math.random() - 0.5) * 0.1;
-        maxIntensity = Math.max(0, Math.min(1, maxIntensity));
-
-        // Color gradient: light gray/teal → yellow → orange → dark red
-        let r, g, b;
-        if (maxIntensity < 0.2) {
-          // Light gray/teal
-          r = 148 + (maxIntensity / 0.2) * 50;
-          g = 163 + (maxIntensity / 0.2) * 30;
-          b = 184;
-        } else if (maxIntensity < 0.4) {
-          // Yellow
-          const t = (maxIntensity - 0.2) / 0.2;
-          r = 198 + t * 54;
-          g = 193 + t * 27;
-          b = 184 - t * 94;
-        } else if (maxIntensity < 0.7) {
-          // Orange
-          const t = (maxIntensity - 0.4) / 0.3;
-          r = 252 - t * 28;
-          g = 220 - t * 96;
-          b = 90 - t * 52;
-        } else {
-          // Dark red
-          const t = (maxIntensity - 0.7) / 0.3;
-          r = 224 - t * 71;
-          g = 124 - t * 97;
-          b = 38 - t * 11;
-        }
-
-        ctx.fillStyle = `rgb(${Math.floor(r)}, ${Math.floor(g)}, ${Math.floor(b)})`;
-        ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
-
-        // Optional: subtle grid lines
-        if (maxIntensity > 0.1) {
-          ctx.strokeStyle = 'rgba(0, 0, 0, 0.05)';
-          ctx.lineWidth = 0.5;
-          ctx.strokeRect(col * cellSize, row * cellSize, cellSize, cellSize);
-        }
-      }
+    const imageUrl = generateTensorCanvas(step, incidentIdx);
+    
+    // Remove existing overlay
+    if (overlayRef.current) {
+      map.removeLayer(overlayRef.current);
     }
 
-    // Add Manila marker in center
-    const centerX = 16 * cellSize;
-    const centerY = 16 * cellSize;
-    
-    ctx.fillStyle = '#1F2937';
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, 4, 0, 2 * Math.PI);
-    ctx.fill();
-    ctx.strokeStyle = 'white';
-    ctx.lineWidth = 2;
-    ctx.stroke();
+    // Add new overlay
+    overlayRef.current = L.imageOverlay(imageUrl, bounds, {
+      opacity: 0.65,
+      interactive: false,
+    }).addTo(map);
 
-  }, [step, incidentIdx]);
+    return () => {
+      if (overlayRef.current) {
+        map.removeLayer(overlayRef.current);
+      }
+    };
+  }, [step, incidentIdx, map]);
 
-  return (
-    <canvas 
-      ref={ref} 
-      width={320} 
-      height={320} 
-      className="rounded-lg border-2 border-stone-200"
-      style={{ imageRendering: 'pixelated' }}
-    />
-  );
+  return null;
+}
+
+// Component to add Manila center marker
+function ManilaMarker() {
+  const map = useMap();
+
+  useEffect(() => {
+    const manilaIcon = L.divIcon({
+      className: 'manila-marker',
+      html: `
+        <div style="
+          width: 12px;
+          height: 12px;
+          background-color: #1F2937;
+          border: 3px solid white;
+          border-radius: 50%;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        "></div>
+      `,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9],
+    });
+
+    const marker = L.marker([14.5995, 120.9842], { icon: manilaIcon }).addTo(map);
+
+    return () => {
+      map.removeLayer(marker);
+    };
+  }, [map]);
+
+  return null;
 }
 
 export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical' }: RadarGridProps) {
@@ -154,7 +188,7 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
     : 'Channel 0: dBZ Reflectivity • Local Manila Grid (32×32 Tensor Input)';
 
   return (
-    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8">
+    <div className="bg-white rounded-2xl border border-stone-200/80 shadow-sm p-8 h-full flex flex-col">
       <div className="mb-6">
         <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-2" style={SANS}>
           {title}
@@ -164,37 +198,46 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
         </p>
       </div>
 
-      {/* Tensor Heatmap with Annotations - Scaled Up */}
-      <div className="w-full max-w-md mx-auto">
-        <div className="relative aspect-square w-full">
-          {/* Top-left coordinate metadata */}
-          <div 
-            className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-10"
-            style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
-          >
-            14.5995°N 120.9842°E
-          </div>
-
-          {/* Top-right timestamp */}
-          <div 
-            className="absolute top-3 right-3 px-2 py-1 rounded text-xs font-medium text-white z-10"
-            style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
-          >
-            {currentTime}
-          </div>
-
-          {/* Bottom-right PAGASA warning pill */}
-          <div 
-            className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold text-white z-10"
-            style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
-          >
-            PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
-          </div>
-
-          <div className="w-full h-full flex items-center justify-center">
-            <TensorHeatmapCanvas step={step} incidentIdx={incidentIdx} />
-          </div>
+      {/* Map Container with Tensor Overlay */}
+      <div className="flex-1 min-h-[400px] relative rounded-xl overflow-hidden border-2 border-stone-200">
+        {/* Map metadata overlays */}
+        <div 
+          className="absolute top-3 left-3 px-2 py-1 rounded text-xs font-medium text-white z-[1000]"
+          style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
+        >
+          14.5995°N 120.9842°E
         </div>
+
+        <div 
+          className="absolute top-3 right-3 px-2 py-1 rounded text-xs font-medium text-white z-[1000]"
+          style={{ backgroundColor: 'rgba(31, 41, 55, 0.85)', ...MONO }}
+        >
+          {currentTime}
+        </div>
+
+        <div 
+          className="absolute bottom-3 right-3 px-3 py-1.5 rounded-full text-xs font-bold text-white z-[1000]"
+          style={{ backgroundColor: getPagasaColor(pagasaWarning), ...SANS }}
+        >
+          PAGASA: {pagasaWarning === "NONE" ? "No Warning" : `${pagasaWarning} Warning`}
+        </div>
+
+        <MapContainer
+          center={[14.5995, 120.9842]}
+          zoom={11}
+          style={{ height: '100%', width: '100%' }}
+          zoomControl={false}
+          attributionControl={false}
+        >
+          {/* Dark mode tile layer - CartoDB Dark Matter */}
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          />
+          
+          <TensorOverlay step={step} incidentIdx={incidentIdx} />
+          <ManilaMarker />
+        </MapContainer>
       </div>
 
       {/* Color Scale Bar */}
