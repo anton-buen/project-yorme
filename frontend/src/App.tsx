@@ -17,8 +17,7 @@ import LoadingScreen from './components/LoadingScreen';
 import Header from './components/Header';
 import SystemContextBanner from './components/SystemContextBanner';
 import HeroCards from './components/HeroCards';
-import RadarGrid from './components/RadarGrid';
-import LiveMap from './components/LiveMap';
+import SpatialContext from './components/SpatialContext';
 import TimelineScrubber from './components/TimelineScrubber';
 import TechnicalAppendix from './components/TechnicalAppendix';
 
@@ -312,10 +311,11 @@ export default function App() {
 
             {/* Right Column: Telemetry + Spatial Tensor */}
             <div className="col-span-12 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-full">
-              <RadarGrid
+              <SpatialContext
                 step={step}
                 incidentIdx={incidentIdx}
                 pagasaWarning={pagasaWarning}
+                mode="historical"
                 isLoading={predictionLoading}
               />
             </div>
@@ -345,14 +345,13 @@ export default function App() {
 
             {/* Right Column: Telemetry + Map */}
             <div className="col-span-12 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-full">
-              <RadarGrid
+              <SpatialContext
                 step={step}
                 incidentIdx={incidentIdx}
                 pagasaWarning={pagasaWarning}
-                mode={mode}
+                mode="live"
                 isLoading={predictionLoading}
               />
-              <LiveMap />
             </div>
           </div>
         )}

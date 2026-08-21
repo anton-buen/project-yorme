@@ -28,6 +28,7 @@ interface RadarGridProps {
   pagasaWarning: PagasaLevel;
   mode?: 'historical' | 'live';
   isLoading?: boolean;
+  bare?: boolean; // When true, renders without outer card wrapper
 }
 
 function getPagasaColor(level: PagasaLevel): string {
@@ -179,9 +180,13 @@ function ManilaMarker() {
   return null;
 }
 
-export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical', isLoading = false }: RadarGridProps) {
+export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'historical', isLoading = false, bare = false }: RadarGridProps) {
   if (isLoading) {
-    return <MapSkeleton />;
+    return bare ? <MapSkeleton /> : (
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 h-full flex flex-col ring-1 ring-slate-900/5">
+        <MapSkeleton />
+      </div>
+    );
   }
   
   const currentTime = mode === 'live' 
@@ -193,16 +198,18 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
     ? 'Real-Time Satellite Telemetry • Metro Manila Grid (32×32 Tensor Input)'
     : 'Channel 0: dBZ Reflectivity • Local Manila Grid (32×32 Tensor Input)';
 
-  return (
-    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 h-full flex flex-col ring-1 ring-slate-900/5">
-      <div className="mb-6">
-        <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-2" style={SANS}>
-          {title}
-        </h3>
-        <p className="text-sm text-stone-600" style={SANS}>
-          {subtitle}
-        </p>
-      </div>
+  const content = (
+    <>
+      {!bare && (
+        <div className="mb-6">
+          <h3 className="text-2xl font-bold font-sans tracking-tight text-stone-900 mb-2" style={SANS}>
+            {title}
+          </h3>
+          <p className="text-sm text-stone-600" style={SANS}>
+            {subtitle}
+          </p>
+        </div>
+      )}
 
       {/* Map Container with Tensor Overlay */}
       <div className="h-64 md:h-80 lg:flex-1 lg:min-h-[400px] relative z-0 rounded-xl overflow-hidden border-2 border-stone-200">
@@ -279,6 +286,16 @@ export default function RadarGrid({ step, incidentIdx, pagasaWarning, mode = 'hi
           This 32×32 grid maps radar reflectivity (dBZ intensity) across Metro Manila. The PPO policy network processes these spatial vectors through its convolutional encoder to evaluate storm trajectory and density before making a recommendation.
         </p>
       </div>
+    </>
+  );
+
+  if (bare) {
+    return <div className="p-6 flex flex-col flex-1">{content}</div>;
+  }
+
+  return (
+    <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-8 h-full flex flex-col ring-1 ring-slate-900/5">
+      {content}
     </div>
   );
 }
