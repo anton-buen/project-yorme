@@ -289,13 +289,13 @@ export default function App() {
         onReplayTour={() => setTourOpen(true)}
       />
 
-      <main className="w-full max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-6 flex-1">
+      <main className="w-full max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-8 py-4 sm:py-6 flex-1">
         
         {/* SystemContextBanner removed from main flow - now in Technical Vault modal */}
 
         {/* Timeline Control - Positioned at top for historical mode */}
         {mode === "historical" && (
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <TimelineScrubber
               step={step}
               setStep={setStep}
@@ -306,7 +306,7 @@ export default function App() {
 
         {/* TIER 2: The Command Deck - 12-column grid */}
         {mode === "historical" ? (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
             {/* Left Column: AI + LGU Decision Cards */}
             <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
               <HeroCards
@@ -328,7 +328,7 @@ export default function App() {
             </div>
 
             {/* Right Column: Telemetry + Spatial Tensor */}
-            <div className="col-span-12 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-full">
+            <div className="col-span-12 lg:col-span-5 flex flex-col gap-3 sm:gap-4 lg:gap-6 h-full">
               <SpatialContext
                 step={step}
                 incidentIdx={incidentIdx}
@@ -341,7 +341,7 @@ export default function App() {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-4 lg:gap-6 mb-4 sm:mb-6">
             {/* Left Column: AI + LGU Decision Cards */}
             <div className="col-span-12 lg:col-span-7 flex flex-col h-full">
               <HeroCards
@@ -364,7 +364,7 @@ export default function App() {
             </div>
 
             {/* Right Column: Telemetry + Map */}
-            <div className="col-span-12 lg:col-span-5 flex flex-col gap-4 lg:gap-6 h-full">
+            <div className="col-span-12 lg:col-span-5 flex flex-col gap-3 sm:gap-4 lg:gap-6 h-full">
               <SpatialContext
                 step={step}
                 incidentIdx={incidentIdx}
@@ -381,7 +381,7 @@ export default function App() {
         {/* Footer */}
         <div
           id="step-legal-footer"
-          className="text-center text-slate-500 text-sm pt-4 pb-2 space-y-2 max-w-3xl mx-auto"
+          className="text-center text-slate-500 text-xs sm:text-sm pt-4 pb-2 space-y-2 max-w-3xl mx-auto px-2"
           style={SANS}
         >
           <div>
@@ -391,7 +391,7 @@ export default function App() {
             </SourceLink>{' '}
             Integration • 100% Factual Compliance
           </div>
-          <p className="text-xs text-slate-400 leading-relaxed px-2">
+          <p className="text-xs leading-relaxed px-2">
             <YormeMark className="text-slate-400" /> is an independent, non-commercial educational
             project by a sole developer and is not affiliated with the City of Manila,{' '}
             <SourceLink source="pagasa" className="text-slate-400">
@@ -442,26 +442,28 @@ export default function App() {
       {!drawerOpen && !techVaultOpen && !legalDisclaimerOpen && (
         <div
           id="step-fab-dock"
-          className="fixed bottom-8 right-8 z-40 flex flex-col gap-3"
+          className="fixed bottom-4 sm:bottom-8 right-4 sm:right-8 z-40 flex flex-col gap-2 sm:gap-3"
         >
           {/* How it Works FAB */}
           <button
             onClick={() => setTechVaultOpen(true)}
-            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
+            className="px-3 sm:px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2 text-xs sm:text-sm"
             aria-label="Open How it Works"
           >
-            <BookOpen className="w-5 h-5" />
-            <span className="font-medium text-sm">How it Works</span>
+            <BookOpen className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium hidden sm:inline">How it Works</span>
+            <span className="font-medium sm:hidden">Info</span>
           </button>
 
           {/* RL Metrics FAB */}
           <button
             onClick={() => setDrawerOpen(true)}
-            className="px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2"
+            className="px-3 sm:px-4 py-2 rounded-full shadow-lg hover:shadow-xl bg-slate-900 text-slate-200 hover:bg-slate-800 transition-all duration-300 ease-in-out hover:scale-105 active:scale-95 flex items-center gap-2 text-xs sm:text-sm"
             aria-label="Open RL Metrics"
           >
-            <BarChart2 className="w-5 h-5" />
-            <span className="font-medium text-sm">RL Metrics</span>
+            <BarChart2 className="w-4 h-4 sm:w-5 sm:h-5" />
+            <span className="font-medium hidden sm:inline">RL Metrics</span>
+            <span className="font-medium sm:hidden">Metrics</span>
           </button>
         </div>
       )}
